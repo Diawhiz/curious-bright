@@ -68,7 +68,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'whitenoise.runserver_nostatic',
-
+    'meta',
     # Local apps
     'blog',
 ]
@@ -360,6 +360,15 @@ if not DEBUG:
     CSRF_TRUSTED_ORIGINS = [
         'https://curiousbright.com.ng',
     ]
+
+# SEO Settings
+META_SITE_PROTOCOL = 'https'
+META_SITE_DOMAIN = 'curiousbright.com.ng'
+META_USE_OG_PROPERTIES = True
+META_USE_TWITTER_PROPERTIES = True
+META_TWITTER_TYPE = 'summary_large_image'
+META_OG_TYPE = 'article'
+META_DEFAULT_IMAGE = '/static/images/default-og.jpg'  
 
 # Custom error handlers
 handler404 = 'blog.views.custom_404'

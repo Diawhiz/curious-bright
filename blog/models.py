@@ -30,6 +30,7 @@ class Post(models.Model):
 
     title = models.CharField(max_length=200)
     slug = models.SlugField(unique=True, blank=True)
+    excerpt = models.TextField(max_length=160, help_text="Used for SEO meta description. Keep under 160 characters.")
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
     featured_image = CloudinaryField('image', folder='newsblog/featured')
     content = RichTextField()

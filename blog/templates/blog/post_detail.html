@@ -2,8 +2,17 @@
 {% load static %}
 
 {% block title %}{{ post.title }} - CuriousBright{% endblock %}
+{% block meta_description %}{{ post.content|striptags|truncatechars:160 }}{% endblock %}
 
-{% block meta_description %}{{ post.content|striptags|truncatewords:50 }}{% endblock %}
+{% block og_title %}{{ post.title }}{% endblock %}
+{% block og_description %}{{ post.content|striptags|truncatechars:160 }}{% endblock %}
+{% block og_type %}article{% endblock %}
+{% block og_url %}{{ request.build_absolute_uri }}{% endblock %}
+{% block og_image %}{% if post.featured_image %}{{ post.featured_image.url }}{% else %}{% static 'images/default-og.jpg' %}{% endif %}{% endblock %}
+
+{% block twitter_title %}{{ post.title }}{% endblock %}
+{% block twitter_description %}{{ post.content|striptags|truncatechars:160 }}{% endblock %}
+{% block twitter_image %}{% if post.featured_image %}{{ post.featured_image.url }}{% else %}{% static 'images/default-og.jpg' %}{% endif %}{% endblock %}
 
 {% block content %}
 <article class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">

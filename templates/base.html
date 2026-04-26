@@ -4,8 +4,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="{% block meta_description %}Exploring curiosity and passion through engaging news and stories{% endblock %}">
+
+    <!-- Primary SEO -->
     <title>{% block title %}CuriousBright - Exploring Curiosity & Passion{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}Exploring curiosity and passion through engaging content and stories{% endblock %}">
+
+    <!-- Open Graph (WhatsApp, Facebook previews) -->
+    <meta property="og:site_name" content="CuriousBright">
+    <meta property="og:title" content="{% block og_title %}CuriousBright - Exploring Curiosity & Passion{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Exploring curiosity and passion through engaging content and stories{% endblock %}">
+    <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+    <meta property="og:url" content="{% block og_url %}{{ request.build_absolute_uri }}{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}{% static 'images/default-og.jpg' %}{% endblock %}">
+
+    <!-- Twitter/X previews -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{% block twitter_title %}CuriousBright - Exploring Curiosity & Passion{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}Exploring curiosity and passion through engaging content and stories{% endblock %}">
+    <meta name="twitter:image" content="{% block twitter_image %}{% static 'images/default-og.jpg' %}{% endblock %}">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="{{ request.build_absolute_uri }}">
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>

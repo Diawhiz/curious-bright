@@ -6,50 +6,78 @@ from .models import Post, Category, Comment, StaticPage
 from django.db.models import Q
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.models import User
+from meta.views import MetadataMixin
+from django.views.generic import DetailView
 
 def home(request):
-    # Get featured/latest post for hero
     featured_posts = Post.objects.filter(status='published').order_by('-created_date')[:3]
-    # Get all other posts
     posts = Post.objects.filter(status='published').order_by('-created_date')[3:12]
-    # Get recent posts for sidebar
     recent_posts = Post.objects.filter(status='published').order_by('-created_date')[:5]
+
+    # SEO for homepage
+    meta = {
+        'title': 'CuriousBright - Latest News & Articles',
+        'description': 'Stay informed with the latest news, articles and stories on CuriousBright.',
+        'image': None,  # put your default OG image static path here
+        'url': request.build_absolute_uri(),
+        'type': 'website',
+        'site_name': 'CuriousBright',
+    }
 
     context = {
         'featured_posts': featured_posts,
         'posts': posts,
         'recent_posts': recent_posts,
+        'meta': meta,
     }
     return render(request, 'blog/home.html', context)
 
-def post_detail(request, slug):
-    post = get_object_or_404(Post, slug=slug, status='published')
-    # Increment view count
-    post.views += 1
-    post.save()
-
-    # Get comments for this post
-    comments = post.comments.filter(parent=None, is_approved=True)
-
-    # Get related posts (same category)
-    related_posts = Post.objects.filter(category=post.category, status='published').exclude(id=post.id)[:3]
-
-    context = {
-        'post': post,
-        'comments': comments,
-        'related_posts': related_posts,
-    }
-    return render(request, 'blog/post_detail.html', context)
 
 def category_posts(request, slug):
     category = get_object_or_404(Category, slug=slug)
     posts = Post.objects.filter(category=category, status='published').order_by('-created_date')
 
+    meta = {
+        'title': f'{category.name} - CuriousBright',
+        'description': f'Browse all {category.name} articles on CuriousBright.',
+        'image': None,
+        'url': request.build_absolute_uri(),
+        'type': 'website',
+        'site_name': 'CuriousBright',
+    }
+
     context = {
         'category': category,
         'posts': posts,
+        'meta': meta,
     }
     return render(request, 'blog/category_posts.html', context)
+    
+def post_detail(request, slug):
+    post = get_object_or_404(Post, slug=slug, status='published')
+    post.views += 1
+    post.save()
+
+    comments = post.comments.filter(parent=None, is_approved=True)
+    related_posts = Post.objects.filter(category=post.category, status='published').exclude(id=post.id)[:3]
+
+    # SEO meta tags
+    meta = {
+        'title': post.title,
+        'description': post.excerpt if hasattr(post, 'excerpt') else post.content[:160],
+        'image': post.featured_image.url if post.featured_image else None,
+        'url': request.build_absolute_uri(),
+        'type': 'article',
+        'site_name': 'CuriousBright',
+    }
+
+    context = {
+        'post': post,
+        'comments': comments,
+        'related_posts': related_posts,
+        'meta': meta,
+    }
+    return render(request, 'blog/post_detail.html', context)
 
 @login_required
 def like_comment(request, comment_id):

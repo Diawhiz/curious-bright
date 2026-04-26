@@ -16,6 +16,7 @@ dependencies = [
     "Pillow==10.4.0",
     "gunicorn==22.0.0",
     "django-jazzmin==2.6.0",
+    "django-meta==2.5.1",
 ]
 
 [build-system]
