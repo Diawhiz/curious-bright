@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 import os
+import sys
 from pathlib import Path
 import cloudinary
 import cloudinary.uploader
@@ -41,6 +42,7 @@ else:
     ALLOWED_HOSTS = [
         '127.0.0.1',
         'localhost',
+        '.vercel.app',
         'curiousbright.com.ng',
     ]
 
@@ -197,12 +199,21 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
+ON_VERCEL = os.environ.get('VERCEL', False)
+
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_DIRS = [BASE_DIR / 'static'] if (BASE_DIR / 'static').exists() else []
 
+# For Vercel, use WhiteNoise
+if ON_VERCEL or not DEBUG:
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
+    
 # Media files - use Cloudinary
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 

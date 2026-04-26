@@ -6,14 +6,7 @@
       "use": "@vercel/python",
       "config": {
         "maxLambdaSize": "15mb",
-        "runtime": "python3.9"
-      }
-    },
-    {
-      "src": "build_files.sh",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "staticfiles"
+        "runtime": "python3.12"
       }
     }
   ],
@@ -23,16 +16,12 @@
       "dest": "/static/$1"
     },
     {
-      "src": "/media/(.*)",
-      "dest": "/media/$1"
-    },
-    {
       "src": "/(.*)",
       "dest": "curiousbright/wsgi.py"
     }
   ],
+  "outputDirectory": "staticfiles",
   "env": {
-    "DJANGO_SETTINGS_MODULE": "curiousbright.settings",
-    "PYTHONPATH": "."
+    "DJANGO_SETTINGS_MODULE": "curiousbright.settings"
   }
 }
