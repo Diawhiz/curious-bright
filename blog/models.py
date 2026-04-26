@@ -40,6 +40,9 @@ class Post(models.Model):
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft')
     views = models.PositiveIntegerField(default=0)
 
+    is_featured = models.BooleanField(default=False, help_text="Check to display this post in the hero section")
+    featured_order = models.IntegerField(default=0, help_text="Lower numbers appear first (1, 2, 3, etc.)")
+
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.title)

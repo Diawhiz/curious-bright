@@ -146,6 +146,11 @@ TEMPLATES = [
     },
 ]
 
+# All Auth templates
+ACCOUNT_TEMPLATE_EXTENSION = 'html'
+ACCOUNT_SIGNUP_TEMPLATE = 'accounts/signup.html'
+ACCOUNT_LOGIN_TEMPLATE = 'accounts/login.html'
+
 WSGI_APPLICATION = 'curiousbright.wsgi.application'
 
 # Database Configuration - Works for both local and production
@@ -335,7 +340,7 @@ JAZZMIN_UI_TWEAKS = {
     "sidebar_nav_legacy_style": False,
     "sidebar_nav_flat_style": False,
     "theme": "default",
-    "dark_mode_theme": None,
+    "default_theme_mode": "auto",
     "button_classes": {
         "primary": "btn-primary",
         "secondary": "btn-secondary",
