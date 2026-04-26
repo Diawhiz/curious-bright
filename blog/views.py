@@ -36,8 +36,8 @@ def category_posts(request, slug):
     posts = Post.objects.filter(category=category, status='published').order_by('-created_date')
 
     meta = {
-        'title': f'{category.name} - CuriousBright',
-        'description': f'Browse all {category.name} articles on CuriousBright.',
+        'title': f'{category.title} - CuriousBright',
+        'description': f'Browse all {category.title} articles on CuriousBright.',
         'image': None,
         'url': request.build_absolute_uri(),
         'type': 'website',
