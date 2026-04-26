@@ -152,7 +152,7 @@ WSGI_APPLICATION = 'curiousbright.wsgi.application'
 # Uses DATABASE_URL from environment, falls back to SQLite for local
 DATABASE_URL = os.environ.get('DATABASE_URL')
 
-if DATABASE_URL:
+if DATABASE_URL and not os.environ.get('USE_SQLITE'):
     # Production database (Aiven PostgreSQL)
     DATABASES = {
         'default': dj_database_url.config(

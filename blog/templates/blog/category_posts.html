@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ category.title }} - CuriousBright{% endblock %}
+
+{% block content %}
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <h1 class="text-3xl font-bold text-gray-900 mb-8">Articles in: {{ category.title }}</h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {% for post in posts %}
+        <div class="bg-white rounded-lg shadow-md overflow-hidden card-hover">
+            {% if post.featured_image %}
+            <img src="{{ post.featured_image.url }}" alt="{{ post.title }}" class="w-full h-48 object-cover">
+            {% endif %}
+            <div class="p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-3">{{ post.title }}</h2>
+                <p class="text-gray-600 mb-4">{{ post.content|striptags|truncatewords:20 }}</p>
+                <a href="{% url 'post_detail' post.slug %}" class="text-purple-600 font-semibold hover:text-purple-700">Read More →</a>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-gray-500 col-span-3 text-center">No posts in this category yet.</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}
