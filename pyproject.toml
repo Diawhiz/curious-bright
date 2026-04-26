@@ -16,6 +16,8 @@ dependencies = [
     "Pillow==10.4.0",
     "gunicorn==22.0.0",
     "django-jazzmin==2.6.0",
+    "PyJWT==2.9.0",
+    "cryptography==43.0.3",
 ]
 
 [build-system]
