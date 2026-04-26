@@ -50,7 +50,7 @@ SITE_ID = 1
 
 # Application definition
 INSTALLED_APPS = [
-    'django_jazzmin',
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -68,7 +68,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'whitenoise.runserver_nostatic',
-    'meta',
+
     # Local apps
     'blog',
 ]
@@ -368,7 +368,7 @@ META_USE_OG_PROPERTIES = True
 META_USE_TWITTER_PROPERTIES = True
 META_TWITTER_TYPE = 'summary_large_image'
 META_OG_TYPE = 'article'
-META_DEFAULT_IMAGE = '/static/images/default-og.jpg'  
+META_DEFAULT_IMAGE = '/static/images/default-og.jpg'
 
 # Custom error handlers
 handler404 = 'blog.views.custom_404'
