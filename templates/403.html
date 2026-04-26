@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Access Denied - CuriousBright{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center px-4 py-12">
+    <div class="text-center">
+        <h1 class="text-9xl font-bold text-yellow-600">403</h1>
+        <h2 class="text-3xl font-bold text-gray-800 mt-4">Access Denied</h2>
+        <p class="text-gray-600 mt-4 mb-8">You don't have permission to access this page.</p>
+        <a href="{% url 'home' %}" class="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition">
+            Back to Home
+        </a>
+    </div>
+</div>
+{% endblock %}

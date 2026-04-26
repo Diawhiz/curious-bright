@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}About Us - CuriousBright{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">About CuriousBright</h1>
+        <div class="w-24 h-1 bg-gradient-to-r from-purple-600 to-indigo-600 mx-auto"></div>
+    </div>
+
+    <div class="prose prose-lg max-w-none">
+        <div class="bg-white rounded-xl shadow-md p-8 mb-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Our Story</h2>
+            <p class="text-gray-600 leading-relaxed">
+                CuriousBright was born from a simple idea: curiosity drives innovation, and passion fuels excellence.
+                We believe that every question asked leads to new discoveries, and every discovery has the power to brighten lives.
+            </p>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-md p-8 mb-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Our Mission</h2>
+            <p class="text-gray-600 leading-relaxed">
+                To create a platform where curious minds can explore, learn, and share knowledge across various domains.
+                We strive to deliver high-quality, engaging content that inspires action and fosters growth.
+            </p>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-md p-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Why Choose Us</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="flex items-start space-x-3">
+                    <i class="fas fa-check-circle text-green-500 mt-1"></i>
+                    <span class="text-gray-600">Authentic & Well-researched content</span>
+                </div>
+                <div class="flex items-start space-x-3">
+                    <i class="fas fa-check-circle text-green-500 mt-1"></i>
+                    <span class="text-gray-600">Regular updates & fresh perspectives</span>
+                </div>
+                <div class="flex items-start space-x-3">
+                    <i class="fas fa-check-circle text-green-500 mt-1"></i>
+                    <span class="text-gray-600">Community-driven discussions</span>
+                </div>
+                <div class="flex items-start space-x-3">
+                    <i class="fas fa-check-circle text-green-500 mt-1"></i>
+                    <span class="text-gray-600">Expert contributors & reviewers</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

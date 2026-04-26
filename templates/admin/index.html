@@ -1,0 +1,90 @@
+{% extends "admin/index.html" %}
+{% load static %}
+
+{% block content %}
+<div id="content-main">
+    <!-- Custom Stats Cards -->
+    <div class="dashboard-stats">
+        <div class="stat-card">
+            <div class="stat-number" id="post-count">Loading...</div>
+            <div class="stat-label">Total Posts</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="comment-count">Loading...</div>
+            <div class="stat-label">Total Comments</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="user-count">Loading...</div>
+            <div class="stat-label">Total Users</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="category-count">Loading...</div>
+            <div class="stat-label">Categories</div>
+        </div>
+    </div>
+
+    <!-- Original admin content -->
+    {% if app_list %}
+        {% for app in app_list %}
+            <div class="module">
+                <table>
+                    <caption>
+                        <a href="{{ app.app_url }}" class="section" title="Models in the {{ app.name }} application">
+                            {{ app.name }}
+                        </a>
+                    </caption>
+                    {% for model in app.models %}
+                        <tr class="model-{{ model.object_name|lower }}">
+                            {% if model.admin_url %}
+                                <th scope="row"><a href="{{ model.admin_url }}">{{ model.name }}</a></th>
+                            {% else %}
+                                <th scope="row">{{ model.name }}</th>
+                            {% endif %}
+
+                            {% if model.add_url %}
+                                <td><a href="{{ model.add_url }}" class="addlink">Add</a></td>
+                            {% else %}
+                                <td>&nbsp;</td>
+                            {% endif %}
+
+                            {% if model.admin_url %}
+                                {% if model.view_only %}
+                                    <td><a href="{{ model.admin_url }}" class="viewlink">View</a></td>
+                                {% else %}
+                                    <td><a href="{{ model.admin_url }}" class="changelink">Change</a></td>
+                                {% endif %}
+                            {% else %}
+                                <td>&nbsp;</td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>You don't have permission to view or edit anything.</p>
+    {% endif %}
+</div>
+
+<script>
+    // Fetch stats from API
+    async function fetchStats() {
+        try {
+            const response = await fetch('/admin/stats/');
+            const data = await response.json();
+            document.getElementById('post-count').textContent = data.posts || 0;
+            document.getElementById('comment-count').textContent = data.comments || 0;
+            document.getElementById('user-count').textContent = data.users || 0;
+            document.getElementById('category-count').textContent = data.categories || 0;
+        } catch (error) {
+            console.error('Error fetching stats:', error);
+            document.getElementById('post-count').textContent = '0';
+            document.getElementById('comment-count').textContent = '0';
+            document.getElementById('user-count').textContent = '0';
+            document.getElementById('category-count').textContent = '0';
+        }
+    }
+
+    fetchStats();
+</script>
+{% endblock %}

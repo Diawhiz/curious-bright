@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Home - CuriousBright{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-gradient text-white py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h1 class="text-5xl font-bold mb-4">Welcome to CuriousBright</h1>
+            <p class="text-xl opacity-90">Exploring curiosity and passion through engaging stories</p>
+        </div>
+
+        {% if featured_posts %}
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {% for post in featured_posts %}
+            <div class="bg-white rounded-xl overflow-hidden shadow-xl card-hover">
+                {% if post.featured_image %}
+                <img src="{{ post.featured_image.url }}" alt="{{ post.title }}" class="w-full h-48 object-cover">
+                {% else %}
+                <div class="w-full h-48 bg-gray-300 flex items-center justify-center">
+                    <span class="text-gray-500">No Image</span>
+                </div>
+                {% endif %}
+                <div class="p-6">
+                    <div class="text-sm text-purple-600 mb-2">{{ post.category.title }}</div>
+                    <h2 class="text-xl font-bold text-gray-800 mb-3">{{ post.title }}</h2>
+                    <p class="text-gray-600 mb-4">{{ post.content|striptags|truncatewords:30 }}</p>
+                    <a href="{% url 'post_detail' post.slug %}" class="text-purple-600 font-semibold hover:text-purple-700">Read More →</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center text-white">
+            <p>No featured posts available yet. Check back soon!</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Latest Posts Grid -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <h2 class="text-3xl font-bold text-gray-800 mb-8">Latest Articles</h2>
+
+    {% if posts %}
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {% for post in posts %}
+        <div class="bg-white rounded-lg shadow-md overflow-hidden card-hover">
+            {% if post.featured_image %}
+            <img src="{{ post.featured_image.url }}" alt="{{ post.title }}" class="w-full h-48 object-cover">
+            {% else %}
+            <div class="w-full h-48 bg-gray-300 flex items-center justify-center">
+                <span class="text-gray-500">No Image</span>
+            </div>
+            {% endif %}
+            <div class="p-6">
+                <div class="flex items-center text-sm text-gray-500 mb-3">
+                    <span class="text-purple-600 font-semibold">{{ post.category.title }}</span>
+                    <span class="mx-2">•</span>
+                    <span>{{ post.created_date|date:"M d, Y" }}</span>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-3">{{ post.title }}</h3>
+                <p class="text-gray-600 mb-4">{{ post.content|striptags|truncatewords:20 }}</p>
+                <a href="{% url 'post_detail' post.slug %}" class="text-purple-600 font-medium hover:text-purple-700">Read More →</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center text-gray-500 py-12">
+        <p>No posts available yet. Please check back later!</p>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}
