@@ -2,8 +2,7 @@
 
 echo "Building Django application for Vercel..."
 
-pip install --upgrade pip
-pip install -r requirements.txt --no-cache-dir
+uv pip install -r requirements.txt --system
 
 python manage.py collectstatic --noinput --clear
 
