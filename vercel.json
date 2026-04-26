@@ -1,12 +1,18 @@
 {
   "version": 2,
-  "outputDirectory": "staticfiles",
-  "functions": {
-    "curiousbright/wsgi.py": {
-      "runtime": "python3.12",
-      "maxDuration": 10
+  "builds": [
+    {
+      "src": "curiousbright/wsgi.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "build_files.sh",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "staticfiles"
+      }
     }
-  },
+  ],
   "routes": [
     {
       "src": "/static/(.*)",
