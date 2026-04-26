@@ -1,15 +1,12 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "curiousbright/wsgi.py",
-      "use": "@vercel/python",
-      "config": {
-        "maxLambdaSize": "15mb",
-        "runtime": "python3.12"
-      }
+  "outputDirectory": "staticfiles",
+  "functions": {
+    "curiousbright/wsgi.py": {
+      "runtime": "python3.12",
+      "maxDuration": 10
     }
-  ],
+  },
   "routes": [
     {
       "src": "/static/(.*)",
@@ -19,9 +16,5 @@
       "src": "/(.*)",
       "dest": "curiousbright/wsgi.py"
     }
-  ],
-  "outputDirectory": "staticfiles",
-  "env": {
-    "DJANGO_SETTINGS_MODULE": "curiousbright.settings"
-  }
+  ]
 }

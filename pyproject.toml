@@ -1,0 +1,23 @@
+[project]
+name = "curiousbright"
+version = "1.0.0"
+description = "CuriousBright - A modern news blog"
+requires-python = ">=3.12"
+dependencies = [
+    "Django==5.1.4",
+    "whitenoise==6.7.0",
+    "dj-database-url==2.2.0",
+    "psycopg2-binary==2.9.10",
+    "cloudinary==1.41.0",
+    "django-cloudinary-storage==0.3.0",
+    "django-ckeditor==6.7.0",
+    "django-allauth==65.2.0",
+    "python-dotenv==1.0.1",
+    "Pillow==10.4.0",
+    "gunicorn==22.0.0",
+    "django-jazzmin==2.6.0",
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"

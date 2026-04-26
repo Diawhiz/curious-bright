@@ -2,14 +2,12 @@
 
 echo "Building Django application for Vercel..."
 
-# Install dependencies with --break-system-packages flag for uv-managed Python
-pip install --break-system-packages -r requirements.txt
-
-# Or try this alternative if above doesn't work:
-# python -m pip install --break-system-packages -r requirements.txt
+# Install dependencies using uv (Vercel's default)
+pip install --upgrade pip
+pip install -r requirements.txt --no-cache-dir
 
 # Collect static files
-python manage.py collectstatic --noinput
+python manage.py collectstatic --noinput --clear
 
 # Run migrations
 python manage.py migrate --noinput
