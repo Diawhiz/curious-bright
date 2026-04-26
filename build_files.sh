@@ -2,8 +2,9 @@
 
 echo "Building Django application for Vercel..."
 
-uv python pin 3.12
-uv pip install -r requirements.txt --system
+uv venv .venv --python 3.12
+source .venv/bin/activate
+uv pip install -r requirements.txt
 
 python manage.py collectstatic --noinput --clear
 
