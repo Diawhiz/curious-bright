@@ -6,8 +6,6 @@ from .models import Post, Category, Comment, StaticPage
 from django.db.models import Q
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.models import User
-from meta.views import MetadataMixin
-from django.views.generic import DetailView
 
 def home(request):
     featured_posts = Post.objects.filter(status='published').order_by('-created_date')[:3]
@@ -52,7 +50,7 @@ def category_posts(request, slug):
         'meta': meta,
     }
     return render(request, 'blog/category_posts.html', context)
-    
+
 def post_detail(request, slug):
     post = get_object_or_404(Post, slug=slug, status='published')
     post.views += 1
