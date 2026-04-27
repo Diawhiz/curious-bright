@@ -49,12 +49,7 @@ else:
 if not DEBUG:
     # Force HTTPS redirect
     SECURE_SSL_REDIRECT = True
-
-    # Enable HSTS (HTTP Strict Transport Security)
-    SECURE_HSTS_SECONDS = 31536000
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-    SECURE_HSTS_PRELOAD = True
-
+    
     # Additional security headers
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
