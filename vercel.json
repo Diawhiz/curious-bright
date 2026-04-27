@@ -24,7 +24,7 @@
     {
       "src": "/ads.txt",
       "dest": "/static/ads.txt"
-    }
+    },
     {
       "src": "/(.*)",
       "dest": "curiousbright/wsgi.py"
