@@ -42,9 +42,26 @@ else:
     ALLOWED_HOSTS = [
         '127.0.0.1',
         'localhost',
-        '.vercel.app',
         'curiousbright.com.ng',
     ]
+
+if not DEBUG:
+    # Force HTTPS redirect
+    SECURE_SSL_REDIRECT = True
+
+    # Enable HSTS (HTTP Strict Transport Security)
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+
+    # Additional security headers
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+
+    # Trust Vercel's proxy headers
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 SITE_ID = 1
 
