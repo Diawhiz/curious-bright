@@ -44,6 +44,7 @@ else:
         'localhost',
         '.vercel.app',
         'curiousbright.com.ng',
+        'www.curiousbright.com.ng',
     ]
 
 if not DEBUG:

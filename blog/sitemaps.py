@@ -5,6 +5,8 @@ from .models import Post, Category, StaticPage
 class PostSitemap(Sitemap):
     changefreq = "weekly"
     priority = 0.8
+    protocol = 'https'
+    domain = 'curiousbright.com.ng'
 
     def items(self):
         return Post.objects.filter(status='published')
@@ -18,6 +20,8 @@ class PostSitemap(Sitemap):
 class CategorySitemap(Sitemap):
     changefreq = "monthly"
     priority = 0.6
+    protocol = 'https'
+    domain = 'curiousbright.com.ng'
 
     def items(self):
         return Category.objects.all()
@@ -28,6 +32,8 @@ class CategorySitemap(Sitemap):
 class StaticSitemap(Sitemap):
     changefreq = "monthly"
     priority = 0.5
+    protocol = 'https'
+    domain = 'curiousbright.com.ng'
 
     def items(self):
         return ['home', 'about', 'privacy', 'terms']
