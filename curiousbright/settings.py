@@ -43,8 +43,7 @@ else:
         '127.0.0.1',
         'localhost',
         '.vercel.app',
-        'curiousbright.com.ng',
-        'www.curiousbright.com.ng',
+        '.curiousbright.com.ng',
     ]
 
 if not DEBUG:
@@ -380,7 +379,7 @@ if not DEBUG:
     SECURE_CONTENT_TYPE_NOSNIFF = True
     CSRF_TRUSTED_ORIGINS = [
         'https://curiousbright.com.ng',
-        'https://curiousbright.vercel.app',
+        'https://www.curiousbright.com.ng',
         'https://*.vercel.app',
     ]
 
