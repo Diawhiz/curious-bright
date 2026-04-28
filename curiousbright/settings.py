@@ -49,7 +49,7 @@ else:
 if not DEBUG:
     # Force HTTPS redirect
     SECURE_SSL_REDIRECT = True
-    
+
     # Additional security headers
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
@@ -71,6 +71,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    'django.contrib.sitemaps',
 
     # Third party apps
     'ckeditor',
@@ -135,6 +136,17 @@ ACCOUNT_EMAIL_VERIFICATION = 'optional'
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = True
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_LOGOUT_REDIRECT_URL = '/'
+SOCIALACCOUNT_LOGIN_ON_GET = True
+SOCIALACCOUNT_QUERY_EMAIL = True
+SOCIALACCOUNT_EMAIL_REQUIRED = True
+SOCIALACCOUNT_STORE_TOKENS = False
+
+SOCIALACCOUNT_TEMPLATES = {
+    'login_cancelled': 'socialaccount/login_cancelled.html',
+    'authentication_error': 'socialaccount/authentication_error.html',
+    'signup': 'socialaccount/signup.html',
+}
 
 # Authentication backends
 AUTHENTICATION_BACKENDS = [
