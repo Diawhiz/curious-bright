@@ -3,61 +3,64 @@
 {% block title %}All Posts - CuriousBright{% endblock %}
 
 {% block content %}
-<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <div class="text-center mb-12">
-        <h1 class="text-4xl font-bold text-gray-900 mb-4">All Articles</h1>
-        <div class="w-24 h-1 bg-gradient-to-r from-purple-600 to-indigo-600 mx-auto"></div>
-        <p class="text-gray-600 mt-4">Explore all our articles and insights</p>
+<div class="section">
+    <div style="text-align:center;margin-bottom:3rem;">
+        <h1 style="font-size:2.25rem;font-weight:800;color:#111827;margin-bottom:1rem;">All Articles</h1>
+        <div style="width:5rem;height:3px;background:linear-gradient(90deg,#7c3aed,#4f46e5);margin:0 auto 1rem;border-radius:2px;"></div>
+        <p style="color:#6b7280;">Explore all our articles and insights</p>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <div style="display:grid;gap:2rem;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));">
         {% for post in posts %}
-        <div class="bg-white rounded-lg shadow-md overflow-hidden card-hover group">
+        <div class="card">
             {% if post.featured_image %}
-            <img src="{{ post.featured_image.url }}" alt="{{ post.title }}" class="w-full h-48 object-cover group-hover:scale-105 transition duration-300">
+            <!-- FIX: Cloudinary optimized + lazy load + explicit dimensions -->
+            <img
+                src="{{ post.featured_image.url|cut:'upload/'|add:'upload/f_auto,q_auto,w_600/' }}"
+                alt="{{ post.title }}"
+                loading="lazy"
+                width="600"
+                height="192"
+                style="height:12rem;width:100%;object-fit:cover;"
+            >
             {% endif %}
-            <div class="p-6">
-                <div class="flex items-center text-sm text-gray-500 mb-3">
-                    <span class="text-purple-600 font-semibold">{{ post.category.title }}</span>
-                    <span class="mx-2">•</span>
+            <div class="card-body">
+                <div style="display:flex;align-items:center;gap:.5rem;font-size:.8rem;color:#6b7280;margin-bottom:.5rem;flex-wrap:wrap;">
+                    <span class="tag">{{ post.category.title }}</span>
+                    <span>•</span>
                     <span>{{ post.created_date|date:"M d, Y" }}</span>
                     {% if post.is_featured %}
-                    <span class="ml-2 text-yellow-500">
-                        <i class="fas fa-star"></i> Featured
-                    </span>
+                    <span style="color:#f59e0b;"><i class="fas fa-star"></i> Featured</span>
                     {% endif %}
                 </div>
-                <h2 class="text-xl font-bold text-gray-800 mb-3">{{ post.title }}</h2>
-                <p class="text-gray-600 mb-4">{{ post.excerpt|default:post.content|striptags|truncatewords:20 }}</p>
-                <a href="{% url 'post_detail' post.slug %}" class="text-purple-600 font-semibold hover:text-purple-700">Read More →</a>
+                <div class="card-title">{{ post.title }}</div>
+                <div class="card-excerpt">{{ post.excerpt|default:post.content|striptags|truncatewords:20 }}</div>
+                <!-- FIX: Descriptive link text -->
+                <a href="{% url 'post_detail' post.slug %}" class="read-more">
+                    Read More →<span class="sr-only"> {{ post.title }}</span>
+                </a>
             </div>
         </div>
         {% empty %}
-        <p class="text-gray-500 col-span-3 text-center">No posts available yet.</p>
+        <p style="color:#6b7280;text-align:center;grid-column:1/-1;">No posts available yet.</p>
         {% endfor %}
     </div>
 
     <!-- Pagination -->
     {% if is_paginated %}
-    <div class="flex justify-center mt-12">
-        <nav class="flex items-center space-x-2">
+    <div style="display:flex;justify-content:center;margin-top:3rem;">
+        <nav style="display:flex;align-items:center;gap:.5rem;" aria-label="Pagination">
             {% if posts.has_previous %}
-            <a href="?page={{ posts.previous_page_number }}" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-purple-600 hover:text-white transition">
-                Previous
-            </a>
+            <a href="?page={{ posts.previous_page_number }}" style="padding:.5rem 1rem;background:#e5e7eb;color:#374151;border-radius:.5rem;text-decoration:none;font-weight:500;transition:background .2s;">Previous</a>
             {% endif %}
-
-            <span class="px-4 py-2 bg-purple-600 text-white rounded-lg">
+            <span style="padding:.5rem 1rem;background:#7c3aed;color:#fff;border-radius:.5rem;font-weight:600;">
                 Page {{ posts.number }} of {{ posts.paginator.num_pages }}
             </span>
-
             {% if posts.has_next %}
-            <a href="?page={{ posts.next_page_number }}" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-purple-600 hover:text-white transition">
-                Next
-            </a>
+            <a href="?page={{ posts.next_page_number }}" style="padding:.5rem 1rem;background:#e5e7eb;color:#374151;border-radius:.5rem;text-decoration:none;font-weight:500;transition:background .2s;">Next</a>
             {% endif %}
         </nav>
     </div>
     {% endif %}
-</section>
+</div>
 {% endblock %}

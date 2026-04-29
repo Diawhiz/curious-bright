@@ -6,9 +6,11 @@ from ckeditor.fields import RichTextField
 from cloudinary.models import CloudinaryField
 from django.utils import timezone
 
+
 class Category(models.Model):
     title = models.CharField(max_length=200)
-    slug = models.SlugField(unique=True, blank=True)
+    # FIX: db_index=True ensures fast lookups on slug
+    slug = models.SlugField(unique=True, blank=True, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
@@ -21,6 +23,8 @@ class Category(models.Model):
 
     class Meta:
         verbose_name_plural = "Categories"
+        ordering = ['title']
+
 
 class Post(models.Model):
     STATUS_CHOICES = (
@@ -29,17 +33,17 @@ class Post(models.Model):
     )
 
     title = models.CharField(max_length=200)
-    slug = models.SlugField(unique=True, blank=True)
+    # FIX: db_index on slug for fast post lookups by URL
+    slug = models.SlugField(unique=True, blank=True, db_index=True)
     excerpt = models.TextField(max_length=160, help_text="Used for SEO meta description. Keep under 160 characters.")
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
     featured_image = CloudinaryField('image', folder='newsblog/featured')
     content = RichTextField()
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='posts')
-    created_date = models.DateTimeField(default=timezone.now)
+    created_date = models.DateTimeField(default=timezone.now, db_index=True)
     updated_date = models.DateTimeField(auto_now=True)
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft')
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft', db_index=True)
     views = models.PositiveIntegerField(default=0)
-
     is_featured = models.BooleanField(default=False, help_text="Check to display this post in the hero section")
     featured_order = models.IntegerField(default=0, help_text="Lower numbers appear first (1, 2, 3, etc.)")
 
@@ -53,6 +57,16 @@ class Post(models.Model):
 
     def get_absolute_url(self):
         return reverse('post_detail', args=[self.slug])
+
+    class Meta:
+        # FIX: Composite indexes for the most common query patterns
+        indexes = [
+            models.Index(fields=['status', '-created_date'], name='idx_post_status_date'),
+            models.Index(fields=['status', 'is_featured', 'featured_order'], name='idx_post_featured'),
+            models.Index(fields=['category', 'status', '-created_date'], name='idx_post_category_date'),
+        ]
+        ordering = ['-created_date']
+
 
 class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
@@ -70,6 +84,13 @@ class Comment(models.Model):
 
     def total_likes(self):
         return self.likes.count()
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['post', 'parent', 'is_approved'], name='idx_comment_post'),
+        ]
+        ordering = ['created_date']
+
 
 class StaticPage(models.Model):
     title = models.CharField(max_length=200)

@@ -2,45 +2,62 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.contrib import messages
-from .models import Post, Category, Comment, StaticPage
-from django.db.models import Q
+from django.db.models import Q, F
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.admin.views.decorators import staff_member_required
+from django.views.decorators.cache import cache_page
+from django.views.decorators.vary import vary_on_cookie
 
+from .models import Post, Category, Comment, StaticPage
+
+
+@cache_page(60 * 10)
+@vary_on_cookie
 def home(request):
-    # Get featured posts for hero banner
     featured_posts = Post.objects.filter(
         status='published',
         is_featured=True
-    ).order_by('featured_order', '-created_date')[:5]
+    ).select_related('author', 'category').order_by('featured_order', '-created_date')[:5]
 
-    # Get latest posts (exclude featured posts)
     latest_posts = Post.objects.filter(
         status='published',
         is_featured=False
+    ).select_related('author', 'category').only(
+        'title', 'slug', 'excerpt', 'content', 'featured_image',
+        'created_date', 'views', 'category__title', 'category__slug',
+        'author__username'
     ).order_by('-created_date')[:9]
-
-    # Get recent posts for sidebar
-    recent_posts = Post.objects.filter(status='published').order_by('-created_date')[:5]
 
     context = {
         'featured_posts': featured_posts,
         'latest_posts': latest_posts,
-        'recent_posts': recent_posts,
     }
     return render(request, 'blog/home.html', context)
 
+
+@cache_page(60 * 15)
+@vary_on_cookie
 def post_detail(request, slug):
-    post = get_object_or_404(Post, slug=slug, status='published')
-    # Increment view count
-    post.views += 1
-    post.save()
+    post = get_object_or_404(
+        Post.objects.select_related('author', 'category'),
+        slug=slug,
+        status='published'
+    )
 
-    # Get comments for this post
-    comments = post.comments.filter(parent=None, is_approved=True)
+    Post.objects.filter(pk=post.pk).update(views=F('views') + 1)
 
-    # Get related posts (same category)
-    related_posts = Post.objects.filter(category=post.category, status='published').exclude(id=post.id)[:3]
+    comments = Comment.objects.filter(
+        post=post, parent=None, is_approved=True
+    ).select_related('user').prefetch_related(
+        'replies__user', 'likes'
+    )
+
+    related_posts = Post.objects.filter(
+        category=post.category,
+        status='published'
+    ).exclude(id=post.id).select_related('category').only(
+        'title', 'slug', 'featured_image', 'category__title', 'category__slug'
+    )[:3]
 
     context = {
         'post': post,
@@ -49,9 +66,17 @@ def post_detail(request, slug):
     }
     return render(request, 'blog/post_detail.html', context)
 
+
+@cache_page(60 * 10)
 def category_posts(request, slug):
     category = get_object_or_404(Category, slug=slug)
-    posts = Post.objects.filter(category=category, status='published').order_by('-created_date')
+    posts = Post.objects.filter(
+        category=category,
+        status='published'
+    ).select_related('author', 'category').only(
+        'title', 'slug', 'excerpt', 'content', 'featured_image',
+        'created_date', 'category__title', 'category__slug'
+    ).order_by('-created_date')
 
     context = {
         'category': category,
@@ -59,39 +84,15 @@ def category_posts(request, slug):
     }
     return render(request, 'blog/category_posts.html', context)
 
-@login_required
-def like_comment(request, comment_id):
-    comment = get_object_or_404(Comment, id=comment_id)
-    if request.user in comment.likes.all():
-        comment.likes.remove(request.user)
-        liked = False
-    else:
-        comment.likes.add(request.user)
-        liked = True
 
-    return JsonResponse({'liked': liked, 'total_likes': comment.total_likes()})
-
-@login_required
-def add_comment(request, slug):
-    post = get_object_or_404(Post, slug=slug)
-
-    if request.method == 'POST':
-        parent_id = request.POST.get('parent_id')
-        content = request.POST.get('content')
-
-        comment = Comment.objects.create(
-            post=post,
-            user=request.user,
-            content=content,
-            parent_id=parent_id if parent_id else None
-        )
-
-        messages.success(request, 'Comment added successfully!')
-
-    return redirect('post_detail', slug=post.slug)
-
+@cache_page(60 * 10)
 def all_posts(request):
-    posts_list = Post.objects.filter(status='published').order_by('-created_date')
+    posts_list = Post.objects.filter(
+        status='published'
+    ).select_related('author', 'category').only(
+        'title', 'slug', 'excerpt', 'content', 'featured_image',
+        'created_date', 'is_featured', 'category__title', 'category__slug'
+    ).order_by('-created_date')
 
     paginator = Paginator(posts_list, 12)
     page = request.GET.get('page', 1)
@@ -109,17 +110,50 @@ def all_posts(request):
     }
     return render(request, 'blog/all_posts.html', context)
 
+
+@login_required
+def like_comment(request, comment_id):
+    comment = get_object_or_404(Comment, id=comment_id)
+    if request.user in comment.likes.all():
+        comment.likes.remove(request.user)
+        liked = False
+    else:
+        comment.likes.add(request.user)
+        liked = True
+    return JsonResponse({'liked': liked, 'total_likes': comment.total_likes()})
+
+
+@login_required
+def add_comment(request, slug):
+    post = get_object_or_404(Post, slug=slug)
+    if request.method == 'POST':
+        parent_id = request.POST.get('parent_id')
+        content = request.POST.get('content', '').strip()
+        if content:
+            Comment.objects.create(
+                post=post,
+                user=request.user,
+                content=content,
+                parent_id=parent_id if parent_id else None
+            )
+            messages.success(request, 'Comment added successfully!')
+    return redirect('post_detail', slug=post.slug)
+
+
 def about(request):
     page = get_object_or_404(StaticPage, slug='about', is_published=True)
     return render(request, 'blog/about.html', {'page': page})
+
 
 def privacy(request):
     page = get_object_or_404(StaticPage, slug='privacy', is_published=True)
     return render(request, 'blog/privacy.html', {'page': page})
 
+
 def terms(request):
     page = get_object_or_404(StaticPage, slug='terms', is_published=True)
     return render(request, 'blog/terms.html', {'page': page})
+
 
 @staff_member_required
 def admin_stats(request):
@@ -132,30 +166,14 @@ def admin_stats(request):
     }
     return JsonResponse(stats)
 
-def all_posts(request):
-    posts_list = Post.objects.filter(status='published').order_by('-created_date')
-
-    paginator = Paginator(posts_list, 12)
-    page = request.GET.get('page', 1)
-
-    try:
-        posts = paginator.page(page)
-    except PageNotAnInteger:
-        posts = paginator.page(1)
-    except EmptyPage:
-        posts = paginator.page(paginator.num_pages)
-
-    context = {
-        'posts': posts,
-        'is_paginated': True,
-    }
-    return render(request, 'blog/all_posts.html', context)
 
 def custom_404(request, exception):
     return render(request, '404.html', status=404)
 
+
 def custom_500(request):
     return render(request, '500.html', status=500)
+
 
 def custom_403(request, exception):
     return render(request, '403.html', status=403)

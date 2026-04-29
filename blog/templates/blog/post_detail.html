@@ -2,61 +2,111 @@
 {% load static %}
 
 {% block title %}{{ post.title }} - CuriousBright{% endblock %}
-{% block meta_description %}{{ post.content|striptags|truncatechars:160 }}{% endblock %}
+{% block meta_description %}{{ post.excerpt|default:post.content|striptags|truncatechars:160 }}{% endblock %}
 
 {% block og_title %}{{ post.title }}{% endblock %}
-{% block og_description %}{{ post.content|striptags|truncatechars:160 }}{% endblock %}
+{% block og_description %}{{ post.excerpt|default:post.content|striptags|truncatechars:160 }}{% endblock %}
 {% block og_type %}article{% endblock %}
 {% block og_url %}{{ request.build_absolute_uri }}{% endblock %}
 {% block og_image %}{% if post.featured_image %}{{ post.featured_image.url }}{% else %}{% static 'images/default-og.jpg' %}{% endif %}{% endblock %}
 
 {% block twitter_title %}{{ post.title }}{% endblock %}
-{% block twitter_description %}{{ post.content|striptags|truncatechars:160 }}{% endblock %}
+{% block twitter_description %}{{ post.excerpt|default:post.content|striptags|truncatechars:160 }}{% endblock %}
 {% block twitter_image %}{% if post.featured_image %}{{ post.featured_image.url }}{% else %}{% static 'images/default-og.jpg' %}{% endif %}{% endblock %}
 
-{% block content %}
-<article class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+{% block extra_css %}
+<style>
+    .article-wrap { max-width: 52rem; margin: 0 auto; padding: 3rem 1.5rem; }
+    .article-cat { font-size: .9rem; color: #7c3aed; margin-bottom: 1rem; }
+    .article-cat a { color: inherit; text-decoration: none; }
+    .article-cat a:hover { text-decoration: underline; }
+    .article-title { font-size: clamp(1.75rem, 4vw, 2.75rem); font-weight: 800; color: #111827; margin-bottom: 1rem; line-height: 1.2; }
+    .article-meta { display: flex; flex-wrap: wrap; gap: .5rem 1rem; color: #6b7280; font-size: .9rem; margin-bottom: 2rem; }
+    .article-feat-img { width: 100%; border-radius: .75rem; box-shadow: 0 4px 20px rgba(0,0,0,.1); margin-bottom: 2rem; display: block; }
+    .comments-section { margin-top: 4rem; padding-top: 2rem; border-top: 1px solid #e5e7eb; }
+    .comment-card { background: #fff; border-radius: .75rem; border: 1px solid #f3f4f6; padding: 1.5rem; margin-bottom: 1.5rem; }
+    .comment-avatar { width: 2.5rem; height: 2.5rem; border-radius: 50%; background: #ede9fe; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #7c3aed; font-size: .9rem; }
+    .comment-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; }
+    .comment-user { font-weight: 600; color: #111827; }
+    .comment-date { font-size: .8rem; color: #9ca3af; }
+    .comment-body { color: #374151; line-height: 1.7; margin-bottom: 1rem; }
+    .like-btn { display: flex; align-items: center; gap: .3rem; font-size: .85rem; color: #6b7280; background: none; border: none; cursor: pointer; transition: color .2s; }
+    .like-btn:hover { color: #7c3aed; }
+    .reply-btn { font-size: .85rem; color: #7c3aed; background: none; border: none; cursor: pointer; font-weight: 600; }
+    .replies-wrap { margin-top: 1rem; margin-left: 1.5rem; padding-left: 1rem; border-left: 2px solid #ede9fe; }
+    .reply-card { background: #f9fafb; border-radius: .5rem; padding: 1rem; margin-bottom: .75rem; }
+    .reply-form-wrap { display: none; margin-top: 1rem; }
+    .form-textarea { width: 100%; padding: .75rem 1rem; border: 1px solid #d1d5db; border-radius: .5rem; font-size: .95rem; resize: none; outline: none; transition: border-color .2s, box-shadow .2s; font-family: inherit; }
+    .form-textarea:focus { border-color: #7c3aed; box-shadow: 0 0 0 3px rgba(124,58,237,.1); }
+    .btn-submit { background: #7c3aed; color: #fff; padding: .6rem 1.5rem; border-radius: .5rem; border: none; font-weight: 600; cursor: pointer; transition: background .2s; }
+    .btn-submit:hover { background: #6d28d9; }
+    .btn-cancel { background: #e5e7eb; color: #374151; padding: .6rem 1.5rem; border-radius: .5rem; border: none; font-weight: 600; cursor: pointer; }
+    .no-comments { text-align: center; padding: 3rem; background: #f9fafb; border-radius: .75rem; color: #6b7280; }
+    .join-box { background: linear-gradient(135deg,#f5f3ff,#eef2ff); border-radius: .75rem; padding: 2.5rem; text-align: center; margin-top: 2rem; }
+    .join-box h4 { font-size: 1.25rem; font-weight: 700; color: #111827; margin: 1rem 0 .5rem; }
+    .join-box p { color: #6b7280; margin-bottom: 1.5rem; }
+    .join-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .related-grid { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); }
+</style>
+{% endblock %}
 
-    <!-- Header -->
-    <header class="mb-8">
-        <div class="text-sm text-purple-600 mb-4">
-            <a href="{% url 'category_posts' post.category.slug %}" class="hover:underline">{{ post.category.title }}</a>
+{% block content %}
+<article class="article-wrap">
+
+    <header>
+        <div class="article-cat">
+            <a href="{% url 'category_posts' post.category.slug %}">{{ post.category.title }}</a>
         </div>
-        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">{{ post.title }}</h1>
-        <div class="flex items-center text-gray-600 mb-6">
+        <h1 class="article-title">{{ post.title }}</h1>
+        <div class="article-meta">
             <span>By {{ post.author.username }}</span>
-            <span class="mx-2">•</span>
+            <span>•</span>
             <span>{{ post.created_date|date:"F d, Y" }}</span>
-            <span class="mx-2">•</span>
+            <span>•</span>
             <span><i class="fas fa-eye"></i> {{ post.views }} views</span>
         </div>
     </header>
 
-    <!-- Featured Image -->
     {% if post.featured_image %}
-    <div class="mb-8">
-        <img src="{{ post.featured_image.url }}" alt="{{ post.title }}" class="w-full rounded-xl shadow-lg">
-    </div>
+    <!-- FIX: Hero image — fetchpriority=high, Cloudinary optimized, explicit dimensions -->
+    <img
+        src="{{ post.featured_image.url|cut:'upload/'|add:'upload/f_auto,q_auto,w_1200/' }}"
+        alt="{{ post.title }}"
+        class="article-feat-img"
+        fetchpriority="high"
+        width="1200"
+        height="630"
+    >
     {% endif %}
 
-    <!-- Content -->
-    <div class="content prose prose-lg max-w-none mb-12">
-        {{ post.content|safe|linebreaks }}
+    <div class="content" style="font-size:1.05rem;line-height:1.8;color:#1f2937;">
+        {{ post.content|safe }}
     </div>
 
     <!-- Related Posts -->
     {% if related_posts %}
-    <section class="mt-16 pt-8 border-t border-gray-200">
-        <h3 class="text-2xl font-bold text-gray-900 mb-6">Related Articles</h3>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <section style="margin-top:4rem;padding-top:2rem;border-top:1px solid #e5e7eb;">
+        <h3 style="font-size:1.5rem;font-weight:700;color:#111827;margin-bottom:1.5rem;">Related Articles</h3>
+        <div class="related-grid">
             {% for related in related_posts %}
-            <div class="bg-white rounded-lg shadow-md overflow-hidden card-hover">
+            <div class="card">
                 {% if related.featured_image %}
-                <img src="{{ related.featured_image.url }}" alt="{{ related.title }}" class="w-full h-40 object-cover">
+                <!-- FIX: Cloudinary optimized, lazy load -->
+                <img
+                    src="{{ related.featured_image.url|cut:'upload/'|add:'upload/f_auto,q_auto,w_400/' }}"
+                    alt="{{ related.title }}"
+                    loading="lazy"
+                    width="400"
+                    height="160"
+                    style="height:10rem;"
+                >
                 {% endif %}
-                <div class="p-4">
-                    <h4 class="font-bold text-gray-800 mb-2">{{ related.title }}</h4>
-                    <a href="{% url 'post_detail' related.slug %}" class="text-purple-600 text-sm hover:underline">Read More →</a>
+                <div class="card-body">
+                    <div class="card-title" style="-webkit-line-clamp:3;">{{ related.title }}</div>
+                    <!-- FIX: Descriptive link text for SEO + accessibility -->
+                    <a href="{% url 'post_detail' related.slug %}" class="read-more">
+                        Read More →<span class="sr-only"> {{ related.title }}</span>
+                    </a>
                 </div>
             </div>
             {% endfor %}
@@ -65,175 +115,132 @@
     {% endif %}
 
     <!-- Comments Section -->
-  <section class="mt-16 pt-8 border-t border-gray-200">
-      <h3 class="text-2xl font-bold text-gray-900 mb-8">
-          {{ comments|length }} Comment{{ comments|length|pluralize }}
-      </h3>
+    <section class="comments-section">
+        <h3 style="font-size:1.5rem;font-weight:700;color:#111827;margin-bottom:2rem;">
+            {{ comments|length }} Comment{{ comments|length|pluralize }}
+        </h3>
 
-      <!-- Display Messages -->
-      {% if messages %}
-      {% for message in messages %}
-      <div class="mb-4 p-4 rounded-lg {% if message.tags == 'success' %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
-          {{ message }}
-      </div>
-      {% endfor %}
-      {% endif %}
+        {% if messages %}
+        {% for message in messages %}
+        <div style="margin-bottom:1rem;padding:1rem;border-radius:.5rem;{% if message.tags == 'success' %}background:#d1fae5;color:#065f46;{% else %}background:#fee2e2;color:#991b1b;{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
 
-      <!-- Existing Comments -->
-      {% for comment in comments %}
-      <div class="mb-8" id="comment-{{ comment.id }}">
-          <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        {% for comment in comments %}
+        <div class="comment-card" id="comment-{{ comment.id }}">
+            <div class="comment-header">
+                <div style="display:flex;align-items:center;gap:.75rem;">
+                    <div class="comment-avatar">{{ comment.user.username|first|upper }}</div>
+                    <div>
+                        <div class="comment-user">{{ comment.user.username }}</div>
+                        <div class="comment-date">{{ comment.created_date|date:"F d, Y" }}</div>
+                    </div>
+                </div>
+                {% if user.is_authenticated %}
+                <button class="like-btn" onclick="likeComment({{ comment.id }}, this)" aria-label="Like comment">
+                    <i class="fas fa-heart"></i>
+                    <span id="likes-count-{{ comment.id }}">{{ comment.total_likes }}</span>
+                </button>
+                {% else %}
+                <div class="like-btn" style="cursor:default;">
+                    <i class="fas fa-heart"></i>
+                    <span>{{ comment.total_likes }}</span>
+                </div>
+                {% endif %}
+            </div>
 
-              <!-- Comment Header -->
-              <div class="flex items-center justify-between mb-4">
-                  <div class="flex items-center space-x-3">
-                      <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
-                          <span class="text-purple-600 font-bold text-sm">
-                              {{ comment.user.username|first|upper }}
-                          </span>
-                      </div>
-                      <div>
-                          <p class="font-semibold text-gray-900">{{ comment.user.username }}</p>
-                          <p class="text-sm text-gray-500">{{ comment.created_date|date:"F d, Y" }}</p>
-                      </div>
-                  </div>
+            <p class="comment-body">{{ comment.content }}</p>
 
-                  <!-- Like Button (only for registered users) -->
-                  {% if user.is_authenticated %}
-                  <button onclick="likeComment({{ comment.id }}, this)"
-                      class="flex items-center space-x-1 text-gray-500 hover:text-purple-600 transition">
-                      <i class="fas fa-heart"></i>
-                      <span id="likes-count-{{ comment.id }}">{{ comment.total_likes }}</span>
-                  </button>
-                  {% else %}
-                  <div class="flex items-center space-x-1 text-gray-400">
-                      <i class="fas fa-heart"></i>
-                      <span id="likes-count-{{ comment.id }}">{{ comment.total_likes }}</span>
-                  </div>
-                  {% endif %}
-              </div>
+            {% if user.is_authenticated %}
+            <button class="reply-btn" onclick="toggleReplyForm({{ comment.id }})" aria-expanded="false">
+                <i class="fas fa-reply"></i> Reply
+            </button>
+            {% endif %}
 
-              <!-- Comment Content -->
-              <p class="text-gray-700 leading-relaxed mb-4">{{ comment.content }}</p>
+            <div id="reply-form-{{ comment.id }}" class="reply-form-wrap">
+                <form method="POST" action="{% url 'add_comment' post.slug %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="parent_id" value="{{ comment.id }}">
+                    <textarea name="content" rows="3" placeholder="Write a reply..." required class="form-textarea" style="margin-bottom:.75rem;"></textarea>
+                    <div style="display:flex;gap:.5rem;">
+                        <button type="submit" class="btn-submit">Post Reply</button>
+                        <button type="button" class="btn-cancel" onclick="toggleReplyForm({{ comment.id }})">Cancel</button>
+                    </div>
+                </form>
+            </div>
 
-              <!-- Reply Button (only for registered users) -->
-              {% if user.is_authenticated %}
-              <button onclick="toggleReplyForm({{ comment.id }})"
-                  class="text-sm text-purple-600 hover:text-purple-700 font-medium transition">
-                  <i class="fas fa-reply mr-1"></i> Reply
-              </button>
-              {% endif %}
+            {% if comment.replies.all %}
+            <div class="replies-wrap">
+                {% for reply in comment.replies.all %}
+                {% if reply.is_approved %}
+                <div class="reply-card" id="comment-{{ reply.id }}">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem;">
+                        <div style="display:flex;align-items:center;gap:.5rem;">
+                            <div class="comment-avatar" style="width:2rem;height:2rem;font-size:.75rem;">{{ reply.user.username|first|upper }}</div>
+                            <div>
+                                <div class="comment-user" style="font-size:.9rem;">{{ reply.user.username }}</div>
+                                <div class="comment-date">{{ reply.created_date|date:"F d, Y" }}</div>
+                            </div>
+                        </div>
+                        {% if user.is_authenticated %}
+                        <button class="like-btn" onclick="likeComment({{ reply.id }}, this)" aria-label="Like reply">
+                            <i class="fas fa-heart"></i>
+                            <span id="likes-count-{{ reply.id }}">{{ reply.total_likes }}</span>
+                        </button>
+                        {% endif %}
+                    </div>
+                    <p style="color:#374151;font-size:.9rem;line-height:1.6;">{{ reply.content }}</p>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        {% empty %}
+        <div class="no-comments">
+            <i class="fas fa-comments" style="font-size:3rem;color:#d1d5db;display:block;margin-bottom:1rem;"></i>
+            <p>No comments yet. Be the first to comment!</p>
+        </div>
+        {% endfor %}
 
-              <!-- Reply Form (hidden by default) -->
-              <div id="reply-form-{{ comment.id }}" class="hidden mt-4">
-                  <form method="POST" action="{% url 'add_comment' post.slug %}">
-                      {% csrf_token %}
-                      <input type="hidden" name="parent_id" value="{{ comment.id }}">
-                      <textarea name="content" rows="3" placeholder="Write a reply..." required
-                          class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"></textarea>
-                      <div class="flex space-x-2 mt-2">
-                          <button type="submit"
-                              class="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-purple-700 transition">
-                              Post Reply
-                          </button>
-                          <button type="button" onclick="toggleReplyForm({{ comment.id }})"
-                              class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm hover:bg-gray-300 transition">
-                              Cancel
-                          </button>
-                      </div>
-                  </form>
-              </div>
-
-              <!-- Replies -->
-              {% if comment.replies.all %}
-              <div class="mt-4 ml-6 space-y-4 border-l-2 border-purple-100 pl-4">
-                  {% for reply in comment.replies.all %}
-                  {% if reply.is_approved %}
-                  <div class="bg-gray-50 rounded-lg p-4" id="comment-{{ reply.id }}">
-                      <div class="flex items-center justify-between mb-2">
-                          <div class="flex items-center space-x-2">
-                              <div class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center">
-                                  <span class="text-purple-600 font-bold text-xs">
-                                      {{ reply.user.username|first|upper }}
-                                  </span>
-                              </div>
-                              <div>
-                                  <p class="font-semibold text-gray-900 text-sm">{{ reply.user.username }}</p>
-                                  <p class="text-xs text-gray-500">{{ reply.created_date|date:"F d, Y" }}</p>
-                              </div>
-                          </div>
-                          {% if user.is_authenticated %}
-                          <button onclick="likeComment({{ reply.id }}, this)"
-                              class="flex items-center space-x-1 text-gray-400 hover:text-purple-600 transition text-sm">
-                              <i class="fas fa-heart"></i>
-                              <span id="likes-count-{{ reply.id }}">{{ reply.total_likes }}</span>
-                          </button>
-                          {% else %}
-                          <div class="flex items-center space-x-1 text-gray-400 text-sm">
-                              <i class="fas fa-heart"></i>
-                              <span id="likes-count-{{ reply.id }}">{{ reply.total_likes }}</span>
-                          </div>
-                          {% endif %}
-                      </div>
-                      <p class="text-gray-700 text-sm">{{ reply.content }}</p>
-                  </div>
-                  {% endif %}
-                  {% endfor %}
-              </div>
-              {% endif %}
-
-          </div>
-      </div>
-      {% empty %}
-      <div class="text-center py-12 bg-gray-50 rounded-xl">
-          <i class="fas fa-comments text-4xl text-gray-300 mb-4"></i>
-          <p class="text-gray-500">No comments yet. Be the first to comment!</p>
-      </div>
-      {% endfor %}
-
-      <!-- Add Comment Form - Now ONLY for registered users -->
-      {% if user.is_authenticated %}
-      <div class="mt-10 bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <h4 class="text-xl font-bold text-gray-900 mb-6">Leave a Comment</h4>
-          <form method="POST" action="{% url 'add_comment' post.slug %}">
-              {% csrf_token %}
-              <p class="text-sm text-gray-600 mb-4">
-                  Commenting as <span class="font-semibold text-purple-600">{{ user.username }}</span>
-              </p>
-              <textarea name="content" rows="5" placeholder="Write your comment here..." required
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none mb-4"></textarea>
-              <button type="submit"
-                  class="bg-purple-600 text-white px-8 py-3 rounded-lg hover:bg-purple-700 transition font-medium">
-                  <i class="fas fa-paper-plane mr-2"></i> Post Comment
-              </button>
-          </form>
-      </div>
-      {% else %}
-      <div class="mt-10 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl p-8 text-center">
-          <i class="fas fa-lock text-4xl text-purple-600 mb-4"></i>
-          <h4 class="text-xl font-bold text-gray-900 mb-2">Join the Discussion</h4>
-          <p class="text-gray-600 mb-6">Sign in to leave a comment or reply to others.</p>
-          <div class="flex flex-col sm:flex-row gap-4 justify-center">
-              <a href="{% url 'account_login' %}?next={{ request.path }}"
-                 class="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition">
-                  Sign In to Comment
-              </a>
-              <a href="{% url 'account_signup' %}"
-                 class="border-2 border-purple-600 text-purple-600 px-6 py-2 rounded-lg hover:bg-purple-50 transition">
-                  Create Account
-              </a>
-          </div>
-      </div>
-      {% endif %}
-  </section>
+        {% if user.is_authenticated %}
+        <div class="comment-card" style="margin-top:2.5rem;">
+            <h4 style="font-size:1.1rem;font-weight:700;color:#111827;margin-bottom:1.5rem;">Leave a Comment</h4>
+            <form method="POST" action="{% url 'add_comment' post.slug %}">
+                {% csrf_token %}
+                <p style="font-size:.9rem;color:#6b7280;margin-bottom:1rem;">
+                    Commenting as <strong style="color:#7c3aed;">{{ user.username }}</strong>
+                </p>
+                <textarea name="content" rows="5" placeholder="Write your comment here..." required class="form-textarea" style="margin-bottom:1rem;"></textarea>
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-paper-plane"></i> Post Comment
+                </button>
+            </form>
+        </div>
+        {% else %}
+        <div class="join-box">
+            <i class="fas fa-lock" style="font-size:2.5rem;color:#7c3aed;"></i>
+            <h4>Join the Discussion</h4>
+            <p>Sign in to leave a comment or reply to others.</p>
+            <div class="join-actions">
+                <a href="{% url 'account_login' %}?next={{ request.path }}" class="btn-signup">Sign In to Comment</a>
+                <a href="{% url 'account_signup' %}" style="border:2px solid #7c3aed;color:#7c3aed;padding:.5rem 1.25rem;border-radius:.5rem;text-decoration:none;font-weight:600;">Create Account</a>
+            </div>
+        </div>
+        {% endif %}
+    </section>
 
 </article>
+{% endblock %}
 
 {% block extra_js %}
 <script>
     function toggleReplyForm(commentId) {
         const form = document.getElementById(`reply-form-${commentId}`);
-        form.classList.toggle('hidden');
+        const isHidden = form.style.display === 'none' || form.style.display === '';
+        form.style.display = isHidden ? 'block' : 'none';
     }
 
     function likeComment(commentId, btn) {
@@ -248,12 +255,9 @@
         .then(data => {
             document.getElementById(`likes-count-${commentId}`).textContent = data.total_likes;
             const icon = btn.querySelector('i');
-            icon.classList.toggle('text-purple-600', data.liked);
-            icon.classList.toggle('text-gray-500', !data.liked);
+            icon.style.color = data.liked ? '#7c3aed' : '';
         })
         .catch(err => console.error('Error:', err));
     }
 </script>
-{% endblock %}
-
 {% endblock %}
