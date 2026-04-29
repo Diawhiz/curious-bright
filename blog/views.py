@@ -22,11 +22,7 @@ def home(request):
     latest_posts = Post.objects.filter(
         status='published',
         is_featured=False
-    ).select_related('author', 'category').only(
-        'title', 'slug', 'excerpt', 'content', 'featured_image',
-        'created_date', 'views', 'category__title', 'category__slug',
-        'author__username'
-    ).order_by('-created_date')[:9]
+    ).select_related('author', 'category').order_by('-created_date')[:9]
 
     context = {
         'featured_posts': featured_posts,
@@ -55,9 +51,7 @@ def post_detail(request, slug):
     related_posts = Post.objects.filter(
         category=post.category,
         status='published'
-    ).exclude(id=post.id).select_related('category').only(
-        'title', 'slug', 'featured_image', 'category__title', 'category__slug'
-    )[:3]
+    ).exclude(id=post.id).select_related('author', 'category').order_by('-created_date')[:3]
 
     context = {
         'post': post,
@@ -73,10 +67,7 @@ def category_posts(request, slug):
     posts = Post.objects.filter(
         category=category,
         status='published'
-    ).select_related('author', 'category').only(
-        'title', 'slug', 'excerpt', 'content', 'featured_image',
-        'created_date', 'category__title', 'category__slug'
-    ).order_by('-created_date')
+    ).select_related('author', 'category').order_by('-created_date')
 
     context = {
         'category': category,
@@ -89,10 +80,7 @@ def category_posts(request, slug):
 def all_posts(request):
     posts_list = Post.objects.filter(
         status='published'
-    ).select_related('author', 'category').only(
-        'title', 'slug', 'excerpt', 'content', 'featured_image',
-        'created_date', 'is_featured', 'category__title', 'category__slug'
-    ).order_by('-created_date')
+    ).select_related('author', 'category').order_by('-created_date')
 
     paginator = Paginator(posts_list, 12)
     page = request.GET.get('page', 1)
