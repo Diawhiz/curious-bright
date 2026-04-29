@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load cloudinary %}
 
 {% block title %}All Posts - CuriousBright{% endblock %}
 
@@ -14,15 +15,7 @@
         {% for post in posts %}
         <div class="card">
             {% if post.featured_image %}
-            <!-- FIX: Cloudinary optimized + lazy load + explicit dimensions -->
-            <img
-                src="{{ post.featured_image.url|cut:'upload/'|add:'upload/f_auto,q_auto,w_600/' }}"
-                alt="{{ post.title }}"
-                loading="lazy"
-                width="600"
-                height="192"
-                style="height:12rem;width:100%;object-fit:cover;"
-            >
+{% cloudinary post.featured_image fetch_format="auto" quality="auto" width=600 height=192 crop="fill" loading="lazy" style="height:12rem;width:100%;object-fit:cover;" alt=post.title|default:"Article" %}
             {% endif %}
             <div class="card-body">
                 <div style="display:flex;align-items:center;gap:.5rem;font-size:.8rem;color:#6b7280;margin-bottom:.5rem;flex-wrap:wrap;">
@@ -35,7 +28,6 @@
                 </div>
                 <div class="card-title">{{ post.title }}</div>
                 <div class="card-excerpt">{{ post.excerpt|default:post.content|striptags|truncatewords:20 }}</div>
-                <!-- FIX: Descriptive link text -->
                 <a href="{% url 'post_detail' post.slug %}" class="read-more">
                     Read More →<span class="sr-only"> {{ post.title }}</span>
                 </a>

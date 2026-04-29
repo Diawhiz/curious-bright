@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static cloudinary %}
 
 {% block title %}{{ post.title }} - CuriousBright{% endblock %}
 {% block meta_description %}{{ post.excerpt|default:post.content|striptags|truncatechars:160 }}{% endblock %}
@@ -68,15 +68,7 @@
     </header>
 
     {% if post.featured_image %}
-    <!-- FIX: Hero image — fetchpriority=high, Cloudinary optimized, explicit dimensions -->
-    <img
-        src="{{ post.featured_image.url|cut:'upload/'|add:'upload/f_auto,q_auto,w_1200/' }}"
-        alt="{{ post.title }}"
-        class="article-feat-img"
-        fetchpriority="high"
-        width="1200"
-        height="630"
-    >
+    {% cloudinary post.featured_image fetch_format="auto" quality="auto" width=1200 height=630 crop="fill" fetchpriority="high" class="article-feat-img" alt=post.title %}
     {% endif %}
 
     <div class="content" style="font-size:1.05rem;line-height:1.8;color:#1f2937;">
@@ -91,19 +83,10 @@
             {% for related in related_posts %}
             <div class="card">
                 {% if related.featured_image %}
-                <!-- FIX: Cloudinary optimized, lazy load -->
-                <img
-                    src="{{ related.featured_image.url|cut:'upload/'|add:'upload/f_auto,q_auto,w_400/' }}"
-                    alt="{{ related.title }}"
-                    loading="lazy"
-                    width="400"
-                    height="160"
-                    style="height:10rem;"
-                >
+{% cloudinary post.featured_image fetch_format="auto" quality="auto" width=600 height=192 crop="fill" loading="lazy" style="height:12rem;width:100%;object-fit:cover;" alt=post.title|default:"Article" %}
                 {% endif %}
                 <div class="card-body">
                     <div class="card-title" style="-webkit-line-clamp:3;">{{ related.title }}</div>
-                    <!-- FIX: Descriptive link text for SEO + accessibility -->
                     <a href="{% url 'post_detail' related.slug %}" class="read-more">
                         Read More →<span class="sr-only"> {{ related.title }}</span>
                     </a>

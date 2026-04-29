@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static cloudinary %}
 
 {% block title %}Home - CuriousBright{% endblock %}
 
@@ -12,14 +12,7 @@
         {% with featured_posts.0 as main_featured %}
 
         {% if main_featured.featured_image %}
-        <!-- FIX: fetchpriority=high on hero image (LCP element), no lazy load, Cloudinary optimized -->
-        <img
-            src="{{ main_featured.featured_image.url|cut:'upload/'|add:'upload/f_auto,q_auto,w_1200/' }}"
-            alt="{{ main_featured.title }}"
-            fetchpriority="high"
-            width="1200"
-            height="600"
-        >
+        {% cloudinary main_featured.featured_image fetch_format="auto" quality="auto" width=1200 height=600 crop="fill" fetchpriority="high" class="" alt=main_featured.title %}
         {% else %}
         <div style="width:100%;height:100%;background:linear-gradient(135deg,#4c1d95,#3730a3);"></div>
         {% endif %}
@@ -56,15 +49,7 @@
             {% for post in featured_posts|slice:"1:5" %}
             <div class="card">
                 {% if post.featured_image %}
-                <!-- FIX: Cloudinary optimized, lazy load, explicit dimensions -->
-                <img
-                    src="{{ post.featured_image.url|cut:'upload/'|add:'upload/f_auto,q_auto,w_400/' }}"
-                    alt="{{ post.title }}"
-                    loading="lazy"
-                    width="400"
-                    height="192"
-                    style="height:12rem;"
-                >
+                {% cloudinary post.featured_image fetch_format="auto" quality="auto" width=400 height=192 crop="fill" loading="lazy" class="" style="height:12rem;" alt=post.title %}
                 {% endif %}
                 <div class="card-body">
                     <span class="tag">{{ post.category.title }}</span>
@@ -96,15 +81,7 @@
         {% for post in latest_posts %}
         <div class="card">
             {% if post.featured_image %}
-            <!-- FIX: Cloudinary optimized w_800, lazy load, explicit h -->
-            <img
-                src="{{ post.featured_image.url|cut:'upload/'|add:'upload/f_auto,q_auto,w_800/' }}"
-                alt="{{ post.title }}"
-                loading="lazy"
-                width="800"
-                height="208"
-                style="height:13rem;"
-            >
+{% cloudinary post.featured_image fetch_format="auto" quality="auto" width=800 height=208 crop="fill" loading="lazy" style="height:13rem;" alt=post.title|default:"Blog Post" %}
             {% else %}
             <div style="height:13rem;background:linear-gradient(135deg,#ede9fe,#e0e7ff);display:flex;align-items:center;justify-content:center;">
                 <i class="fas fa-image" style="font-size:2.5rem;color:#a78bfa;"></i>
