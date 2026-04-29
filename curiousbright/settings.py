@@ -58,7 +58,7 @@ INSTALLED_APPS = [
     'django.contrib.sitemaps',
 
     # Third party
-    'ckeditor',
+    'django_quill',
     'cloudinary',
     'cloudinary_storage',
     'allauth',
