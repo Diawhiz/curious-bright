@@ -114,9 +114,6 @@ TEMPLATES = [
 ]
 
 ACCOUNT_TEMPLATE_EXTENSION = 'html'
-ACCOUNT_SIGNUP_TEMPLATE = 'accounts/signup.html'
-ACCOUNT_LOGIN_TEMPLATE = 'accounts/login.html'
-
 
 # ---------------------------------------------------------------------------
 # Database

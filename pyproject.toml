@@ -10,7 +10,7 @@ dependencies = [
     "psycopg2-binary==2.9.10",
     "cloudinary==1.41.0",
     "django-cloudinary-storage==0.3.0",
-    "django-quill-editor==0.1.42"
+    "django-quill-editor==0.1.42",
     "django-allauth[socialaccount]==65.2.0",
     "python-dotenv==1.0.1",
     "Pillow==10.4.0",
