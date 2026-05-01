@@ -20,6 +20,8 @@
     <meta name="twitter:description" content="{% block twitter_description %}Exploring curiosity and passion through engaging content and stories{% endblock %}">
     <meta name="twitter:image" content="{% block twitter_image %}{% static 'images/default-og.jpg' %}{% endblock %}">
 
+    <meta name="google-adsense-account" content="ca-pub-1190045725751394">
+
     <link rel="canonical" href="{{ request.build_absolute_uri }}">
 
     <!-- Preconnect to all external origins -->
@@ -116,6 +118,39 @@
         .content img { max-width: 100%; height: auto; border-radius: .5rem; margin: 1.5rem 0; }
         .content ul, .content ol { margin: 1rem 0 1rem 1.5rem; line-height: 1.8; }
         .content blockquote { border-left: 4px solid #7c3aed; padding-left: 1rem; margin: 1.5rem 0; color: #4b5563; font-style: italic; }
+
+        /* ── Google Auto Ads Global Styling ─────────────────────── */
+.adsbygoogle-noablate,
+ins.adsbygoogle {
+    border-radius: .75rem !important;
+    overflow: hidden !important;
+    margin: 1.5rem auto !important;
+}
+
+/* Anchor ads (sticky bottom bar) — make less intrusive */
+#google-auto-placed-anchor {
+    box-shadow: 0 -2px 12px rgba(0,0,0,.08) !important;
+    border-top: 1px solid #e5e7eb !important;
+}
+
+/* In-article auto ad spacing */
+.google-auto-placed {
+    margin: 2rem 0 !important;
+    border-radius: .75rem !important;
+    overflow: hidden !important;
+}
+
+/* Prevent auto ads from touching the nav */
+ins[data-anchor-status] {
+    margin-top: 0 !important;
+}
+
+/* Prevent auto-injected ads from breaking grid/flex layouts */
+.card-grid ins.adsbygoogle,
+.section ins.adsbygoogle {
+    grid-column: 1 / -1;
+    width: 100% !important;
+}
     </style>
 
     {% block extra_css %}{% endblock %}
