@@ -5,11 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Primary SEO -->
     <title>{% block title %}CuriousBright - Exploring Curiosity & Passion{% endblock %}</title>
     <meta name="description" content="{% block meta_description %}Exploring curiosity and passion through engaging content and stories{% endblock %}">
 
-    <!-- Open Graph -->
     <meta property="og:site_name" content="CuriousBright">
     <meta property="og:title" content="{% block og_title %}CuriousBright - Exploring Curiosity & Passion{% endblock %}">
     <meta property="og:description" content="{% block og_description %}Exploring curiosity and passion through engaging content and stories{% endblock %}">
@@ -17,31 +15,35 @@
     <meta property="og:url" content="{% block og_url %}{{ request.build_absolute_uri }}{% endblock %}">
     <meta property="og:image" content="{% block og_image %}{% static 'images/default-og.jpg' %}{% endblock %}">
 
-    <!-- Twitter/X -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{% block twitter_title %}CuriousBright - Exploring Curiosity & Passion{% endblock %}">
     <meta name="twitter:description" content="{% block twitter_description %}Exploring curiosity and passion through engaging content and stories{% endblock %}">
     <meta name="twitter:image" content="{% block twitter_image %}{% static 'images/default-og.jpg' %}{% endblock %}">
 
-    <!-- Canonical URL -->
     <link rel="canonical" href="{{ request.build_absolute_uri }}">
 
-    <!-- Preconnect to all external origins BEFORE loading anything -->
+    <!-- Preconnect to all external origins -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://res.cloudinary.com">
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
 
-    <!--  Google Fonts -->
+    <!-- FIX: Preload Font Awesome woff2 — eliminates font-display audit warning -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin>
+
+    <!-- Google Fonts — non-blocking -->
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"></noscript>
 
-    <!-- Font Awesome  -->
+    <!-- Font Awesome — non-blocking -->
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
 
+    <!-- FIX: Hero image preload injected by child templates (home.html) to fix LCP -->
+    {% block hero_preload %}{% endblock %}
+
     <style>
-        /* Critical above-the-fold styles only */
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: #f9fafb; }
         nav { background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.1); position: sticky; top: 0; z-index: 50; }
@@ -76,7 +78,9 @@
         .card-body { padding: 1.25rem; }
         .tag { color: #7c3aed; font-weight: 600; font-size: .85rem; }
         .card-title { font-size: 1.1rem; font-weight: 700; color: #1f2937; margin: .5rem 0; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        /* FIX: Accessibility contrast — #9ca3af fails WCAG AA, replaced with #6b7280 */
         .card-excerpt { color: #6b7280; font-size: .9rem; line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 1rem; }
+        .card-meta { font-size: .8rem; color: #6b7280; } /* was #9ca3af — fails contrast */
         .read-more { color: #7c3aed; font-weight: 600; text-decoration: none; font-size: .9rem; }
         .read-more:hover { color: #6d28d9; }
         .section { max-width: 80rem; margin: 0 auto; padding: 3rem 1.5rem; }
@@ -97,7 +101,7 @@
         .footer-social { display: flex; gap: 1rem; }
         .footer-social a { color: #9ca3af; font-size: 1.4rem; transition: color .2s; text-decoration: none; }
         .footer-social a:hover { color: #fff; }
-        .footer-bottom { border-top: 1px solid #1f2937; margin-top: 2rem; padding-top: 2rem; text-align: center; color: #9ca3af; font-size: .85rem; }
+        .footer-bottom { border-top: 1px solid #374151; margin-top: 2rem; padding-top: 2rem; text-align: center; color: #9ca3af; font-size: .85rem; }
         .newsletter-section { background: linear-gradient(135deg,#7c3aed,#4f46e5); padding: 4rem 1.5rem; text-align: center; }
         .newsletter-section h2 { font-size: 2rem; font-weight: 800; color: #fff; margin-bottom: .75rem; }
         .newsletter-section p { color: rgba(255,255,255,.85); margin-bottom: 1.5rem; }
@@ -118,18 +122,15 @@
 </head>
 <body>
 
-    <!-- Navigation -->
     <nav>
         <div class="nav-inner">
             <a href="{% url 'home' %}" class="nav-brand">CuriousBright</a>
-
             <div class="nav-links">
                 <a href="{% url 'home' %}">Home</a>
                 {% for category in categories|slice:":5" %}
                     <a href="{% url 'category_posts' category.slug %}">{{ category.title }}</a>
                 {% endfor %}
             </div>
-
             <div class="nav-actions">
                 {% if user.is_authenticated %}
                     <span style="color:#374151;font-size:.9rem;">Welcome, {{ user.username }}!</span>
@@ -142,12 +143,10 @@
         </div>
     </nav>
 
-    <!-- Main Content -->
     <main>
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Footer -->
     <footer>
         <div class="footer-inner">
             <div>
@@ -183,20 +182,31 @@
         <div class="footer-bottom">&copy; 2026 CuriousBright. All rights reserved.</div>
     </footer>
 
-    <script src="https://cdn.tailwindcss.com" defer></script>
+    <!-- FIX: Tailwind CDN removed — eliminates ~308 KiB unused JS -->
 
+    <!-- Google Analytics — deferred until after load -->
     <script defer src="https://www.googletagmanager.com/gtag/js?id=G-8PFS0SF8YG"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
-        // Defer GA init until after page load
         window.addEventListener('load', function() {
             gtag('js', new Date());
             gtag('config', 'G-8PFS0SF8YG');
         });
     </script>
 
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1190045725751394" crossorigin="anonymous"></script>
+    <!-- AdSense — loaded 2s after page load to protect TBT -->
+    <script>
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                var s = document.createElement('script');
+                s.async = true;
+                s.crossOrigin = 'anonymous';
+                s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1190045725751394';
+                document.head.appendChild(s);
+            }, 2000);
+        });
+    </script>
 
     {% block extra_js %}{% endblock %}
 </body>

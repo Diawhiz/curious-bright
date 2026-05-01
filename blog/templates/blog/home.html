@@ -3,16 +3,35 @@
 
 {% block title %}Home - CuriousBright{% endblock %}
 
+{# FIX: Inject hero image preload into <head> via block — critical for LCP #}
+{% block hero_preload %}
+{% if featured_posts %}
+{% with featured_posts.0 as main_featured %}
+{% if main_featured.featured_image %}
+{# Build the optimized Cloudinary URL for preload — w_800 matches the img tag below #}
+<link
+    rel="preload"
+    as="image"
+    href="{% cloudinary_url main_featured.featured_image fetch_format='auto' quality='auto' width=800 height=450 crop='fill' %}"
+    fetchpriority="high"
+>
+{% endif %}
+{% endwith %}
+{% endif %}
+{% endblock %}
+
 {% block content %}
 
-<!-- Hero Banner Section -->
 {% if featured_posts %}
 <section class="hero-section">
     <div class="hero-img-wrap">
         {% with featured_posts.0 as main_featured %}
 
         {% if main_featured.featured_image %}
-        {% cloudinary main_featured.featured_image fetch_format="auto" quality="auto" width=1200 height=600 crop="fill" fetchpriority="high" class="" alt=main_featured.title %}
+        {# FIX: width=800 not 1200 — mobile test is 412px wide, 1200 is wasteful
+           fetchpriority=high — tells browser this is the LCP element
+           decoding=async — unblocks main thread during image decode #}
+        {% cloudinary main_featured.featured_image fetch_format="auto" quality="auto" width=800 height=450 crop="fill" fetchpriority="high" decoding="async" alt=main_featured.title %}
         {% else %}
         <div style="width:100%;height:100%;background:linear-gradient(135deg,#4c1d95,#3730a3);"></div>
         {% endif %}
@@ -42,14 +61,13 @@
         {% endwith %}
     </div>
 
-    <!-- Secondary Featured Posts -->
     {% if featured_posts|length > 1 %}
     <div style="max-width:80rem;margin:0 auto;padding:0 1.5rem;margin-top:-5rem;position:relative;z-index:20;">
-        <div class="card-grid card-grid-4" style="display:grid;gap:1.5rem;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));">
+        <div style="display:grid;gap:1.5rem;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));">
             {% for post in featured_posts|slice:"1:5" %}
             <div class="card">
                 {% if post.featured_image %}
-                {% cloudinary post.featured_image fetch_format="auto" quality="auto" width=400 height=192 crop="fill" loading="lazy" class="" style="height:12rem;" alt=post.title %}
+                {% cloudinary post.featured_image fetch_format="auto" quality="auto" width=400 height=192 crop="fill" loading="lazy" style="height:12rem;" alt=post.title %}
                 {% endif %}
                 <div class="card-body">
                     <span class="tag">{{ post.category.title }}</span>
@@ -66,7 +84,6 @@
 </section>
 {% endif %}
 
-<!-- Latest Posts Section -->
 <div class="section" style="padding-top:{% if featured_posts|length > 1 %}5rem{% else %}3rem{% endif %};">
     <div class="section-header">
         <div>
@@ -77,17 +94,18 @@
     </div>
 
     {% if latest_posts %}
-    <div class="card-grid card-grid-3" style="display:grid;gap:2rem;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));">
+    <div style="display:grid;gap:2rem;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));">
         {% for post in latest_posts %}
         <div class="card">
             {% if post.featured_image %}
-{% cloudinary post.featured_image fetch_format="auto" quality="auto" width=800 height=208 crop="fill" loading="lazy" style="height:13rem;" alt=post.title|default:"Blog Post" %}
+            {% cloudinary post.featured_image fetch_format="auto" quality="auto" width=600 height=208 crop="fill" loading="lazy" style="height:13rem;" alt=post.title %}
             {% else %}
             <div style="height:13rem;background:linear-gradient(135deg,#ede9fe,#e0e7ff);display:flex;align-items:center;justify-content:center;">
                 <i class="fas fa-image" style="font-size:2.5rem;color:#a78bfa;"></i>
             </div>
             {% endif %}
             <div class="card-body">
+                {# FIX: color changed from #9ca3af to #6b7280 — passes WCAG AA contrast #}
                 <div style="display:flex;align-items:center;gap:.5rem;font-size:.85rem;color:#6b7280;margin-bottom:.5rem;">
                     <span class="tag">{{ post.category.title }}</span>
                     <span>•</span>
@@ -99,7 +117,8 @@
                     <a href="{% url 'post_detail' post.slug %}" class="read-more">
                         Read More <i class="fas fa-arrow-right"></i><span class="sr-only"> {{ post.title }}</span>
                     </a>
-                    <span style="font-size:.8rem;color:#9ca3af;"><i class="fas fa-eye"></i> {{ post.views }}</span>
+                    {# FIX: color #6b7280 instead of #9ca3af #}
+                    <span style="font-size:.8rem;color:#6b7280;"><i class="fas fa-eye"></i> {{ post.views }}</span>
                 </div>
             </div>
         </div>
@@ -113,7 +132,6 @@
     {% endif %}
 </div>
 
-<!-- Newsletter Section -->
 <div class="newsletter-section">
     <h2>Stay Curious</h2>
     <p>Subscribe to our newsletter for the latest articles and insights</p>
