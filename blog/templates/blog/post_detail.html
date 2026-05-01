@@ -72,7 +72,7 @@
     {% endif %}
 
     <div class="content" style="font-size:1.05rem;line-height:1.8;color:#1f2937;">
-        {{ post.content|safe }}
+        {{ post.content.html|safe }}
     </div>
 
     <!-- Related Posts -->
