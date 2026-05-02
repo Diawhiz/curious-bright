@@ -69,7 +69,6 @@ INSTALLED_APPS = [
 
     # Local
     'blog',
-    'autoposter',
 ]
 
 
@@ -295,21 +294,6 @@ META_DEFAULT_IMAGE = '/static/images/default-og.jpg'
 handler404 = 'blog.views.custom_404'
 handler500 = 'blog.views.custom_500'
 handler403 = 'blog.views.custom_403'
-
-# ---------------------------------------------------------------------------
-# Social Media Autoposter
-# ---------------------------------------------------------------------------
-TWITTER_API_KEY = os.environ.get('TWITTER_API_KEY')
-TWITTER_API_SECRET = os.environ.get('TWITTER_API_SECRET')
-TWITTER_ACCESS_TOKEN = os.environ.get('TWITTER_ACCESS_TOKEN')
-TWITTER_ACCESS_TOKEN_SECRET = os.environ.get('TWITTER_ACCESS_TOKEN_SECRET')
-
-FACEBOOK_PAGE_ID = os.environ.get('FACEBOOK_PAGE_ID')
-FACEBOOK_PAGE_ACCESS_TOKEN = os.environ.get('FACEBOOK_PAGE_ACCESS_TOKEN')
-
-THREADS_USER_ID = os.environ.get('THREADS_USER_ID')
-THREADS_ACCESS_TOKEN = os.environ.get('THREADS_ACCESS_TOKEN')
-
 
 # ---------------------------------------------------------------------------
 # Jazzmin
