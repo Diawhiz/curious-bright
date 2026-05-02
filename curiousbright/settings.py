@@ -69,6 +69,7 @@ INSTALLED_APPS = [
 
     # Local
     'blog',
+    'autoposter',
 ]
 
 
