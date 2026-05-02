@@ -5,6 +5,7 @@ from django.conf.urls.static import static
 from blog.sitemaps import PostSitemap, CategorySitemap, StaticSitemap
 from django.contrib.sitemaps.views import sitemap
 from django.views.generic import TemplateView
+from blog.feeds import LatestPostsFeed
 
 sitemaps = {
     'posts': PostSitemap,
@@ -18,6 +19,7 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
     path('robots.txt', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
+    path('feed/', LatestPostsFeed(), name='feed'),
 ]
 
 if settings.DEBUG:
