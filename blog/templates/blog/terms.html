@@ -1,56 +1,25 @@
 {% extends 'base.html' %}
 
-{% block title %}Terms of Service - CuriousBright{% endblock %}
+{% block title %}Terms — CuriousBright{% endblock %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <div class="text-center mb-12">
-        <h1 class="text-4xl font-bold text-gray-900 mb-4">Terms of Service</h1>
-        <div class="w-24 h-1 bg-gradient-to-r from-purple-600 to-indigo-600 mx-auto"></div>
-        <p class="text-gray-600 mt-4">Last updated: April 2025</p>
-    </div>
-
-    <div class="bg-white rounded-xl shadow-md p-8 space-y-6">
-        <section>
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">1. Acceptance of Terms</h2>
-            <p class="text-gray-600">By accessing or using CuriousBright, you agree to be bound by these Terms of Service. If you disagree with any part, please do not use our platform.</p>
-        </section>
-
-        <section>
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">2. User Accounts</h2>
-            <p class="text-gray-600">To access certain features, you must create an account. You are responsible for maintaining the confidentiality of your account credentials and for all activities under your account.</p>
-        </section>
-
-        <section>
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">3. User Content</h2>
-            <p class="text-gray-600">You retain ownership of content you post. By posting, you grant us a non-exclusive license to display and distribute your content on our platform.</p>
-            <p class="text-gray-600 mt-2">You agree not to post content that is:</p>
-            <ul class="list-disc list-inside text-gray-600 mt-2 space-y-2">
-                <li>Illegal or promotes illegal activities</li>
-                <li>Harassing, abusive, or discriminatory</li>
-                <li>Infringes on intellectual property rights</li>
-                <li>Contains malicious code or spam</li>
-            </ul>
-        </section>
-
-        <section>
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">4. Intellectual Property</h2>
-            <p class="text-gray-600">All content on CuriousBright (excluding user content) is our property and protected by copyright laws. You may not reproduce or distribute our content without permission.</p>
-        </section>
-
-        <section>
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">5. Limitation of Liability</h2>
-            <p class="text-gray-600">CuriousBright is provided "as is" without warranties. We are not liable for any damages arising from your use of our platform.</p>
-        </section>
-
-        <section>
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">6. Termination</h2>
-            <p class="text-gray-600">We reserve the right to terminate or suspend accounts that violate these terms, without prior notice.</p>
-        </section>
-
-        <div class="bg-purple-50 rounded-lg p-6 mt-8">
-            <p class="text-gray-700">For questions about these Terms, contact us at: <strong>legal@curiousbright.com</strong></p>
+<section style="padding: 12rem 0 6rem;">
+    <div class="container" style="max-width: 800px;">
+        <span class="hero-tag">Legal</span>
+        <h1 style="font-size: clamp(3rem, 10vw, 5rem); font-weight: 900; letter-spacing: -0.05em; color: var(--text-heading); margin-bottom: 4rem;">
+            Terms of <span>Service</span>
+        </h1>
+        
+        <div class="content" style="font-size: 1.1rem; line-height: 1.8; color: var(--text-heading);">
+            <h2 style="margin: 0 0 1.5rem; font-weight: 900;">1. Acceptance</h2>
+            <p>By accessing CuriousBright, you agree to comply with and be bound by these terms of service and all applicable laws.</p>
+            
+            <h2 style="margin: 3rem 0 1.5rem; font-weight: 900;">2. License to Use</h2>
+            <p>We grant you a personal, non-exclusive license to access our content for personal, non-commercial use only. Redistribution without consent is strictly prohibited.</p>
+            
+            <h2 style="margin: 3rem 0 1.5rem; font-weight: 900;">3. User Contributions</h2>
+            <p>By posting comments or content, you grant us a perpetual, royalty-free license to display and distribute that content on our platform.</p>
         </div>
     </div>
-</div>
+</section>
 {% endblock %}

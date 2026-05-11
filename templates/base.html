@@ -8,240 +8,157 @@
     <title>{% block title %}CuriousBright - Exploring Curiosity & Passion{% endblock %}</title>
     <meta name="description" content="{% block meta_description %}Exploring curiosity and passion through engaging content and stories{% endblock %}">
 
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="{{ request.build_absolute_uri }}">
+    
+    <!-- Open Graph / Social Meta -->
     <meta property="og:site_name" content="CuriousBright">
-    <meta property="og:title" content="{% block og_title %}CuriousBright - Exploring Curiosity & Passion{% endblock %}">
-    <meta property="og:description" content="{% block og_description %}Exploring curiosity and passion through engaging content and stories{% endblock %}">
-    <meta property="og:type" content="{% block og_type %}website{% endblock %}">
-    <meta property="og:url" content="{% block og_url %}{{ request.build_absolute_uri }}{% endblock %}">
+    <meta property="og:title" content="{% block og_title %}CuriousBright{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Exploring curiosity and passion.{% endblock %}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
     <meta property="og:image" content="{% block og_image %}{% static 'images/default-og.jpg' %}{% endblock %}">
 
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="{% block twitter_title %}CuriousBright - Exploring Curiosity & Passion{% endblock %}">
-    <meta name="twitter:description" content="{% block twitter_description %}Exploring curiosity and passion through engaging content and stories{% endblock %}">
-    <meta name="twitter:image" content="{% block twitter_image %}{% static 'images/default-og.jpg' %}{% endblock %}">
-
     <meta name="google-adsense-account" content="ca-pub-1190045725751394">
-
-    <link rel="canonical" href="{{ request.build_absolute_uri }}">
 
     <link rel="icon" type="image/x-icon" href="{% static 'images/cb_favicon.png' %}">
 
-    <!-- Preconnect to all external origins -->
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://res.cloudinary.com">
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- FIX: Preload Font Awesome woff2 — eliminates font-display audit warning -->
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin>
-
-    <!-- Google Fonts — non-blocking -->
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"></noscript>
-
-    <!-- Font Awesome — non-blocking -->
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
-
-    <!-- FIX: Hero image preload injected by child templates (home.html) to fix LCP -->
-    {% block hero_preload %}{% endblock %}
-
-    <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: #f9fafb; }
-        nav { background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.1); position: sticky; top: 0; z-index: 50; }
-        .nav-inner { max-width: 80rem; margin: 0 auto; padding: 0 1rem; display: flex; justify-content: space-between; align-items: center; height: 4rem; }
-        .nav-brand { font-size: 1.5rem; font-weight: 800; background: linear-gradient(135deg,#7c3aed,#4f46e5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-decoration: none; }
-        .nav-links { display: none; gap: 2rem; }
-        @media(min-width:768px){ .nav-links { display: flex; align-items: center; } }
-        .nav-links a { color: #374151; text-decoration: none; font-size: .95rem; transition: color .2s; }
-        .nav-links a:hover { color: #7c3aed; }
-        .nav-actions { display: flex; align-items: center; gap: 1rem; }
-        .btn-login { color: #7c3aed; text-decoration: none; font-weight: 500; }
-        .btn-signup { background: #7c3aed; color: #fff; padding: .5rem 1rem; border-radius: .5rem; text-decoration: none; font-weight: 500; transition: background .2s; }
-        .btn-signup:hover { background: #6d28d9; }
-        .btn-logout { background: #ef4444; color: #fff; padding: .5rem 1rem; border-radius: .5rem; text-decoration: none; font-weight: 500; }
-        .hero-section { position: relative; }
-        .hero-img-wrap { position: relative; height: 600px; overflow: hidden; }
-        .hero-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
-        .hero-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,.85) 0%, rgba(0,0,0,.5) 50%, transparent 100%); }
-        .hero-content { position: absolute; inset: 0; display: flex; align-items: center; max-width: 80rem; margin: 0 auto; padding: 0 1.5rem; }
-        .hero-content h1 { font-size: clamp(2rem,5vw,3.5rem); font-weight: 800; color: #fff; margin-bottom: 1rem; line-height: 1.15; }
-        .hero-content p { color: #e5e7eb; font-size: 1.1rem; margin-bottom: 1.5rem; }
-        .badge-cat { background: #7c3aed; color: #fff; padding: .25rem .75rem; border-radius: 999px; font-size: .8rem; font-weight: 600; }
-        .badge-feat { color: #fbbf24; margin-left: .75rem; font-size: .9rem; }
-        .btn-read { display: inline-flex; align-items: center; gap: .5rem; background: #7c3aed; color: #fff; padding: .75rem 1.75rem; border-radius: 999px; font-weight: 600; text-decoration: none; transition: background .2s, transform .2s; }
-        .btn-read:hover { background: #6d28d9; transform: scale(1.03); }
-        .hero-meta { font-size: .85rem; color: #d1d5db; }
-        .card-grid { display: grid; gap: 1.5rem; grid-template-columns: 1fr; }
-        @media(min-width:768px){ .card-grid-2 { grid-template-columns: repeat(2,1fr); } .card-grid-3 { grid-template-columns: repeat(3,1fr); } .card-grid-4 { grid-template-columns: repeat(4,1fr); } }
-        .card { background: #fff; border-radius: .75rem; box-shadow: 0 1px 3px rgba(0,0,0,.08); overflow: hidden; transition: transform .3s, box-shadow .3s; }
-        .card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,.1); }
-        .card img { width: 100%; object-fit: cover; display: block; }
-        .card-body { padding: 1.25rem; }
-        .tag { color: #7c3aed; font-weight: 600; font-size: .85rem; }
-        .card-title { font-size: 1.1rem; font-weight: 700; color: #1f2937; margin: .5rem 0; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        /* FIX: Accessibility contrast — #9ca3af fails WCAG AA, replaced with #6b7280 */
-        .card-excerpt { color: #6b7280; font-size: .9rem; line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 1rem; }
-        .card-meta { font-size: .8rem; color: #6b7280; } /* was #9ca3af — fails contrast */
-        .read-more { color: #7c3aed; font-weight: 600; text-decoration: none; font-size: .9rem; }
-        .read-more:hover { color: #6d28d9; }
-        .section { max-width: 80rem; margin: 0 auto; padding: 3rem 1.5rem; }
-        .section-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem; }
-        .section-title { font-size: 1.75rem; font-weight: 800; color: #1f2937; }
-        .section-title-bar { width: 5rem; height: 3px; background: linear-gradient(90deg,#7c3aed,#4f46e5); margin-top: .5rem; border-radius: 2px; }
-        .view-all { color: #7c3aed; font-weight: 600; text-decoration: none; }
-        footer { background: #111827; color: #fff; margin-top: 5rem; }
-        .footer-inner { max-width: 80rem; margin: 0 auto; padding: 3rem 1.5rem; display: grid; gap: 2rem; grid-template-columns: 1fr; }
-        @media(min-width:768px){ .footer-inner { grid-template-columns: repeat(4,1fr); } }
-        .footer-brand { font-size: 1.2rem; font-weight: 700; margin-bottom: 1rem; }
-        .footer-desc { color: #9ca3af; font-size: .9rem; line-height: 1.6; }
-        .footer-heading { font-weight: 600; margin-bottom: 1rem; }
-        .footer-links { list-style: none; }
-        .footer-links li { margin-bottom: .5rem; }
-        .footer-links a { color: #9ca3af; text-decoration: none; font-size: .9rem; transition: color .2s; }
-        .footer-links a:hover { color: #fff; }
-        .footer-social { display: flex; gap: 1rem; }
-        .footer-social a { color: #9ca3af; font-size: 1.4rem; transition: color .2s; text-decoration: none; }
-        .footer-social a:hover { color: #fff; }
-        .footer-bottom { border-top: 1px solid #374151; margin-top: 2rem; padding-top: 2rem; text-align: center; color: #9ca3af; font-size: .85rem; }
-        .newsletter-section { background: linear-gradient(135deg,#7c3aed,#4f46e5); padding: 4rem 1.5rem; text-align: center; }
-        .newsletter-section h2 { font-size: 2rem; font-weight: 800; color: #fff; margin-bottom: .75rem; }
-        .newsletter-section p { color: rgba(255,255,255,.85); margin-bottom: 1.5rem; }
-        .newsletter-form { display: flex; gap: 1rem; max-width: 26rem; margin: 0 auto; flex-wrap: wrap; justify-content: center; }
-        .newsletter-form input { flex: 1; min-width: 12rem; padding: .75rem 1rem; border-radius: .5rem; border: none; outline: none; font-size: 1rem; }
-        .newsletter-form button { background: #000; color: #fff; padding: .75rem 1.5rem; border-radius: .5rem; border: none; font-weight: 600; cursor: pointer; transition: background .2s; }
-        .newsletter-form button:hover { background: #1f2937; }
-        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
-        .content p { margin-bottom: 1rem; line-height: 1.8; }
-        .content h2 { font-size: 1.4rem; font-weight: 700; margin: 1.5rem 0 .75rem; color: #1f2937; }
-        .content h3 { font-size: 1.2rem; font-weight: 700; margin: 1.25rem 0 .5rem; }
-        .content img { max-width: 100%; height: auto; border-radius: .5rem; margin: 1.5rem 0; }
-        .content ul, .content ol { margin: 1rem 0 1rem 1.5rem; line-height: 1.8; }
-        .content blockquote { border-left: 4px solid #7c3aed; padding-left: 1rem; margin: 1.5rem 0; color: #4b5563; font-style: italic; }
-
-        /* ── Google Auto Ads Global Styling ─────────────────────── */
-.adsbygoogle-noablate,
-ins.adsbygoogle {
-    border-radius: .75rem !important;
-    overflow: hidden !important;
-    margin: 1.5rem auto !important;
-}
-
-/* Anchor ads (sticky bottom bar) — make less intrusive */
-#google-auto-placed-anchor {
-    box-shadow: 0 -2px 12px rgba(0,0,0,.08) !important;
-    border-top: 1px solid #e5e7eb !important;
-}
-
-/* In-article auto ad spacing */
-.google-auto-placed {
-    margin: 2rem 0 !important;
-    border-radius: .75rem !important;
-    overflow: hidden !important;
-}
-
-/* Prevent auto ads from touching the nav */
-ins[data-anchor-status] {
-    margin-top: 0 !important;
-}
-
-/* Prevent auto-injected ads from breaking grid/flex layouts */
-.card-grid ins.adsbygoogle,
-.section ins.adsbygoogle {
-    grid-column: 1 / -1;
-    width: 100% !important;
-}
-    </style>
+    <!-- Design System -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
     {% block extra_css %}{% endblock %}
 </head>
 <body>
 
-    <nav>
-        <div class="nav-inner">
-            <a href="{% url 'home' %}" class="nav-brand">CuriousBright</a>
-            <div class="nav-links">
-                <a href="{% url 'home' %}">Home</a>
-                {% for category in categories|slice:":5" %}
-                    <a href="{% url 'category_posts' category.slug %}">{{ category.title }}</a>
+    <header class="site-nav" id="mainHeader">
+        <a href="{% url 'home' %}" class="logo">CuriousBright</a>
+        
+        <nav>
+            <ul class="nav-links">
+                <li><a href="{% url 'home' %}" class="nav-link">Home</a></li>
+                <li><a href="{% url 'all_posts' %}" class="nav-link">Archive</a></li>
+                {% for category in categories|slice:":3" %}
+                    <li><a href="{% url 'category_posts' category.slug %}" class="nav-link">{{ category.title }}</a></li>
                 {% endfor %}
-            </div>
-            <div class="nav-actions">
-                {% if user.is_authenticated %}
-                    <span style="color:#374151;font-size:.9rem;">Welcome, {{ user.username }}!</span>
-                    <a href="{% url 'account_logout' %}" class="btn-logout">Logout</a>
-                {% else %}
-                    <a href="{% url 'account_login' %}" class="btn-login">Login</a>
-                    <a href="{% url 'account_signup' %}" class="btn-signup">Sign Up</a>
-                {% endif %}
-            </div>
+            </ul>
+        </nav>
+
+        <div class="nav-actions">
+            {% if user.is_authenticated %}
+                <a href="{% url 'account_logout' %}" class="btn btn-outline">Exit</a>
+            {% else %}
+                <a href="{% url 'account_login' %}" class="btn btn-outline">Sign In</a>
+                <a href="{% url 'account_signup' %}" class="btn btn-primary">Join</a>
+            {% endif %}
         </div>
-    </nav>
+
+        <button class="btn btn-outline" id="menuToggle" style="padding: 0.75rem;">
+            <i class="fas fa-bars"></i>
+        </button>
+    </header>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-overlay" id="mobileMenu">
+        <ul class="mobile-nav-links">
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li><a href="{% url 'all_posts' %}">The Archive</a></li>
+            {% for category in categories %}
+                <li><a href="{% url 'category_posts' category.slug %}">{{ category.title }}</a></li>
+            {% endfor %}
+        </ul>
+        <div style="margin-top: auto; display: flex; flex-direction: column; gap: 1rem;">
+            {% if user.is_authenticated %}
+                <a href="{% url 'account_logout' %}" class="btn btn-primary" style="width: 100%; justify-content: center;">Sign Out</a>
+            {% else %}
+                <a href="{% url 'account_login' %}" class="btn btn-outline" style="width: 100%; justify-content: center;">Sign In</a>
+                <a href="{% url 'account_signup' %}" class="btn btn-primary" style="width: 100%; justify-content: center;">Join Community</a>
+            {% endif %}
+        </div>
+    </div>
 
     <main>
         {% block content %}{% endblock %}
     </main>
 
-    <footer>
-        <div class="footer-inner">
-            <div>
-                <div class="footer-brand">CuriousBright</div>
-                <p class="footer-desc">Exploring curiosity and passion through engaging stories and insights.</p>
+    <footer class="container">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <h2>CuriousBright.</h2>
+                <p style="color: var(--text-muted); max-width: 400px; font-size: 1.1rem;">Where curiosity meets clarity. Discover stories that illuminate the intersection of passion and purpose.</p>
             </div>
-            <div>
-                <div class="footer-heading">Quick Links</div>
-                <ul class="footer-links">
+            <div class="footer-links">
+                <h4>Platform</h4>
+                <ul>
                     <li><a href="{% url 'home' %}">Home</a></li>
-                    <li><a href="{% url 'about' %}">About</a></li>
-                    <li><a href="{% url 'privacy' %}">Privacy</a></li>
-                    <li><a href="{% url 'terms' %}">Term of Service</a></li>
+                    <li><a href="{% url 'all_posts' %}">The Archive</a></li>
+                    <li><a href="{% url 'about' %}">About Us</a></li>
                 </ul>
             </div>
-            <div>
-                <div class="footer-heading">Categories</div>
-                <ul class="footer-links">
-                    {% for category in categories|slice:":5" %}
-                        <li><a href="{% url 'category_posts' category.slug %}">{{ category.title }}</a></li>
-                    {% endfor %}
+            <div class="footer-links">
+                <h4>Privacy</h4>
+                <ul>
+                    <li><a href="{% url 'privacy' %}">Privacy Policy</a></li>
+                    <li><a href="{% url 'terms' %}">Terms</a></li>
                 </ul>
             </div>
-            <div>
-                <div class="footer-heading">Follow Us</div>
-                <div class="footer-social">
-                    <a href="https://x.com/curiousbright1" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-                    <a href="https://facebook.com/curiousbright" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
-                    <a href="https://thread.com/curious.bright" aria-label="Thread"><i class="fa-brands fa-threads"></i></a>
-                </div>
+            <div class="footer-links">
+                <h4>Social</h4>
+                <ul>
+                    <li><a href="https://x.com/curiousbright1"><i class="fab fa-twitter"></i> Twitter</a></li>
+                    <li><a href="https://instagram.com/curious.bright"><i class="fab fa-instagram"></i> Instagram</a></li>
+                </ul>
             </div>
         </div>
-        <div class="footer-bottom">&copy; 2026 CuriousBright. All rights reserved.</div>
+        <div class="footer-bottom" style="padding-top: 4rem; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center;">
+            <span>&copy; 2026 CuriousBright. All rights reserved.</span>
+            <span>Made with <i class="fas fa-heart" style="color: #ef4444;"></i> for the curious.</span>
+        </div>
     </footer>
 
-    <!-- FIX: Tailwind CDN removed — eliminates ~308 KiB unused JS -->
-
-    <!-- Google Analytics — deferred until after load -->
-    <script defer src="https://www.googletagmanager.com/gtag/js?id=G-8PFS0SF8YG"></script>
     <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        window.addEventListener('load', function() {
-            gtag('js', new Date());
-            gtag('config', 'G-8PFS0SF8YG');
+        // Header scroll behavior
+        const header = document.getElementById('mainHeader');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
         });
-    </script>
 
-    <!-- AdSense — loaded 2s after page load to protect TBT -->
-    <script>
-        window.addEventListener('load', function() {
-            setTimeout(function() {
-                var s = document.createElement('script');
-                s.async = true;
-                s.crossOrigin = 'anonymous';
-                s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1190045725751394';
-                document.head.appendChild(s);
-            }, 2000);
+        // Mobile Menu Toggle
+        const menuToggle = document.getElementById('menuToggle');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const menuIcon = menuToggle.querySelector('i');
+
+        menuToggle.addEventListener('click', () => {
+            mobileMenu.classList.toggle('active');
+            if (mobileMenu.classList.contains('active')) {
+                menuIcon.classList.remove('fa-bars');
+                menuIcon.classList.add('fa-times');
+                document.body.style.overflow = 'hidden';
+            } else {
+                menuIcon.classList.remove('fa-times');
+                menuIcon.classList.add('fa-bars');
+                document.body.style.overflow = '';
+            }
+        });
+
+        // Close menu on link click
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.remove('active');
+                menuIcon.classList.remove('fa-times');
+                menuIcon.classList.add('fa-bars');
+                document.body.style.overflow = '';
+            });
         });
     </script>
 

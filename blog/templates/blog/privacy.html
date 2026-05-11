@@ -1,56 +1,27 @@
 {% extends 'base.html' %}
 
-{% block title %}Privacy Policy - CuriousBright{% endblock %}
+{% block title %}Privacy — CuriousBright{% endblock %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <div class="text-center mb-12">
-        <h1 class="text-4xl font-bold text-gray-900 mb-4">Privacy Policy</h1>
-        <div class="w-24 h-1 bg-gradient-to-r from-purple-600 to-indigo-600 mx-auto"></div>
-        <p class="text-gray-600 mt-4">Last updated: April 2025</p>
-    </div>
-
-    <div class="bg-white rounded-xl shadow-md p-8 space-y-6">
-        <section>
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">Information We Collect</h2>
-            <p class="text-gray-600">We collect information you provide directly to us, such as when you create an account, leave comments, or contact us. This may include:</p>
-            <ul class="list-disc list-inside text-gray-600 mt-2 space-y-2">
-                <li>Name and email address</li>
-                <li>Profile information</li>
-                <li>Comments and content you post</li>
-                <li>Communication preferences</li>
-            </ul>
-        </section>
-
-        <section>
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">How We Use Your Information</h2>
-            <p class="text-gray-600">We use the information we collect to:</p>
-            <ul class="list-disc list-inside text-gray-600 mt-2 space-y-2">
-                <li>Provide, maintain, and improve our services</li>
-                <li>Process transactions and send related information</li>
-                <li>Respond to your comments and questions</li>
-                <li>Send technical notices and support messages</li>
-            </ul>
-        </section>
-
-        <section>
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">Cookies & Tracking</h2>
-            <p class="text-gray-600">We use cookies to enhance your experience on our platform. You can set your browser to refuse cookies, but some features may not function properly.</p>
-        </section>
-
-        <section>
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">Data Security</h2>
-            <p class="text-gray-600">We implement appropriate technical and organizational measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction.</p>
-        </section>
-
-        <section>
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">Your Rights</h2>
-            <p class="text-gray-600">You have the right to access, correct, or delete your personal information. Contact us at privacy@curiousbright.com for such requests.</p>
-        </section>
-
-        <div class="bg-purple-50 rounded-lg p-6 mt-8">
-            <p class="text-gray-700">If you have questions about this Privacy Policy, please contact us at: <strong>privacy@curiousbright.com</strong></p>
+<section style="padding: 12rem 0 6rem;">
+    <div class="container" style="max-width: 800px;">
+        <span class="hero-tag">Compliance</span>
+        <h1 style="font-size: clamp(3rem, 10vw, 5rem); font-weight: 900; letter-spacing: -0.05em; color: var(--text-heading); margin-bottom: 4rem;">
+            Privacy <span>Policy</span>
+        </h1>
+        
+        <div class="content" style="font-size: 1.1rem; line-height: 1.8; color: var(--text-heading);">
+            <p style="margin-bottom: 2rem;">Your privacy is not just a policy; it's a priority. We are committed to transparency in how we collect and use your data.</p>
+            
+            <h2 style="margin: 3rem 0 1.5rem; font-weight: 900;">Information Collection</h2>
+            <p>We collect information only when it is essential for the functionality of our services. This includes identifiers like your name and email when you subscribe or comment.</p>
+            
+            <h2 style="margin: 3rem 0 1.5rem; font-weight: 900;">Data Usage</h2>
+            <p>We use your data solely to personalize your experience, improve our platform, and communicate updates. We never sell your personal information to third parties.</p>
+            
+            <h2 style="margin: 3rem 0 1.5rem; font-weight: 900;">Security</h2>
+            <p>We employ industry-standard encryption and security protocols to ensure your data remains protected at all times.</p>
         </div>
     </div>
-</div>
+</section>
 {% endblock %}

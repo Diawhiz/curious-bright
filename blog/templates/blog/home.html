@@ -1,144 +1,69 @@
 {% extends 'base.html' %}
 {% load static cloudinary %}
 
-{% block title %}Home - CuriousBright{% endblock %}
-
-{# FIX: Inject hero image preload into <head> via block — critical for LCP #}
-{% block hero_preload %}
-{% if featured_posts %}
-{% with featured_posts.0 as main_featured %}
-{% if main_featured.featured_image %}
-{# Build the optimized Cloudinary URL for preload — w_800 matches the img tag below #}
-<link
-    rel="preload"
-    as="image"
-    href="{% cloudinary_url main_featured.featured_image fetch_format='auto' quality='auto' width=800 height=450 crop='fill' %}"
-    fetchpriority="high"
->
-{% endif %}
-{% endwith %}
-{% endif %}
-{% endblock %}
+{% block title %}CuriousBright — The Art of Curiosity{% endblock %}
 
 {% block content %}
 
-{% if featured_posts %}
-<section class="hero-section">
-    <div class="hero-img-wrap">
-        {% with featured_posts.0 as main_featured %}
-
-        {% if main_featured.featured_image %}
-        {# FIX: width=800 not 1200 — mobile test is 412px wide, 1200 is wasteful
-           fetchpriority=high — tells browser this is the LCP element
-           decoding=async — unblocks main thread during image decode #}
-        {% cloudinary main_featured.featured_image fetch_format="auto" quality="auto" width=800 height=450 crop="fill" fetchpriority="high" decoding="async" alt=main_featured.title %}
-        {% else %}
-        <div style="width:100%;height:100%;background:linear-gradient(135deg,#4c1d95,#3730a3);"></div>
-        {% endif %}
-
-        <div class="hero-overlay"></div>
-
-        <div class="hero-content">
-            <div style="max-width:46rem;color:#fff;">
-                <div style="margin-bottom:1rem;">
-                    <span class="badge-cat">{{ main_featured.category.title }}</span>
-                    <span class="badge-feat"><i class="fas fa-star"></i> Featured Story</span>
-                </div>
-                <h1>{{ main_featured.title }}</h1>
-                <p>{{ main_featured.excerpt|default:main_featured.content|striptags|truncatewords:25 }}</p>
-                <div style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;">
-                    <a href="{% url 'post_detail' main_featured.slug %}" class="btn-read">
-                        Read Article <i class="fas fa-arrow-right"></i>
-                    </a>
-                    <span class="hero-meta">
-                        <i class="fas fa-calendar-alt"></i> {{ main_featured.created_date|date:"F d, Y" }}
-                        &nbsp;•&nbsp;
-                        <i class="fas fa-eye"></i> {{ main_featured.views }} views
-                    </span>
-                </div>
-            </div>
-        </div>
-        {% endwith %}
-    </div>
-
-    {% if featured_posts|length > 1 %}
-    <div style="max-width:80rem;margin:0 auto;padding:0 1.5rem;margin-top:-5rem;position:relative;z-index:20;">
-        <div style="display:grid;gap:1.5rem;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));">
-            {% for post in featured_posts|slice:"1:5" %}
-            <div class="card">
-                {% if post.featured_image %}
-                {% cloudinary post.featured_image fetch_format="auto" quality="auto" width=400 height=192 crop="fill" loading="lazy" style="height:12rem;" alt=post.title %}
-                {% endif %}
-                <div class="card-body">
-                    <span class="tag">{{ post.category.title }}</span>
-                    <div class="card-title">{{ post.title }}</div>
-                    <a href="{% url 'post_detail' post.slug %}" class="read-more">
-                        Read More →<span class="sr-only"> {{ post.title }}</span>
-                    </a>
-                </div>
-            </div>
-            {% endfor %}
+<!-- High Impact Hero -->
+<section class="hero">
+    <div class="hero-inner">
+        <span class="hero-tag">Curated Insights</span>
+        <h1>The Pursuit of <span>Brilliance</span></h1>
+        <p>A destination for those who seek to understand the world through the lens of curiosity, creativity, and conscious living.</p>
+        <div class="hero-buttons" style="display: flex; gap: 1.5rem; justify-content: center;">
+            <a href="{% url 'all_posts' %}" class="btn btn-primary" style="padding: 1.25rem 3rem; font-size: 1rem;">Explore the Archive</a>
+            <a href="#featured" class="btn btn-outline" style="padding: 1.25rem 3rem; font-size: 1rem;">Recent Stories</a>
         </div>
     </div>
-    {% endif %}
 </section>
-{% endif %}
 
-<div class="section" style="padding-top:{% if featured_posts|length > 1 %}5rem{% else %}3rem{% endif %};">
-    <div class="section-header">
-        <div>
-            <div class="section-title">Latest Articles</div>
-            <div class="section-title-bar"></div>
-        </div>
-        <a href="{% url 'all_posts' %}" class="view-all">View All <i class="fas fa-arrow-right"></i></a>
+<!-- Bento Grid Section -->
+<div class="container" id="featured">
+    <div style="margin-bottom: 4rem;">
+        <h2 style="font-size: 2.5rem; font-weight: 900; letter-spacing: -0.04em;">Selected <span>Stories</span></h2>
     </div>
 
-    {% if latest_posts %}
-    <div style="display:grid;gap:2rem;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));">
+    <div class="posts-grid">
         {% for post in latest_posts %}
-        <div class="card">
-            {% if post.featured_image %}
-            {% cloudinary post.featured_image fetch_format="auto" quality="auto" width=600 height=208 crop="fill" loading="lazy" style="height:13rem;" alt=post.title %}
-            {% else %}
-            <div style="height:13rem;background:linear-gradient(135deg,#ede9fe,#e0e7ff);display:flex;align-items:center;justify-content:center;">
-                <i class="fas fa-image" style="font-size:2.5rem;color:#a78bfa;"></i>
-            </div>
-            {% endif %}
+        <article class="post-card {% if forloop.first %}large{% elif forloop.counter < 4 %}medium{% else %}small{% endif %}">
+            <a href="{% url 'post_detail' post.slug %}" class="card-img">
+                {% if post.featured_image %}
+                    {% cloudinary post.featured_image fetch_format="auto" quality="auto" width=1200 height=675 crop="fill" loading="lazy" alt=post.title %}
+                {% else %}
+                    <div style="width: 100%; height: 100%; background: var(--bg-main);"></div>
+                {% endif %}
+            </a>
             <div class="card-body">
-                {# FIX: color changed from #9ca3af to #6b7280 — passes WCAG AA contrast #}
-                <div style="display:flex;align-items:center;gap:.5rem;font-size:.85rem;color:#6b7280;margin-bottom:.5rem;">
-                    <span class="tag">{{ post.category.title }}</span>
-                    <span>•</span>
-                    <span>{{ post.created_date|date:"M d, Y" }}</span>
-                </div>
-                <div class="card-title">{{ post.title }}</div>
-                <div class="card-excerpt">{{ post.excerpt|default:post.content|striptags|truncatewords:20 }}</div>
-                <div style="display:flex;justify-content:space-between;align-items:center;">
-                    <a href="{% url 'post_detail' post.slug %}" class="read-more">
-                        Read More <i class="fas fa-arrow-right"></i><span class="sr-only"> {{ post.title }}</span>
-                    </a>
-                    {# FIX: color #6b7280 instead of #9ca3af #}
-                    <span style="font-size:.8rem;color:#6b7280;"><i class="fas fa-eye"></i> {{ post.views }}</span>
+                <span class="card-cat">{{ post.category.title }}</span>
+                <h3 class="card-title">
+                    <a href="{% url 'post_detail' post.slug %}" style="text-decoration: none; color: inherit;">{{ post.title }}</a>
+                </h3>
+                <p class="card-excerpt">{{ post.excerpt|default:post.content|striptags|truncatewords:25 }}</p>
+                
+                <div class="card-meta">
+                    <div class="author-info">
+                        <div class="author-avatar">{{ post.author.username|first|upper }}</div>
+                        <span>{{ post.author.username }}</span>
+                    </div>
+                    <span style="color: var(--text-muted);">{{ post.created_date|date:"M d, Y" }}</span>
                 </div>
             </div>
-        </div>
+        </article>
         {% endfor %}
     </div>
-    {% else %}
-    <div style="text-align:center;color:#6b7280;padding:3rem;background:#f9fafb;border-radius:.75rem;">
-        <i class="fas fa-newspaper" style="font-size:3rem;margin-bottom:1rem;opacity:.4;display:block;"></i>
-        <p>No posts available yet. Check back later!</p>
-    </div>
-    {% endif %}
 </div>
 
-<div class="newsletter-section">
-    <h2>Stay Curious</h2>
-    <p>Subscribe to our newsletter for the latest articles and insights</p>
-    <form class="newsletter-form" onsubmit="return false;">
-        <input type="email" placeholder="Your email address" aria-label="Email address">
-        <button type="submit">Subscribe</button>
-    </form>
+<!-- High-End Newsletter -->
+<div class="container">
+    <section class="newsletter">
+        <h2>Stay Ahead.</h2>
+        <p>Join 5,000+ readers receiving our monthly briefing on curiosity and intentional living.</p>
+        <form class="newsletter-form" onsubmit="return false;">
+            <input type="email" placeholder="Enter your email" required>
+            <button type="submit" class="btn-pill">Subscribe Now</button>
+        </form>
+    </section>
 </div>
 
 {% endblock %}

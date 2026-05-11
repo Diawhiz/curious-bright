@@ -58,6 +58,11 @@ class Post(models.Model):
     def get_absolute_url(self):
         return reverse('post_detail', args=[self.slug])
 
+    def get_full_url(self):
+        from django.contrib.sites.models import Site
+        domain = Site.objects.get_current().domain
+        return f"https://{domain}{self.get_absolute_url()}"
+
     class Meta:
         # FIX: Composite indexes for the most common query patterns
         indexes = [

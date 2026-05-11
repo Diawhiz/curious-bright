@@ -6,6 +6,7 @@ from blog.sitemaps import PostSitemap, CategorySitemap, StaticSitemap
 from django.contrib.sitemaps.views import sitemap
 from django.views.generic import TemplateView
 from blog.feeds import LatestPostsFeed
+from blog import admin_views
 
 sitemaps = {
     'posts': PostSitemap,
@@ -14,6 +15,9 @@ sitemaps = {
 }
 
 urlpatterns = [
+    path('admin/analytics/', include([
+        path('', admin_views.analytics_dashboard, name='admin_analytics'),
+    ])),
     path('admin/', admin.site.urls),
     path('', include('blog.urls')),
     path('accounts/', include('allauth.urls')),

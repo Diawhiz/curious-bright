@@ -1,57 +1,58 @@
 {% extends 'base.html' %}
 {% load cloudinary %}
 
-{% block title %}All Posts - CuriousBright{% endblock %}
+{% block title %}The Archive — CuriousBright{% endblock %}
 
 {% block content %}
-<div class="section">
-    <div style="text-align:center;margin-bottom:3rem;">
-        <h1 style="font-size:2.25rem;font-weight:800;color:#111827;margin-bottom:1rem;">All Articles</h1>
-        <div style="width:5rem;height:3px;background:linear-gradient(90deg,#7c3aed,#4f46e5);margin:0 auto 1rem;border-radius:2px;"></div>
-        <p style="color:#6b7280;">Explore all our articles and insights</p>
+<section style="padding: 12rem 0 6rem; background: var(--bg-main);">
+    <div class="container" style="text-align: center;">
+        <span class="hero-tag">The Complete Collection</span>
+        <h1 style="font-size: clamp(3rem, 10vw, 5rem); font-weight: 900; letter-spacing: -0.05em; color: var(--text-heading); margin-bottom: 2rem;">
+            The <span>Archive</span>
+        </h1>
+        <p style="font-size: 1.25rem; color: var(--text-body); max-width: 600px; margin: 0 auto; opacity: 0.7;">
+            Browse through our complete library of stories, insights, and perspectives.
+        </p>
     </div>
+</section>
 
-    <div style="display:grid;gap:2rem;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));">
+<div class="container" style="padding-bottom: 8rem;">
+    <div class="posts-grid">
         {% for post in posts %}
-        <div class="card">
-            {% if post.featured_image %}
-{% cloudinary post.featured_image fetch_format="auto" quality="auto" width=600 height=192 crop="fill" loading="lazy" style="height:12rem;width:100%;object-fit:cover;" alt=post.title|default:"Article" %}
-            {% endif %}
+        <article class="post-card medium">
+            <a href="{% url 'post_detail' post.slug %}" class="card-img">
+                {% if post.featured_image %}
+                    {% cloudinary post.featured_image fetch_format="auto" quality="auto" width=800 height=450 crop="fill" loading="lazy" alt=post.title %}
+                {% endif %}
+            </a>
             <div class="card-body">
-                <div style="display:flex;align-items:center;gap:.5rem;font-size:.8rem;color:#6b7280;margin-bottom:.5rem;flex-wrap:wrap;">
-                    <span class="tag">{{ post.category.title }}</span>
-                    <span>•</span>
-                    <span>{{ post.created_date|date:"M d, Y" }}</span>
-                    {% if post.is_featured %}
-                    <span style="color:#f59e0b;"><i class="fas fa-star"></i> Featured</span>
-                    {% endif %}
+                <span class="card-cat">{{ post.category.title }}</span>
+                <h3 class="card-title">
+                    <a href="{% url 'post_detail' post.slug %}" style="text-decoration: none; color: inherit;">{{ post.title }}</a>
+                </h3>
+                <div class="card-meta">
+                    <span style="color: var(--text-muted);">{{ post.created_date|date:"M d, Y" }}</span>
+                    <span style="color: var(--text-muted);"><i class="far fa-eye"></i> {{ post.views }}</span>
                 </div>
-                <div class="card-title">{{ post.title }}</div>
-                <div class="card-excerpt">{{ post.excerpt|default:post.content|striptags|truncatewords:20 }}</div>
-                <a href="{% url 'post_detail' post.slug %}" class="read-more">
-                    Read More →<span class="sr-only"> {{ post.title }}</span>
-                </a>
             </div>
-        </div>
-        {% empty %}
-        <p style="color:#6b7280;text-align:center;grid-column:1/-1;">No posts available yet.</p>
+        </article>
         {% endfor %}
     </div>
 
     <!-- Pagination -->
-    {% if is_paginated %}
-    <div style="display:flex;justify-content:center;margin-top:3rem;">
-        <nav style="display:flex;align-items:center;gap:.5rem;" aria-label="Pagination">
-            {% if posts.has_previous %}
-            <a href="?page={{ posts.previous_page_number }}" style="padding:.5rem 1rem;background:#e5e7eb;color:#374151;border-radius:.5rem;text-decoration:none;font-weight:500;transition:background .2s;">Previous</a>
-            {% endif %}
-            <span style="padding:.5rem 1rem;background:#7c3aed;color:#fff;border-radius:.5rem;font-weight:600;">
-                Page {{ posts.number }} of {{ posts.paginator.num_pages }}
-            </span>
-            {% if posts.has_next %}
-            <a href="?page={{ posts.next_page_number }}" style="padding:.5rem 1rem;background:#e5e7eb;color:#374151;border-radius:.5rem;text-decoration:none;font-weight:500;transition:background .2s;">Next</a>
-            {% endif %}
-        </nav>
+    {% if posts.has_other_pages %}
+    <div style="display: flex; justify-content: center; gap: 1rem; margin-top: 4rem;">
+        {% if posts.has_previous %}
+            <a href="?page={{ posts.previous_page_number }}" class="btn btn-outline">Previous</a>
+        {% endif %}
+        
+        <span class="btn" style="background: white; border: 1px solid var(--border); cursor: default;">
+            {{ posts.number }} / {{ posts.paginator.num_pages }}
+        </span>
+
+        {% if posts.has_next %}
+            <a href="?page={{ posts.next_page_number }}" class="btn btn-outline">Next</a>
+        {% endif %}
     </div>
     {% endif %}
 </div>

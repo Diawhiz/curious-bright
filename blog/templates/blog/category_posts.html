@@ -1,29 +1,42 @@
 {% extends 'base.html' %}
 {% load cloudinary %}
 
-{% block title %}{{ category.title }} - CuriousBright{% endblock %}
+{% block title %}{{ category.title }} — CuriousBright{% endblock %}
 
 {% block content %}
-<div class="section">
-    <h1 style="font-size:2rem;font-weight:800;color:#111827;margin-bottom:.5rem;">Articles in: {{ category.title }}</h1>
-    <div style="width:5rem;height:3px;background:linear-gradient(90deg,#7c3aed,#4f46e5);border-radius:2px;margin-bottom:2.5rem;"></div>
+<section style="padding: 12rem 0 6rem; background: var(--bg-main);">
+    <div class="container">
+        <span class="hero-tag">Category</span>
+        <h1 style="font-size: clamp(3rem, 10vw, 5rem); font-weight: 900; letter-spacing: -0.05em; color: var(--text-heading); margin-bottom: 2rem;">
+            {{ category.title }}
+        </h1>
+        <div style="width: 100px; height: 6px; background: var(--primary); border-radius: var(--radius-full);"></div>
+    </div>
+</section>
 
-    <div style="display:grid;gap:2rem;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));">
+<div class="container" style="padding-bottom: 8rem;">
+    <div class="posts-grid">
         {% for post in posts %}
-        <div class="card">
-            {% if post.featured_image %}
-{% cloudinary post.featured_image fetch_format="auto" quality="auto" width=600 height=192 crop="fill" loading="lazy" style="height:12rem;width:100%;object-fit:cover;" alt=post.title|default:"Article" %}
-            {% endif %}
+        <article class="post-card medium">
+            <a href="{% url 'post_detail' post.slug %}" class="card-img">
+                {% if post.featured_image %}
+                    {% cloudinary post.featured_image fetch_format="auto" quality="auto" width=800 height=450 crop="fill" loading="lazy" alt=post.title %}
+                {% endif %}
+            </a>
             <div class="card-body">
-                <div class="card-title">{{ post.title }}</div>
-                <div class="card-excerpt">{{ post.excerpt|default:post.content|striptags|truncatewords:20 }}</div>
-                <a href="{% url 'post_detail' post.slug %}" class="read-more">
-                    Read More →<span class="sr-only"> {{ post.title }}</span>
-                </a>
+                <h3 class="card-title">
+                    <a href="{% url 'post_detail' post.slug %}" style="text-decoration: none; color: inherit;">{{ post.title }}</a>
+                </h3>
+                <div class="card-meta">
+                    <span style="color: var(--text-muted);">{{ post.created_date|date:"M d, Y" }}</span>
+                    <span style="color: var(--text-muted);"><i class="far fa-eye"></i> {{ post.views }}</span>
+                </div>
             </div>
-        </div>
+        </article>
         {% empty %}
-        <p style="color:#6b7280;text-align:center;grid-column:1/-1;">No posts in this category yet.</p>
+        <div style="grid-column: 1/-1; text-align: center; padding: 10rem 0; color: var(--text-muted);">
+            <p>No stories found in this category yet.</p>
+        </div>
         {% endfor %}
     </div>
 </div>

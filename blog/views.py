@@ -111,20 +111,30 @@ def like_comment(request, comment_id):
     return JsonResponse({'liked': liked, 'total_likes': comment.total_likes()})
 
 
-@login_required
 def add_comment(request, slug):
     post = get_object_or_404(Post, slug=slug)
     if request.method == 'POST':
         parent_id = request.POST.get('parent_id')
         content = request.POST.get('content', '').strip()
+        name = request.POST.get('name', '').strip()
+        email = request.POST.get('email', '').strip()
+
         if content:
-            Comment.objects.create(
-                post=post,
-                user=request.user,
-                content=content,
-                parent_id=parent_id if parent_id else None
-            )
-            messages.success(request, 'Comment added successfully!')
+            comment_data = {
+                'post': post,
+                'content': content,
+                'parent_id': parent_id if parent_id else None,
+            }
+            
+            if request.user.is_authenticated:
+                comment_data['user'] = request.user
+            else:
+                comment_data['name'] = name if name else 'Anonymous'
+                comment_data['email'] = email
+
+            Comment.objects.create(**comment_data)
+            messages.success(request, 'Comment added successfully! It will appear once approved.' if not request.user.is_authenticated else 'Comment added successfully!')
+            
     return redirect('post_detail', slug=post.slug)
 
 
