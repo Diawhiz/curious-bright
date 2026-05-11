@@ -19,11 +19,11 @@
   "routes": [
     {
       "src": "/static/(.*)",
-      "dest": "/$1"
+      "dest": "staticfiles/$1"
     },
     {
       "src": "/ads.txt",
-      "dest": "/static/ads.txt"
+      "dest": "/staticfiles/ads.txt"
     },
     {
       "src": "/(.*)",
