@@ -1,5 +1,6 @@
 {
   "version": 2,
+  "outputDirectory": "staticfiles",
   "builds": [
     {
       "src": "curiousbright/wsgi.py",
