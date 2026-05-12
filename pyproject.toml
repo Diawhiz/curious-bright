@@ -2,9 +2,9 @@
 name = "curiousbright"
 version = "1.0.0"
 description = "CuriousBright - A modern news blog"
-requires-python = ">=3.9"
+requires-python = ">=3.12"
 dependencies = [
-    "Django==4.2.16",
+    "Django==5.1.4",
     "whitenoise==6.7.0",
     "dj-database-url==2.2.0",
     "psycopg2-binary==2.9.10",
