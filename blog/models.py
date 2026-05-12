@@ -38,7 +38,7 @@ class Post(models.Model):
     excerpt = models.TextField(max_length=160, help_text="Used for SEO meta description. Keep under 160 characters.")
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
     featured_image = CloudinaryField('image', folder='newsblog/featured')
-    content = QuillField(config='QUILL_CONFIG')
+    content = QuillField()
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='posts')
     created_date = models.DateTimeField(default=timezone.now, db_index=True)
     updated_date = models.DateTimeField(auto_now=True)
@@ -59,9 +59,23 @@ class Post(models.Model):
         return reverse('post_detail', args=[self.slug])
 
     def get_full_url(self):
+        """
+        Get the full absolute URL including domain.
+        
+        Falls back to settings.ALLOWED_HOSTS[0] if Site framework is not configured.
+        This prevents crashes on fresh installs or misconfigured sites.
+        """
         from django.contrib.sites.models import Site
-        domain = Site.objects.get_current().domain
-        return f"https://{domain}{self.get_absolute_url()}"
+        from django.conf import settings
+        
+        try:
+            domain = Site.objects.get_current().domain
+        except Exception:
+            # Fallback: use first allowed host or localhost
+            domain = settings.ALLOWED_HOSTS[0] if settings.ALLOWED_HOSTS else 'localhost'
+        
+        protocol = 'https' if not settings.DEBUG else 'http'
+        return f"{protocol}://{domain}{self.get_absolute_url()}"
 
     class Meta:
         # FIX: Composite indexes for the most common query patterns

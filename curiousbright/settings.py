@@ -317,6 +317,34 @@ if not DEBUG:
 
 
 # ---------------------------------------------------------------------------
+# Caching
+# ---------------------------------------------------------------------------
+
+# Use database cache for serverless compatibility
+# This works on Vercel because it doesn't require external services like Redis
+# For high-traffic sites, consider using Redis or Memcached
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'django_cache_table',
+        'TIMEOUT': 300,  # 5 minutes default
+        'OPTIONS': {
+            'MAX_ENTRIES': 1000,
+            'CULL_FREQUENCY': 3,
+        }
+    }
+}
+
+# For local development, use locmem cache (faster, per-process)
+if DEBUG and not ON_VERCEL:
+    CACHES['default'] = {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'curiousbright-cache',
+        'TIMEOUT': 300,
+    }
+
+
+# ---------------------------------------------------------------------------
 # SEO
 # ---------------------------------------------------------------------------
 
