@@ -98,16 +98,26 @@
     </div>
 </div>
 
+{{ post_labels|json_script:"post-labels-data" }}
+{{ post_data|json_script:"post-data-data" }}
+{{ cat_labels|json_script:"cat-labels-data" }}
+{{ cat_data|json_script:"cat-data-data" }}
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+    const postLabels = JSON.parse(document.getElementById('post-labels-data').textContent);
+    const postData = JSON.parse(document.getElementById('post-data-data').textContent);
+    const catLabels = JSON.parse(document.getElementById('cat-labels-data').textContent);
+    const catData = JSON.parse(document.getElementById('cat-data-data').textContent);
+
     const postsCtx = document.getElementById('postsChart').getContext('2d');
     new Chart(postsCtx, {
         type: 'bar',
         data: {
-            labels: {{ post_labels|safe }},
+            labels: postLabels,
             datasets: [{
                 label: 'Views',
-                data: {{ post_data|safe }},
+                data: postData,
                 backgroundColor: 'rgba(79, 70, 229, 0.2)',
                 borderColor: 'rgba(79, 70, 229, 1)',
                 borderWidth: 1,
@@ -125,9 +135,9 @@
     new Chart(catsCtx, {
         type: 'doughnut',
         data: {
-            labels: {{ cat_labels|safe }},
+            labels: catLabels,
             datasets: [{
-                data: {{ cat_data|safe }},
+                data: catData,
                 backgroundColor: [
                     '#4f46e5', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'
                 ]

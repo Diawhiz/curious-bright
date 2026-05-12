@@ -1,90 +1,279 @@
-{% extends "admin/index.html" %}
-{% load static %}
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 24px;
+        margin-bottom: 32px;
+    }
+    
+    .dashboard-card {
+        background: white;
+        border-radius: 8px;
+        padding: 24px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .dashboard-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    
+    .stat-card {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+    
+    .stat-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+    }
+    
+    .stat-icon.blue { background: #e8f4fd; color: #2271b1; }
+    .stat-icon.green { background: #edfaef; color: #00a32a; }
+    .stat-icon.orange { background: #fcf9e8; color: #dba617; }
+    .stat-icon.red { background: #fcf0f1; color: #d63638; }
+    
+    .stat-info h3 {
+        margin: 0 0 4px 0;
+        font-size: 14px;
+        color: #646970;
+        font-weight: 500;
+    }
+    
+    .stat-info p {
+        margin: 0;
+        font-size: 28px;
+        font-weight: 700;
+        color: #1e1e1e;
+    }
+    
+    .quick-actions {
+        background: white;
+        border-radius: 8px;
+        padding: 24px;
+        margin-bottom: 24px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .quick-actions h2 {
+        margin: 0 0 16px 0;
+        font-size: 16px;
+        font-weight: 600;
+    }
+    
+    .action-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+    
+    .action-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 20px;
+        background: #2271b1;
+        color: white;
+        text-decoration: none;
+        border-radius: 6px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+    
+    .action-btn:hover {
+        background: #135e96;
+        box-shadow: 0 2px 8px rgba(34, 113, 177, 0.3);
+    }
+    
+    .recent-section {
+        background: white;
+        border-radius: 8px;
+        padding: 24px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .recent-section h2 {
+        margin: 0 0 20px 0;
+        font-size: 16px;
+        font-weight: 600;
+        padding-bottom: 16px;
+        border-bottom: 1px solid #c3c4c7;
+    }
+    
+    .recent-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .recent-list li {
+        padding: 12px 0;
+        border-bottom: 1px solid #f0f0f1;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .recent-list li:last-child {
+        border-bottom: none;
+    }
+    
+    .recent-list a {
+        color: #2271b1;
+        text-decoration: none;
+        font-weight: 500;
+    }
+    
+    .recent-list a:hover {
+        text-decoration: underline;
+    }
+    
+    .recent-list .time {
+        color: #8c8f94;
+        font-size: 12px;
+    }
+    
+    .welcome-banner {
+        background: linear-gradient(135deg, #2271b1 0%, #135e96 100%);
+        color: white;
+        padding: 32px;
+        border-radius: 8px;
+        margin-bottom: 24px;
+    }
+    
+    .welcome-banner h2 {
+        margin: 0 0 8px 0;
+        font-size: 24px;
+    }
+    
+    .welcome-banner p {
+        margin: 0;
+        opacity: 0.9;
+    }
+</style>
+{% endblock %}
 
 {% block content %}
 <div id="content-main">
-    <!-- Custom Stats Cards -->
-    <div class="dashboard-stats">
-        <div class="stat-card">
-            <div class="stat-number" id="post-count">Loading...</div>
-            <div class="stat-label">Total Posts</div>
+    {% if request.user.is_superuser %}
+    <div class="welcome-banner">
+        <h2>Welcome to CuriousBright CMS</h2>
+        <p>Manage your content, track analytics, and grow your audience.</p>
+    </div>
+    
+    <div class="dashboard-grid">
+        <div class="dashboard-card">
+            <div class="stat-card">
+                <div class="stat-icon blue">
+                    <i class="fas fa-newspaper"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Published Posts</h3>
+                    <p>{{ post_count|default:"0" }}</p>
+                </div>
+            </div>
         </div>
-        <div class="stat-card">
-            <div class="stat-number" id="comment-count">Loading...</div>
-            <div class="stat-label">Total Comments</div>
+        
+        <div class="dashboard-card">
+            <div class="stat-card">
+                <div class="stat-icon orange">
+                    <i class="fas fa-comments"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Comments</h3>
+                    <p>{{ comment_count|default:"0" }}</p>
+                </div>
+            </div>
         </div>
-        <div class="stat-card">
-            <div class="stat-number" id="user-count">Loading...</div>
-            <div class="stat-label">Total Users</div>
+        
+        <div class="dashboard-card">
+            <div class="stat-card">
+                <div class="stat-icon green">
+                    <i class="fas fa-eye"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Total Views</h3>
+                    <p>{{ total_views|default:"0" }}</p>
+                </div>
+            </div>
         </div>
-        <div class="stat-card">
-            <div class="stat-number" id="category-count">Loading...</div>
-            <div class="stat-label">Categories</div>
+        
+        <div class="dashboard-card">
+            <div class="stat-card">
+                <div class="stat-icon red">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Users</h3>
+                    <p>{{ user_count|default:"0" }}</p>
+                </div>
+            </div>
         </div>
     </div>
-
-    <!-- Original admin content -->
-    {% if app_list %}
-        {% for app in app_list %}
-            <div class="module">
-                <table>
-                    <caption>
-                        <a href="{{ app.app_url }}" class="section" title="Models in the {{ app.name }} application">
-                            {{ app.name }}
-                        </a>
-                    </caption>
-                    {% for model in app.models %}
-                        <tr class="model-{{ model.object_name|lower }}">
-                            {% if model.admin_url %}
-                                <th scope="row"><a href="{{ model.admin_url }}">{{ model.name }}</a></th>
-                            {% else %}
-                                <th scope="row">{{ model.name }}</th>
-                            {% endif %}
-
-                            {% if model.add_url %}
-                                <td><a href="{{ model.add_url }}" class="addlink">Add</a></td>
-                            {% else %}
-                                <td>&nbsp;</td>
-                            {% endif %}
-
-                            {% if model.admin_url %}
-                                {% if model.view_only %}
-                                    <td><a href="{{ model.admin_url }}" class="viewlink">View</a></td>
-                                {% else %}
-                                    <td><a href="{{ model.admin_url }}" class="changelink">Change</a></td>
-                                {% endif %}
-                            {% else %}
-                                <td>&nbsp;</td>
-                            {% endif %}
-                        </tr>
-                    {% endfor %}
-                </table>
-            </div>
-        {% endfor %}
-    {% else %}
-        <p>You don't have permission to view or edit anything.</p>
+    
+    <div class="quick-actions">
+        <h2>Quick Actions</h2>
+        <div class="action-buttons">
+            <a href="{% url 'admin:blog_post_add' %}" class="action-btn">
+                <i class="fas fa-plus"></i> New Post
+            </a>
+            <a href="{% url 'admin:blog_category_add' %}"> <i class="fas fa-tag"></i> New Category
+            </a>
+            <a href="{% url 'admin:blog_staticpage_add' %}"> <i class="fas fa-file-alt"></i> New Page
+            </a>
+            <a href="{% url 'admin:analytics_dashboard' %}"> <i class="fas fa-chart-line"></i> Analytics
+            </a>
+        </div>
+    </div>
     {% endif %}
+    
+    <div class="recent-section">
+        <h2>Recent Activity</h2>
+        {% load log %}
+        {% get_admin_log 10 as admin_log for_user user %}
+        {% if admin_log %}
+        <ul class="recent-list">
+            {% for entry in admin_log %}
+            <li>
+                <span>
+                    {% if entry.is_addition %}<i class="fas fa-plus-circle" style="color: #00a32a;"></i>{% endif %}
+                    {% if entry.is_change %}<i class="fas fa-edit" style="color: #2271b1;"></i>{% endif %}
+                    {% if entry.is_deletion %}<i class="fas fa-trash" style="color: #d63638;"></i>{% endif %}
+                    
+                    {% if entry.content_type %}
+                        <strong>{{ entry.content_type.name|capfirst }}</strong>:
+                        {% if entry.is_deletion or not entry.get_admin_url %}
+                            {{ entry.object_repr }}
+                        {% else %}
+                            <a href="{{ entry.get_admin_url }}">{{ entry.object_repr }}</a>
+                        {% endif %}
+                    {% else %}
+                        {{ entry.object_repr }}
+                    {% endif %}
+                </span>
+                <span class="time">{{ entry.action_time|timesince }} ago</span>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p>No recent activity.</p>
+        {% endif %}
+    </div>
 </div>
+{% endblock %}
 
-<script>
-    // Fetch stats from API
-    async function fetchStats() {
-        try {
-            const response = await fetch('/admin/stats/');
-            const data = await response.json();
-            document.getElementById('post-count').textContent = data.posts || 0;
-            document.getElementById('comment-count').textContent = data.comments || 0;
-            document.getElementById('user-count').textContent = data.users || 0;
-            document.getElementById('category-count').textContent = data.categories || 0;
-        } catch (error) {
-            console.error('Error fetching stats:', error);
-            document.getElementById('post-count').textContent = '0';
-            document.getElementById('comment-count').textContent = '0';
-            document.getElementById('user-count').textContent = '0';
-            document.getElementById('category-count').textContent = '0';
-        }
-    }
-
-    fetchStats();
-</script>
+{% block sidebar %}
+{{ block.super }}
 {% endblock %}

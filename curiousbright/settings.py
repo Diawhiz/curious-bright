@@ -47,7 +47,7 @@ SITE_ID = 2 if DEBUG else 1
 # ---------------------------------------------------------------------------
 
 INSTALLED_APPS = [
-    'jazzmin',
+    # 'jazzmin',  # Temporarily disabled due to Python 3.14 compatibility
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -107,6 +107,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'blog.context_processors.categories_processor',
+                'blog.context_processors.admin_stats_processor',
             ],
         },
     },
@@ -219,15 +220,44 @@ USE_TZ = True
 
 
 # ---------------------------------------------------------------------------
+# Django Quill Editor Configuration
+# ---------------------------------------------------------------------------
+
+QUILL_CONFIG = {
+    'theme': 'snow',
+    'modules': {
+        'toolbar': [
+            [{'header': [1, 2, 3, 4, False]}],
+            ['bold', 'italic', 'underline', 'strike'],
+            [{'color': []}, {'background': []}],
+            [{'script': 'sub'}, {'script': 'super'}],
+            [{'list': 'ordered'}, {'list': 'bullet'}],
+            [{'indent': '-1'}, {'indent': '+1'}],
+            [{'align': []}],
+            ['blockquote', 'code-block'],
+            ['link', 'image'],
+            ['clean'],
+        ],
+    },
+    'placeholder': 'Start writing your story...',
+}
+
 # Static & media files
 # ---------------------------------------------------------------------------
 
-ON_VERCEL = os.environ.get('VERCEL', False)
+ON_VERCEL = os.environ.get('VERCEL', 'False').lower() == 'true'
 
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static'] if (BASE_DIR / 'static').exists() else []
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+
+# WhiteNoise configuration for production
+if ON_VERCEL or not DEBUG:
+    # Use ManifestStaticFilesStorage for proper cache-busting hashes
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    WHITENOISE_MAX_AGE = 31536000  # 1 year for immutable files
+else:
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
@@ -265,12 +295,25 @@ if not DEBUG:
     CSRF_COOKIE_SECURE = True
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
+    X_FRAME_OPTIONS = 'DENY'
+    
+    # HSTS - Uncomment after HTTPS is fully verified working
+    # SECURE_HSTS_SECONDS = 31536000  # 1 year
+    # SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    # SECURE_HSTS_PRELOAD = True
 
     CSRF_TRUSTED_ORIGINS = [
         'https://curiousbright.com.ng',
         'https://www.curiousbright.com.ng',
         'https://*.vercel.app',
     ]
+    
+    # WhiteNoise security headers for static files
+    WHITENOISE_ADD_HEADERS_FUNCTION = lambda headers, path, url: headers.update({
+        'X-Content-Type-Options': 'nosniff',
+        'Referrer-Policy': 'strict-origin-when-cross-origin',
+        'X-Frame-Options': 'DENY',
+    })
 
 
 # ---------------------------------------------------------------------------

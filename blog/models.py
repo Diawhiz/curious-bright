@@ -38,7 +38,7 @@ class Post(models.Model):
     excerpt = models.TextField(max_length=160, help_text="Used for SEO meta description. Keep under 160 characters.")
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
     featured_image = CloudinaryField('image', folder='newsblog/featured')
-    content = QuillField()
+    content = QuillField(config='QUILL_CONFIG')
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='posts')
     created_date = models.DateTimeField(default=timezone.now, db_index=True)
     updated_date = models.DateTimeField(auto_now=True)

@@ -35,7 +35,7 @@
     <!-- Article Content -->
     <div class="container" style="max-width: 800px; margin-bottom: 8rem;">
         <div class="content" style="font-size: 1.25rem; line-height: 1.8; color: var(--text-heading);">
-            {{ post.content.html|safe }}
+            {{ post.content.html|sanitize_html|safe }}
         </div>
     </div>
 
