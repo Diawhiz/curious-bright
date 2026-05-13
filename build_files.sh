@@ -1,8 +1,4 @@
 #!/bin/bash
 set -e
-
-# Install dependencies first
-pip install -r requirements.txt
-
-# Then collect static files
+pip install -r requirements.txt --break-system-packages
 python manage.py collectstatic --noinput
