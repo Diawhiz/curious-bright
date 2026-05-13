@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-!2cuway20jozk_y2b7ot(f)&81hskg@#el9s6@8l30fcs+upuu')
 
-DEBUG = os.environ.get('DEBUG', 'True') == 'True'
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
 if DEBUG:
     ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '*']
@@ -449,6 +449,10 @@ JAZZMIN_UI_TWEAKS = {
         "warning": "btn-warning",
         "danger": "btn-danger",
         "success": "btn-success",
+    },
+    "actions_sticky_top": True,
+}
+cess",
     },
     "actions_sticky_top": True,
 }

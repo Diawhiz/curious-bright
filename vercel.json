@@ -1,39 +1,14 @@
 {
   "version": 2,
-  "outputDirectory": "staticfiles",
   "builds": [
     {
       "src": "curiousbright/wsgi.py",
       "use": "@vercel/python",
-      "config": {
-        "runtime": "python3.12",
-        "maxLambdaSize": "15mb",
-        "includeFiles": "staticfiles/**"
-      }
-    },
-    {
-      "src": "build_files.sh",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "staticfiles"
-      }
+      "config": { "runtime": "python3.12" }
     }
   ],
   "routes": [
-    {
-      "src": "/static/(.*)",
-      "headers": {
-        "Cache-Control": "public, max-age=31536000, immutable"
-      },
-      "dest": "staticfiles/$1"
-    },
-    {
-      "src": "/ads.txt",
-      "dest": "/staticfiles/ads.txt"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "curiousbright/wsgi.py"
-    }
-  ]
+    { "src": "/(.*)", "dest": "curiousbright/wsgi.py" }
+  ],
+  "outputDirectory": "staticfiles"
 }
