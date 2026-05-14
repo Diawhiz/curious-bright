@@ -303,6 +303,7 @@ if not DEBUG:
     CSRF_TRUSTED_ORIGINS = [
         'https://curiousbright.com.ng',
         'https://www.curiousbright.com.ng',
+        'https://curiousbright-0a9fca62af3a.herokuapp.com',
 
     ]
     
