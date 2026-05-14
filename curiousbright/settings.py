@@ -251,7 +251,7 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static'] if (BASE_DIR / 'static').exists() else []
 
 # WhiteNoise configuration for production
-if ON_VERCEL or not DEBUG:
+if not DEBUG:
     # Use ManifestStaticFilesStorage for proper cache-busting hashes
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
     WHITENOISE_MAX_AGE = 31536000  # 1 year for immutable files
@@ -286,7 +286,6 @@ cloudinary.config(
 # ---------------------------------------------------------------------------
 
 if not DEBUG:
-    # Vercel terminates SSL at the edge — don't redirect again inside Django
     SECURE_SSL_REDIRECT = False
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
@@ -304,7 +303,7 @@ if not DEBUG:
     CSRF_TRUSTED_ORIGINS = [
         'https://curiousbright.com.ng',
         'https://www.curiousbright.com.ng',
-        'https://*.vercel.app',
+
     ]
     
     # WhiteNoise security headers for static files
@@ -321,7 +320,6 @@ if not DEBUG:
 # ---------------------------------------------------------------------------
 
 # Use database cache for serverless compatibility
-# This works on Vercel because it doesn't require external services like Redis
 # For high-traffic sites, consider using Redis or Memcached
 CACHES = {
     'default': {
@@ -336,7 +334,7 @@ CACHES = {
 }
 
 # For local development, use locmem cache (faster, per-process)
-if DEBUG and not ON_VERCEL:
+if DEBUG:
     CACHES['default'] = {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
         'LOCATION': 'curiousbright-cache',
