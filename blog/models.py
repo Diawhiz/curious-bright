@@ -126,3 +126,27 @@ class StaticPage(models.Model):
     class Meta:
         verbose_name = "Static Page"
         verbose_name_plural = "Static Pages"
+
+
+class SocialPost(models.Model):
+    """Tracks social media posts for blog posts."""
+    PLATFORM_CHOICES = (
+        ('facebook', 'Facebook'),
+        ('threads', 'Threads'),
+        ('quora', 'Quora'),
+    )
+    
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='social_posts')
+    platform = models.CharField(max_length=20, choices=PLATFORM_CHOICES)
+    platform_post_id = models.CharField(max_length=255, blank=True)
+    platform_post_url = models.URLField(blank=True)
+    posted_at = models.DateTimeField(auto_now_add=True)
+    success = models.BooleanField(default=True)
+    error_message = models.TextField(blank=True)
+    
+    class Meta:
+        unique_together = ['post', 'platform']
+        ordering = ['-posted_at']
+    
+    def __str__(self):
+        return f"{self.platform} - {self.post.title}"

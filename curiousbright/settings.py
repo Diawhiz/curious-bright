@@ -31,7 +31,7 @@ else:
     ALLOWED_HOSTS = [
         '127.0.0.1',
         'localhost',
-        '.vercel.app',
+        '.herokuapp.com',
         '.curiousbright.com.ng',
     ]
 
@@ -449,10 +449,6 @@ JAZZMIN_UI_TWEAKS = {
         "warning": "btn-warning",
         "danger": "btn-danger",
         "success": "btn-success",
-    },
-    "actions_sticky_top": True,
-}
-cess",
     },
     "actions_sticky_top": True,
 }

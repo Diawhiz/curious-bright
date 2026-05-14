@@ -10,6 +10,3 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'curiousbright.settings')
 
 # Create the application
 application = get_wsgi_application()
-
-# For Vercel
-app = application
