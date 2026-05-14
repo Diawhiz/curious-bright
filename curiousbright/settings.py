@@ -245,7 +245,6 @@ QUILL_CONFIG = {
 # Static & media files
 # ---------------------------------------------------------------------------
 
-ON_VERCEL = os.environ.get('VERCEL', 'False').lower() == 'true'
 
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
@@ -309,11 +308,12 @@ if not DEBUG:
     ]
     
     # WhiteNoise security headers for static files
-    WHITENOISE_ADD_HEADERS_FUNCTION = lambda headers, path, url: headers.update({
-        'X-Content-Type-Options': 'nosniff',
-        'Referrer-Policy': 'strict-origin-when-cross-origin',
-        'X-Frame-Options': 'DENY',
-    })
+    def add_whitenoise_headers(headers, path, url):
+        headers['X-Content-Type-Options'] = 'nosniff'
+        headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+        headers['X-Frame-Options'] = 'DENY'
+
+    WHITENOISE_ADD_HEADERS_FUNCTION = add_whitenoise_headers
 
 
 # ---------------------------------------------------------------------------
