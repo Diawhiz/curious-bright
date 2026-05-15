@@ -35,13 +35,6 @@ else:
         '.curiousbright.com.ng',
     ]
 
-# SITE_ID: must match the domain in Django admin → Sites
-# Local:      Site #2  →  127.0.0.1:8000
-# Production: Site #1  →  curiousbright.com.ng
-# After deploying, go to admin → Sites and set Site #1 domain to curiousbright.com.ng
-SITE_ID = 2 if DEBUG else 1
-
-
 # ---------------------------------------------------------------------------
 # Applications
 # ---------------------------------------------------------------------------
@@ -145,45 +138,12 @@ else:
 
 
 # ---------------------------------------------------------------------------
-# Authentication & Allauth
+# Authentication
 # ---------------------------------------------------------------------------
 
-AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
-]
-
-LOGIN_URL = '/accounts/login/'
+LOGIN_URL = '/admin/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
-ACCOUNT_LOGOUT_REDIRECT_URL = '/'
-
-ACCOUNT_EMAIL_VERIFICATION = 'none'
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_USERNAME_REQUIRED = True
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
-
-SOCIALACCOUNT_QUERY_EMAIL = True
-SOCIALACCOUNT_EMAIL_REQUIRED = True
-SOCIALACCOUNT_STORE_TOKENS = False
-
-SOCIALACCOUNT_PROVIDERS = {
-    'google': {
-        'SCOPE': ['profile', 'email'],
-        'AUTH_PARAMS': {'access_type': 'online'},
-        'APP': {
-            'client_id': os.environ.get('GOOGLE_CLIENT_ID'),
-            'secret': os.environ.get('GOOGLE_CLIENT_SECRET'),
-            'key': '',
-        }
-    }
-}
-
-SOCIALACCOUNT_TEMPLATES = {
-    'login_cancelled': 'socialaccount/login_cancelled.html',
-    'authentication_error': 'socialaccount/authentication_error.html',
-    'signup': 'socialaccount/signup.html',
-}
 
 # Email Config
 if DEBUG:
@@ -380,39 +340,31 @@ JAZZMIN_SETTINGS = {
     "search_model": "blog.Post",
     "user_avatar": None,
     "topmenu_links": [
-        {"name": "Home", "url": "admin:index", "permissions": ["auth.view_user"]},
-        {"name": "Analytics", "url": "admin_analytics", "permissions": ["auth.view_user"]},
-        {"name": "Blog Posts", "url": "admin:blog_post_changelist", "permissions": ["blog.view_post"]},
-        {"name": "Categories", "url": "admin:blog_category_changelist", "permissions": ["blog.view_category"]},
-        {"name": "Comments", "url": "admin:blog_comment_changelist", "permissions": ["blog.view_comment"]},
+        {"name": "Home", "url": "admin:index"},
+        {"name": "Analytics", "url": "admin_analytics"},
+        {"name": "Blog Posts", "url": "admin:blog_post_changelist"},
+        {"name": "Categories", "url": "admin:blog_category_changelist"},
+        {"name": "Comments", "url": "admin:blog_comment_changelist"},
         {"name": "View Site", "url": "/", "new_window": True},
     ],
     "show_ui_builder": False,
     "changeform_format": "horizontal_tabs",
-    "changeform_format_overrides": {
-        "auth.user": "collapsible",
-        "auth.group": "vertical_tabs",
-    },
+
     "icons": {
-        "auth": "fas fa-users-cog",
-        "auth.user": "fas fa-user",
-        "auth.Group": "fas fa-users",
         "blog.Post": "fas fa-newspaper",
         "blog.Category": "fas fa-tag",
         "blog.Comment": "fas fa-comments",
-        "sites.Site": "fas fa-globe",
     },
     "default_icon_parents": "fas fa-chevron-circle-right",
     "default_icon_children": "fas fa-circle",
     "hide_apps": [],
     "hide_models": [],
-    "order_with_respect_to": ["blog", "auth", "sites"],
+    "order_with_respect_to": ["blog"],
     "custom_links": {
         "blog": [{
             "name": "Make Announcement",
             "url": "admin:blog_post_add",
             "icon": "fas fa-plus-circle",
-            "permissions": ["blog.add_post"],
         }]
     },
     "show_sidebar": True,
@@ -425,15 +377,15 @@ JAZZMIN_UI_TWEAKS = {
     "footer_small_text": False,
     "body_small_text": False,
     "brand_small_text": False,
-    "brand_colour": "navbar-purple",
-    "accent": "accent-purple",
-    "navbar": "navbar-purple navbar-dark",
+    "brand_colour": "navbar-light",
+    "accent": "accent-primary",
+    "navbar": "navbar-white navbar-light",
     "no_navbar_border": False,
     "navbar_fixed": True,
     "layout_boxed": False,
     "footer_fixed": False,
     "sidebar_fixed": True,
-    "sidebar": "sidebar-dark-purple",
+    "sidebar": "sidebar-light-primary",
     "sidebar_nav_small_text": False,
     "sidebar_disable_expand": False,
     "sidebar_nav_child_indent": False,
@@ -441,7 +393,7 @@ JAZZMIN_UI_TWEAKS = {
     "sidebar_nav_legacy_style": False,
     "sidebar_nav_flat_style": False,
     "theme": "default",
-    "default_theme_mode": "auto",
+    "default_theme_mode": "light",
     "button_classes": {
         "primary": "btn-primary",
         "secondary": "btn-secondary",
@@ -451,6 +403,4 @@ JAZZMIN_UI_TWEAKS = {
         "success": "btn-success",
     },
     "actions_sticky_top": True,
-    "sidebar_text": "sidebar-text-light",
-    "sidebar_icon": "sidebar-icon-light",
 }

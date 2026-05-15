@@ -1,13 +1,11 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.contrib import messages
-from django.db.models import Q, F
+from django.db.models import F
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.admin.views.decorators import staff_member_required
 from django.views.decorators.cache import cache_page
 from django.views.decorators.vary import vary_on_cookie
-from django.views.decorators.http import require_POST
 
 from .models import Post, Category, Comment, StaticPage
 
@@ -45,9 +43,7 @@ def post_detail(request, slug):
 
     comments = Comment.objects.filter(
         post=post, parent=None, is_approved=True
-    ).select_related('user').prefetch_related(
-        'replies__user', 'likes'
-    )
+    ).prefetch_related('replies', 'likes')
 
     related_posts = Post.objects.filter(
         category=post.category,
@@ -100,15 +96,18 @@ def all_posts(request):
     return render(request, 'blog/all_posts.html', context)
 
 
-@login_required
 def like_comment(request, comment_id):
     comment = get_object_or_404(Comment, id=comment_id)
-    if request.user in comment.likes.all():
-        comment.likes.remove(request.user)
+    liked_comments = request.session.get('liked_comments', [])
+    
+    if comment_id in liked_comments:
+        liked_comments.remove(comment_id)
         liked = False
     else:
-        comment.likes.add(request.user)
+        liked_comments.append(comment_id)
         liked = True
+    
+    request.session['liked_comments'] = liked_comments
     return JsonResponse({'liked': liked, 'total_likes': comment.total_likes()})
 
 
@@ -125,16 +124,12 @@ def add_comment(request, slug):
                 'post': post,
                 'content': content,
                 'parent_id': parent_id if parent_id else None,
+                'name': name if name else 'Anonymous',
+                'email': email,
             }
-            
-            if request.user.is_authenticated:
-                comment_data['user'] = request.user
-            else:
-                comment_data['name'] = name if name else 'Anonymous'
-                comment_data['email'] = email
 
             Comment.objects.create(**comment_data)
-            messages.success(request, 'Comment added successfully! It will appear once approved.' if not request.user.is_authenticated else 'Comment added successfully!')
+            messages.success(request, 'Comment added successfully! It will appear once approved.')
             
     return redirect('post_detail', slug=post.slug)
 
@@ -156,11 +151,9 @@ def terms(request):
 
 @staff_member_required
 def admin_stats(request):
-    from django.contrib.auth.models import User
     stats = {
         'posts': Post.objects.count(),
         'comments': Comment.objects.count(),
-        'users': User.objects.count(),
         'categories': Category.objects.count(),
     }
     return JsonResponse(stats)

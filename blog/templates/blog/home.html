@@ -5,7 +5,7 @@
 
 {% block content %}
 
-<!-- High Impact Hero -->
+<!-- Hero Section -->
 <section class="hero">
     <div class="hero-inner">
         <span class="hero-tag">Curated Insights</span>
@@ -13,76 +13,70 @@
         <p>A destination for those who seek to understand the world through the lens of curiosity, creativity, and conscious living.</p>
         <div class="hero-buttons" style="display: flex; gap: 1.5rem; justify-content: center;">
             <a href="{% url 'all_posts' %}" class="btn btn-primary" style="padding: 1.25rem 3rem; font-size: 1rem;">Explore the Archive</a>
-            <a href="#featured" class="btn btn-outline" style="padding: 1.25rem 3rem; font-size: 1rem;">Recent Stories</a>
+            <a href="#latest" class="btn btn-outline" style="padding: 1.25rem 3rem; font-size: 1rem;">Recent Stories</a>
         </div>
     </div>
 </section>
 
-<!-- Bento Grid Section -->
+<!-- Featured Posts Section -->
+{% if featured_posts %}
 <div class="container" id="featured">
-    <div style="margin-bottom: 4rem;">
-        <h2 style="font-size: 2.5rem; font-weight: 900; letter-spacing: -0.04em;">Selected <span>Stories</span></h2>
+    <div style="margin-bottom: 3rem;">
+        <h2 style="font-size: 2rem; font-weight: 800;">Featured <span style="color: var(--primary);">Stories</span></h2>
     </div>
 
-    <div class="posts-grid">
+    <div class="posts-grid-simple">
         {% for post in featured_posts %}
-        <article class="post-card {% if forloop.first %}large{% elif forloop.counter < 4 %}medium{% else %}small{% endif %}">
-            <a href="{% url 'post_detail' post.slug %}" class="card-img">
+        <article class="post-card-simple">
+            <a href="{% url 'post_detail' post.slug %}" class="card-img-simple">
                 {% if post.featured_image %}
-                    {% cloudinary post.featured_image fetch_format="auto" quality="auto" width=1200 height=675 crop="fill" loading="lazy" alt=post.title %}
+                    {% cloudinary post.featured_image fetch_format="auto" quality="auto" width=600 height=400 crop="fill" loading="lazy" alt=post.title %}
                 {% else %}
-                    <div style="width: 100%; height: 100%; background: var(--bg-main);"></div>
+                    <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
                 {% endif %}
             </a>
-            <div class="card-body">
-                <span class="card-cat">{{ post.category.title }}</span>
-                <h3 class="card-title">
-                    <a href="{% url 'post_detail' post.slug %}" style="text-decoration: none; color: inherit;">{{ post.title }}</a>
+            <div class="card-body-simple">
+                <span class="card-cat-simple">{{ post.category.title }}</span>
+                <h3 class="card-title-simple">
+                    <a href="{% url 'post_detail' post.slug %}">{{ post.title }}</a>
                 </h3>
-                <p class="card-excerpt">{{ post.excerpt|default:post.content|striptags|truncatewords:25 }}</p>
-                
-                <div class="card-meta">
-                    <div class="author-info">
-                        <div class="author-avatar">{{ post.author.username|first|upper }}</div>
-                        <span>{{ post.author.username }}</span>
-                    </div>
-                    <span style="color: var(--text-muted);">{{ post.created_date|date:"M d, Y" }}</span>
+                <p class="card-excerpt-simple">{{ post.excerpt|default:post.content|striptags|truncatewords:20 }}</p>
+                <div class="card-meta-simple">
+                    <span>{{ post.author.username }}</span>
+                    <span>{{ post.created_date|date:"M d, Y" }}</span>
                 </div>
             </div>
         </article>
         {% endfor %}
     </div>
 </div>
+{% endif %}
 
 <!-- Latest Posts Section -->
-<div class="container">
-    <div style="margin-bottom: 4rem; margin-top: 6rem;">
-        <h2 style="font-size: 2.5rem; font-weight: 900; letter-spacing: -0.04em;">Latest <span>Stories</span></h2>
+<div class="container" id="latest">
+    <div style="margin-bottom: 3rem; margin-top: 4rem;">
+        <h2 style="font-size: 2rem; font-weight: 800;">Latest <span style="color: var(--primary);">Stories</span></h2>
     </div>
 
-    <div class="posts-grid">
+    <div class="posts-grid-simple">
         {% for post in latest_posts %}
-        <article class="post-card {% if forloop.first %}large{% elif forloop.counter < 4 %}medium{% else %}small{% endif %}">
-            <a href="{% url 'post_detail' post.slug %}" class="card-img">
+        <article class="post-card-simple">
+            <a href="{% url 'post_detail' post.slug %}" class="card-img-simple">
                 {% if post.featured_image %}
-                    {% cloudinary post.featured_image fetch_format="auto" quality="auto" width=1200 height=675 crop="fill" loading="lazy" alt=post.title %}
+                    {% cloudinary post.featured_image fetch_format="auto" quality="auto" width=600 height=400 crop="fill" loading="lazy" alt=post.title %}
                 {% else %}
-                    <div style="width: 100%; height: 100%; background: var(--bg-main);"></div>
+                    <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
                 {% endif %}
             </a>
-            <div class="card-body">
-                <span class="card-cat">{{ post.category.title }}</span>
-                <h3 class="card-title">
-                    <a href="{% url 'post_detail' post.slug %}" style="text-decoration: none; color: inherit;">{{ post.title }}</a>
+            <div class="card-body-simple">
+                <span class="card-cat-simple">{{ post.category.title }}</span>
+                <h3 class="card-title-simple">
+                    <a href="{% url 'post_detail' post.slug %}">{{ post.title }}</a>
                 </h3>
-                <p class="card-excerpt">{{ post.excerpt|default:post.content|striptags|truncatewords:25 }}</p>
-                
-                <div class="card-meta">
-                    <div class="author-info">
-                        <div class="author-avatar">{{ post.author.username|first|upper }}</div>
-                        <span>{{ post.author.username }}</span>
-                    </div>
-                    <span style="color: var(--text-muted);">{{ post.created_date|date:"M d, Y" }}</span>
+                <p class="card-excerpt-simple">{{ post.excerpt|default:post.content|striptags|truncatewords:20 }}</p>
+                <div class="card-meta-simple">
+                    <span>{{ post.author.username }}</span>
+                    <span>{{ post.created_date|date:"M d, Y" }}</span>
                 </div>
             </div>
         </article>
@@ -90,7 +84,7 @@
     </div>
 </div>
 
-<!-- High-End Newsletter -->
+<!-- Newsletter Section -->
 <div class="container">
     <section class="newsletter">
         <h2>Stay Ahead.</h2>
@@ -101,5 +95,97 @@
         </form>
     </section>
 </div>
+
+<style>
+    .posts-grid-simple {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 2rem;
+    }
+
+    @media (max-width: 768px) {
+        .posts-grid-simple {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .post-card-simple {
+        background: var(--surface);
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .post-card-simple:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+    }
+
+    .card-img-simple {
+        display: block;
+        width: 100%;
+        height: 220px;
+        overflow: hidden;
+    }
+
+    .card-img-simple img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .post-card-simple:hover .card-img-simple img {
+        transform: scale(1.05);
+    }
+
+    .card-body-simple {
+        padding: 1.5rem;
+    }
+
+    .card-cat-simple {
+        display: inline-block;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--primary);
+        margin-bottom: 0.75rem;
+    }
+
+    .card-title-simple {
+        font-size: 1.25rem;
+        font-weight: 700;
+        line-height: 1.3;
+        margin-bottom: 0.75rem;
+    }
+
+    .card-title-simple a {
+        color: var(--text);
+        text-decoration: none;
+    }
+
+    .card-title-simple a:hover {
+        color: var(--primary);
+    }
+
+    .card-excerpt-simple {
+        font-size: 0.95rem;
+        color: var(--text-muted);
+        line-height: 1.6;
+        margin-bottom: 1rem;
+    }
+
+    .card-meta-simple {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        padding-top: 1rem;
+        border-top: 1px solid var(--border);
+    }
+</style>
 
 {% endblock %}

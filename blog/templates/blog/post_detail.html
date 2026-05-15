@@ -60,14 +60,12 @@
                 <h4 style="font-size: 1.25rem; margin-bottom: 2rem;">Contribute to the conversation</h4>
                 <form action="{% url 'add_comment' post.slug %}" method="POST" id="commentForm">
                     {% csrf_token %}
-                    {% if not user.is_authenticated %}
                     <div class="responsive-grid" style="margin-bottom: 1.5rem;">
                         <input type="text" name="name" id="guestName" placeholder="Your Name" required 
                                style="width: 100%; padding: 1rem 1.5rem; border: 1px solid var(--border); border-radius: var(--radius-full); background: var(--bg-main); outline: none;">
                         <input type="email" name="email" id="guestEmail" placeholder="Email" required 
                                style="width: 100%; padding: 1rem 1.5rem; border: 1px solid var(--border); border-radius: var(--radius-full); background: var(--bg-main); outline: none;">
                     </div>
-                    {% endif %}
                     <textarea name="content" rows="5" placeholder="Share your insights..." required 
                               style="width: 100%; padding: 1.5rem; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--bg-main); outline: none; margin-bottom: 2rem; font-family: inherit; font-size: 1rem;"></textarea>
                     <button type="submit" class="btn btn-primary" style="padding: 1.25rem 3rem;">Post Contribution</button>

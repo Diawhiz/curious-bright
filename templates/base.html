@@ -51,12 +51,7 @@
         </nav>
 
         <div class="nav-actions">
-            {% if user.is_authenticated %}
-                <a href="{% url 'account_logout' %}" class="btn btn-outline">Exit</a>
-            {% else %}
-                <a href="{% url 'account_login' %}" class="btn btn-outline">Sign In</a>
-                <a href="{% url 'account_signup' %}" class="btn btn-primary">Join</a>
-            {% endif %}
+            <a href="{% url 'admin:index' %}" class="btn btn-outline">Admin</a>
         </div>
 
         <button class="btn btn-outline" id="menuToggle" style="padding: 0.75rem;">
@@ -74,12 +69,7 @@
             {% endfor %}
         </ul>
         <div style="margin-top: auto; display: flex; flex-direction: column; gap: 1rem;">
-            {% if user.is_authenticated %}
-                <a href="{% url 'account_logout' %}" class="btn btn-primary" style="width: 100%; justify-content: center;">Sign Out</a>
-            {% else %}
-                <a href="{% url 'account_login' %}" class="btn btn-outline" style="width: 100%; justify-content: center;">Sign In</a>
-                <a href="{% url 'account_signup' %}" class="btn btn-primary" style="width: 100%; justify-content: center;">Join Community</a>
-            {% endif %}
+            <a href="{% url 'admin:index' %}" class="btn btn-primary" style="width: 100%; justify-content: center;">Admin Login</a>
         </div>
     </div>
 
