@@ -25,6 +25,42 @@
     </div>
 
     <div class="posts-grid">
+        {% for post in featured_posts %}
+        <article class="post-card {% if forloop.first %}large{% elif forloop.counter < 4 %}medium{% else %}small{% endif %}">
+            <a href="{% url 'post_detail' post.slug %}" class="card-img">
+                {% if post.featured_image %}
+                    {% cloudinary post.featured_image fetch_format="auto" quality="auto" width=1200 height=675 crop="fill" loading="lazy" alt=post.title %}
+                {% else %}
+                    <div style="width: 100%; height: 100%; background: var(--bg-main);"></div>
+                {% endif %}
+            </a>
+            <div class="card-body">
+                <span class="card-cat">{{ post.category.title }}</span>
+                <h3 class="card-title">
+                    <a href="{% url 'post_detail' post.slug %}" style="text-decoration: none; color: inherit;">{{ post.title }}</a>
+                </h3>
+                <p class="card-excerpt">{{ post.excerpt|default:post.content|striptags|truncatewords:25 }}</p>
+                
+                <div class="card-meta">
+                    <div class="author-info">
+                        <div class="author-avatar">{{ post.author.username|first|upper }}</div>
+                        <span>{{ post.author.username }}</span>
+                    </div>
+                    <span style="color: var(--text-muted);">{{ post.created_date|date:"M d, Y" }}</span>
+                </div>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Latest Posts Section -->
+<div class="container">
+    <div style="margin-bottom: 4rem; margin-top: 6rem;">
+        <h2 style="font-size: 2.5rem; font-weight: 900; letter-spacing: -0.04em;">Latest <span>Stories</span></h2>
+    </div>
+
+    <div class="posts-grid">
         {% for post in latest_posts %}
         <article class="post-card {% if forloop.first %}large{% elif forloop.counter < 4 %}medium{% else %}small{% endif %}">
             <a href="{% url 'post_detail' post.slug %}" class="card-img">

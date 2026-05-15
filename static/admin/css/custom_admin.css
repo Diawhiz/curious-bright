@@ -705,6 +705,78 @@ ul.actionlist li:last-child {
     }
 }
 
+/* Laptop Screens (1280px - 1440px) */
+@media (min-width: 1280px) and (max-width: 1440px) {
+    :root {
+        --wp-sidebar-width: 220px;
+    }
+    
+    #content {
+        margin-left: var(--wp-sidebar-width);
+        width: calc(100% - var(--wp-sidebar-width));
+        max-width: calc(100% - var(--wp-sidebar-width));
+        padding: 20px;
+    }
+    
+    #content-related,
+    .content-related {
+        width: var(--wp-sidebar-width);
+    }
+    
+    /* Ensure dashboard grid fits properly */
+    .dashboard-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+    
+    /* Adjust stat cards */
+    .stat-info p {
+        font-size: 24px;
+    }
+    
+    .stat-icon {
+        width: 48px;
+        height: 48px;
+        font-size: 20px;
+    }
+}
+
+/* Laptop Screens (1280px - 1440px) */
+@media (min-width: 1280px) and (max-width: 1440px) {
+    :root {
+        --wp-sidebar-width: 220px;
+    }
+    
+    #content {
+        margin-left: var(--wp-sidebar-width);
+        width: calc(100% - var(--wp-sidebar-width));
+        max-width: calc(100% - var(--wp-sidebar-width));
+        padding: 20px;
+    }
+    
+    #content-related,
+    .content-related {
+        width: var(--wp-sidebar-width);
+    }
+    
+    /* Ensure dashboard grid fits properly */
+    .dashboard-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+    
+    /* Adjust stat cards */
+    .stat-info p {
+        font-size: 24px;
+    }
+    
+    .stat-icon {
+        width: 48px;
+        height: 48px;
+        font-size: 20px;
+    }
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
     #content-related,

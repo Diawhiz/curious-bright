@@ -47,7 +47,7 @@ SITE_ID = 2 if DEBUG else 1
 # ---------------------------------------------------------------------------
 
 INSTALLED_APPS = [
-    # 'jazzmin',  # Temporarily disabled due to Python 3.14 compatibility
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -373,8 +373,8 @@ JAZZMIN_SETTINGS = {
     "site_title": "CuriousBright CMS",
     "site_header": "CuriousBright",
     "site_brand": "CuriousBright",
-    "site_logo": None,
-    "login_logo": None,
+    "site_logo": "/images/cb_favicon.png",
+    "login_logo": "/images/cb_favicon.png",
     "welcome_sign": "Welcome to CuriousBright CMS",
     "copyright": "CuriousBright © 2026",
     "search_model": "blog.Post",
@@ -451,4 +451,6 @@ JAZZMIN_UI_TWEAKS = {
         "success": "btn-success",
     },
     "actions_sticky_top": True,
+    "sidebar_text": "sidebar-text-light",
+    "sidebar_icon": "sidebar-icon-light",
 }
