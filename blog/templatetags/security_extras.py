@@ -52,6 +52,5 @@ def sanitize_html(value):
         value,
         tags=ALLOWED_TAGS,
         attributes=ALLOWED_ATTRIBUTES,
-        styles=ALLOWED_STYLES,
         strip=True
     )
