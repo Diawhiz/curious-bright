@@ -15,3 +15,4 @@
 
 # Authentication
 - Do not implement OAuth or login systems unless explicitly requested. Confidence: 0.80
+- Do not add Admin buttons or links to the public navbar. Confidence: 0.75

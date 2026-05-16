@@ -54,10 +54,6 @@ INSTALLED_APPS = [
     'django_quill',
     'cloudinary',
     'cloudinary_storage',
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.google',
 
     # Local
     'blog',
