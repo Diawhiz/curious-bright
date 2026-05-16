@@ -1,9 +1,22 @@
 {% extends 'base.html' %}
-{% load static cloudinary %}
+{% load static cloudinary security_extras %}
 
-{% block title %}CuriousBright — The Art of Curiosity{% endblock %}
+{% block title %}CuriousBright — Where Curiosity Meets Clarity{% endblock %}
 
 {% block content %}
+
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-inner">
+        <span class="hero-tag">Welcome to CuriousBright</span>
+        <h1>Where Curiosity <span>Meets Clarity</span></h1>
+        <p>Discover stories that illuminate the intersection of passion, purpose, and profound understanding.</p>
+        <div class="hero-buttons">
+            <a href="{% url 'all_posts' %}" class="btn btn-primary">Explore Archive</a>
+            <a href="#latest-stories" class="btn btn-outline">Latest Stories</a>
+        </div>
+    </div>
+</section>
 
 <!-- Featured Posts Banner / Advert Section -->
 {% if featured_posts %}
@@ -44,19 +57,27 @@
 {% endif %}
 
 <!-- Latest Posts Section -->
-<div class="container" id="latest">
-    <div style="margin-bottom: 3rem; margin-top: 4rem;">
-        <h2 style="font-size: 2rem; font-weight: 800;">Latest <span style="color: var(--primary);">Stories</span></h2>
+<div class="container" id="latest-stories">
+    <div class="section-header">
+        <h2>Latest <span>Stories</span></h2>
     </div>
 
-    <div class="posts-grid-simple">
+    <!-- Category Filter Pills -->
+    <div class="category-pills">
+        <button class="pill active" data-category="all">All</button>
+        {% for category in categories %}
+        <button class="pill" data-category="{{ category.slug }}">{{ category.title }}</button>
+        {% endfor %}
+    </div>
+
+    <div class="posts-grid-simple" id="postsGrid">
         {% for post in latest_posts %}
-        <article class="post-card-simple">
+        <article class="post-card-simple" data-category="{{ post.category.slug }}">
             <a href="{% url 'post_detail' post.slug %}" class="card-img-simple">
                 {% if post.featured_image %}
                     {% cloudinary post.featured_image fetch_format="auto" quality="auto" width=600 height=400 crop="fill" loading="lazy" alt=post.title %}
                 {% else %}
-                    <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+                    <div style="width: 100%; height: 100%; background: linear-gradient(135deg, var(--primary-light) 0%, var(--accent) 100%);"></div>
                 {% endif %}
             </a>
             <div class="card-body-simple">
@@ -67,15 +88,158 @@
                 <p class="card-excerpt-simple">{{ post.excerpt|default:post.content|striptags|truncatewords:20 }}</p>
                 <div class="card-meta-simple">
                     <span>{{ post.author.username }}</span>
-                    <span>{{ post.created_date|date:"M d, Y" }}</span>
+                    <span>{{ post.content.html|reading_time }} min read</span>
                 </div>
             </div>
         </article>
         {% endfor %}
     </div>
+
+    <!-- View All CTA -->
+    <div class="view-all-cta">
+        <a href="{% url 'all_posts' %}" class="btn btn-outline btn-large">View All Stories <i class="fas fa-arrow-right"></i></a>
+    </div>
 </div>
 
+<!-- Newsletter Section -->
+<section class="newsletter-section">
+    <div class="container">
+        <div class="newsletter-content">
+            <h2>Stay Ahead of the Curve</h2>
+            <p>Join thousands of curious minds receiving our weekly digest of insights, stories, and ideas that matter.</p>
+            <form class="newsletter-form" onsubmit="return false;">
+                <input type="email" placeholder="Enter your email address" required>
+                <button type="submit" class="btn btn-primary">Subscribe</button>
+            </form>
+        </div>
+    </div>
+</section>
+
 <style>
+    /* Hero Section */
+    .hero {
+        min-height: 70vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 8rem 2rem 4rem;
+        background: var(--bg-main);
+    }
+
+    .hero-inner {
+        max-width: 800px;
+        text-align: center;
+    }
+
+    .hero-tag {
+        display: inline-block;
+        padding: 0.5rem 1.25rem;
+        background: var(--primary-light);
+        color: var(--primary-dark);
+        border-radius: var(--radius-full);
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: 1.5rem;
+    }
+
+    .hero h1 {
+        font-size: clamp(2.5rem, 6vw, 4rem);
+        font-weight: 900;
+        line-height: 1.1;
+        letter-spacing: -0.03em;
+        color: var(--text-heading);
+        margin-bottom: 1.5rem;
+    }
+
+    .hero h1 span {
+        color: var(--primary);
+    }
+
+    .hero p {
+        font-size: 1.25rem;
+        color: var(--text-muted);
+        max-width: 600px;
+        margin: 0 auto 2rem;
+        line-height: 1.6;
+    }
+
+    .hero-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+    }
+
+    .btn-large {
+        padding: 1rem 2.5rem;
+        font-size: 1.1rem;
+    }
+
+    @media (max-width: 768px) {
+        .hero {
+            min-height: auto;
+            padding: 6rem 1.5rem 3rem;
+        }
+        
+        .hero-buttons {
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .hero-buttons .btn {
+            width: 100%;
+            max-width: 300px;
+        }
+    }
+
+    /* Section Header */
+    .section-header {
+        margin-bottom: 2rem;
+        margin-top: 4rem;
+    }
+
+    .section-header h2 {
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--text-heading);
+    }
+
+    .section-header h2 span {
+        color: var(--primary);
+    }
+
+    /* Category Pills */
+    .category-pills {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        margin-bottom: 2rem;
+    }
+
+    .pill {
+        padding: 0.5rem 1.25rem;
+        background: transparent;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-full);
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: var(--text-body);
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .pill:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+    }
+
+    .pill.active {
+        background: var(--primary);
+        border-color: var(--primary);
+        color: white;
+    }
+
     /* Featured Banner Styles */
     .featured-banner {
         position: relative;
@@ -125,7 +289,7 @@
     .featured-gradient {
         width: 100%;
         height: 100%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
     }
 
     .featured-overlay {
@@ -134,7 +298,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: linear-gradient(to right, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.2) 100%);
+        background: linear-gradient(to right, rgba(26,26,46,0.9) 0%, rgba(26,26,46,0.6) 50%, rgba(26,26,46,0.3) 100%);
         z-index: 2;
     }
 
@@ -180,7 +344,7 @@
         align-items: center;
         gap: 0.75rem;
         background: white;
-        color: var(--text);
+        color: var(--text-heading);
         padding: 1rem 2rem;
         border-radius: 8px;
         font-weight: 600;
@@ -223,7 +387,7 @@
     .featured-prev:hover,
     .featured-next:hover {
         background: white;
-        color: var(--text);
+        color: var(--text-heading);
     }
 
     .featured-dots {
@@ -279,7 +443,7 @@
     }
 
     .post-card-simple {
-        background: var(--surface);
+        background: var(--bg-surface);
         border-radius: 12px;
         overflow: hidden;
         border: 1px solid var(--border);
@@ -289,6 +453,10 @@
     .post-card-simple:hover {
         transform: translateY(-4px);
         box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+    }
+
+    .post-card-simple.hidden {
+        display: none;
     }
 
     .card-img-simple {
@@ -331,7 +499,7 @@
     }
 
     .card-title-simple a {
-        color: var(--text);
+        color: var(--text-heading);
         text-decoration: none;
     }
 
@@ -354,6 +522,82 @@
         color: var(--text-muted);
         padding-top: 1rem;
         border-top: 1px solid var(--border);
+    }
+
+    /* View All CTA */
+    .view-all-cta {
+        text-align: center;
+        margin: 4rem 0;
+    }
+
+    /* Newsletter Section */
+    .newsletter-section {
+        background: var(--text-heading);
+        padding: 5rem 0;
+        margin-top: 4rem;
+    }
+
+    .newsletter-content {
+        max-width: 600px;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    .newsletter-content h2 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: white;
+        margin-bottom: 1rem;
+    }
+
+    .newsletter-content p {
+        font-size: 1.1rem;
+        color: rgba(255,255,255,0.7);
+        margin-bottom: 2rem;
+    }
+
+    .newsletter-section .newsletter-form {
+        display: flex;
+        gap: 0.75rem;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+
+    .newsletter-section .newsletter-form input {
+        flex: 1;
+        padding: 1rem 1.5rem;
+        border: 1px solid rgba(255,255,255,0.2);
+        border-radius: var(--radius-full);
+        background: rgba(255,255,255,0.05);
+        color: white;
+        font-size: 1rem;
+        outline: none;
+    }
+
+    .newsletter-section .newsletter-form input::placeholder {
+        color: rgba(255,255,255,0.5);
+    }
+
+    .newsletter-section .newsletter-form input:focus {
+        border-color: var(--primary);
+    }
+
+    @media (max-width: 768px) {
+        .newsletter-section {
+            padding: 3rem 1.5rem;
+        }
+
+        .newsletter-content h2 {
+            font-size: 1.75rem;
+        }
+
+        .newsletter-section .newsletter-form {
+            flex-direction: column;
+        }
+
+        .newsletter-section .newsletter-form button {
+            width: 100%;
+        }
     }
 </style>
 
@@ -391,6 +635,29 @@
             changeSlide(1);
         }, 5000);
     }
+
+    // Category Filter Pills
+    const pills = document.querySelectorAll('.pill');
+    const posts = document.querySelectorAll('.post-card-simple');
+
+    pills.forEach(pill => {
+        pill.addEventListener('click', () => {
+            // Update active pill
+            pills.forEach(p => p.classList.remove('active'));
+            pill.classList.add('active');
+
+            const category = pill.dataset.category;
+
+            // Filter posts
+            posts.forEach(post => {
+                if (category === 'all' || post.dataset.category === category) {
+                    post.classList.remove('hidden');
+                } else {
+                    post.classList.add('hidden');
+                }
+            });
+        });
+    });
 </script>
 
 {% endblock %}

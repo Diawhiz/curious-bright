@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 from django.contrib import messages
-from django.db.models import F
+from django.db.models import F, Q
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.admin.views.decorators import staff_member_required
 from django.views.decorators.cache import cache_page
@@ -157,6 +157,24 @@ def admin_stats(request):
         'categories': Category.objects.count(),
     }
     return JsonResponse(stats)
+
+
+def search(request):
+    query = request.GET.get('q', '').strip()
+    posts = []
+    
+    if query:
+        posts = Post.objects.filter(
+            Q(title__icontains=query) | Q(content__icontains=query),
+            status='published'
+        ).select_related('author', 'category').order_by('-created_date')
+    
+    context = {
+        'query': query,
+        'posts': posts,
+        'count': posts.count() if query else 0,
+    }
+    return render(request, 'blog/search_results.html', context)
 
 
 def custom_404(request, exception):

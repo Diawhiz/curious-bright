@@ -54,3 +54,21 @@ def sanitize_html(value):
         attributes=ALLOWED_ATTRIBUTES,
         strip=True
     )
+
+
+@register.filter(name='reading_time')
+def reading_time(value):
+    """
+    Calculate estimated reading time in minutes.
+    Assumes average reading speed of 200 words per minute.
+    """
+    if not value:
+        return 1
+    
+    # Strip HTML tags and count words
+    text = bleach.clean(value, tags=[], strip=True)
+    word_count = len(text.split())
+    
+    # Calculate minutes (minimum 1 minute)
+    minutes = max(1, round(word_count / 200))
+    return minutes

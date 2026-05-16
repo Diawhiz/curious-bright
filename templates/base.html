@@ -44,11 +44,18 @@
             <ul class="nav-links">
                 <li><a href="{% url 'home' %}" class="nav-link">Home</a></li>
                 <li><a href="{% url 'all_posts' %}" class="nav-link">Archive</a></li>
-                {% for category in categories|slice:":3" %}
+                {% for category in categories|slice:":4" %}
                     <li><a href="{% url 'category_posts' category.slug %}" class="nav-link">{{ category.title }}</a></li>
                 {% endfor %}
             </ul>
         </nav>
+
+        <div class="nav-search desktop-only">
+            <form action="{% url 'search' %}" method="GET" class="search-form">
+                <input type="text" name="q" placeholder="Search..." class="search-input" required>
+                <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
+            </form>
+        </div>
 
         <button class="btn btn-outline" id="menuToggle" style="padding: 0.75rem;">
             <i class="fas fa-bars"></i>
@@ -60,6 +67,13 @@
         <button class="mobile-close" id="menuClose">
             <i class="fas fa-times"></i>
         </button>
+        <div class="mobile-search">
+            <form action="{% url 'search' %}" method="GET" class="search-form">
+                <input type="text" name="q" placeholder="Search articles..." class="search-input" required>
+                <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
+            </form>
+        </div>
+
         <ul class="mobile-nav-links">
             <li><a href="{% url 'home' %}">Home</a></li>
             <li><a href="{% url 'all_posts' %}">Archive</a></li>
@@ -97,10 +111,20 @@
             </div>
             <div class="footer-links">
                 <h4>Social</h4>
-                <ul>
-                    <li><a href="https://x.com/curiousbright1"><i class="fab fa-twitter"></i> Twitter</a></li>
-                    <li><a href="https://instagram.com/curious.bright"><i class="fab fa-instagram"></i> Instagram</a></li>
-                </ul>
+                <div class="social-links">
+                    <a href="https://x.com/curiousbright1" class="social-btn" aria-label="Twitter">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="https://instagram.com/curious.bright" class="social-btn" aria-label="Instagram">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://linkedin.com/company/curiousbright" class="social-btn" aria-label="LinkedIn">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                    <a href="https://youtube.com/@curiousbright" class="social-btn" aria-label="YouTube">
+                        <i class="fab fa-youtube"></i>
+                    </a>
+                </div>
             </div>
         </div>
         <div class="footer-bottom" style="padding-top: 4rem; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center;">

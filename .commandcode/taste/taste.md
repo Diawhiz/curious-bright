@@ -12,6 +12,7 @@
 
 # UI/UX
 - Prioritize user-friendly layouts and designs. Confidence: 0.70
+- Use orange-based color palette: Primary `#F97316`, Accent `#FB923C`, Complement `#0EA5E9`, Dark `#1A1A2E`, Surface `#FFF7ED`. Confidence: 0.85
 
 # Authentication
 - Do not implement OAuth or login systems unless explicitly requested. Confidence: 0.80
