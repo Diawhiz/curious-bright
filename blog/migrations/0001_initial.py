@@ -3,7 +3,6 @@
 import cloudinary.models
 import django.db.models.deletion
 import django.utils.timezone
-import django_quill.fields
 from django.conf import settings
 from django.db import migrations, models
 
@@ -55,7 +54,7 @@ class Migration(migrations.Migration):
                 ('slug', models.SlugField(blank=True, unique=True)),
                 ('excerpt', models.TextField(help_text='Used for SEO meta description. Keep under 160 characters.', max_length=160)),
                 ('featured_image', cloudinary.models.CloudinaryField(max_length=255, verbose_name='image')),
-                ('content', django_quill.fields.QuillField()),
+                ('content', models.TextField(blank=True, default='')),
                 ('created_date', models.DateTimeField(db_index=True, default=django.utils.timezone.now)),
                 ('updated_date', models.DateTimeField(auto_now=True)),
                 ('status', models.CharField(choices=[('draft', 'Draft'), ('published', 'Published')], db_index=True, default='draft', max_length=10)),
