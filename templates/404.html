@@ -1,16 +1,138 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Page Not Found - CuriousBright{% endblock %}
+{% block title %}Lost in the Curiosity Void — CuriousBright{% endblock %}
 
 {% block content %}
-<div class="min-h-screen flex items-center justify-center px-4 py-12">
-    <div class="text-center">
-        <h1 class="text-9xl font-bold text-purple-600">404</h1>
-        <h2 class="text-3xl font-bold text-gray-800 mt-4">Page Not Found</h2>
-        <p class="text-gray-600 mt-4 mb-8">Oops! The page you're looking for doesn't exist or has been moved.</p>
-        <a href="{% url 'home' %}" class="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition">
-            Back to Home
-        </a>
+<section class="error-page">
+    <div class="error-code-bg">404</div>
+    <div class="error-content">
+        <h1 class="error-title">Lost in the Curiosity Void</h1>
+        <p class="error-message">The page you're looking for went exploring and hasn't come back. Let's get you somewhere familiar.</p>
+        <div class="error-actions">
+            <a href="{% url 'home' %}" class="btn btn-primary error-btn">Go Home</a>
+            <a href="{% url 'all_posts' %}" class="btn btn-outline error-btn">Browse Archive</a>
+        </div>
     </div>
-</div>
+</section>
+
+<style>
+.error-page {
+    min-height: calc(100vh - 70px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    padding: 2rem;
+    background: var(--bg-main);
+}
+
+.error-code-bg {
+    position: absolute;
+    font-size: clamp(15rem, 35vw, 30rem);
+    font-weight: 900;
+    color: var(--primary);
+    opacity: 0.06;
+    user-select: none;
+    pointer-events: none;
+    z-index: 0;
+    animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0) scale(1);
+        opacity: 0.06;
+    }
+    50% {
+        transform: translateY(-20px) scale(1.02);
+        opacity: 0.1;
+    }
+}
+
+.error-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    max-width: 600px;
+    animation: fadeSlideUp 0.8s ease-out;
+}
+
+@keyframes fadeSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.error-title {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 800;
+    color: var(--text-heading);
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.02em;
+}
+
+.error-message {
+    font-size: 1.2rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 2.5rem;
+}
+
+.error-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.error-btn {
+    padding: 1rem 2rem;
+    font-size: 1rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.error-btn:hover {
+    animation: gentleBounce 0.5s ease;
+}
+
+@keyframes gentleBounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-4px);
+    }
+    60% {
+        transform: translateY(-2px);
+    }
+}
+
+@media (max-width: 768px) {
+    .error-page {
+        min-height: calc(100vh - 60px);
+        padding: 1.5rem;
+    }
+    
+    .error-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .error-btn {
+        width: 100%;
+        max-width: 280px;
+    }
+    
+    .error-message {
+        font-size: 1.1rem;
+    }
+}
+</style>
 {% endblock %}
