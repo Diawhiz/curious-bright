@@ -51,7 +51,6 @@ INSTALLED_APPS = [
     'django.contrib.sitemaps',
 
     # Third party
-    'django_quill',
     'cloudinary',
     'cloudinary_storage',
 
@@ -173,29 +172,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-
-# ---------------------------------------------------------------------------
-# Django Quill Editor Configuration
-# ---------------------------------------------------------------------------
-
-QUILL_CONFIG = {
-    'theme': 'snow',
-    'modules': {
-        'toolbar': [
-            [{'header': [1, 2, 3, 4, False]}],
-            ['bold', 'italic', 'underline', 'strike'],
-            [{'color': []}, {'background': []}],
-            [{'script': 'sub'}, {'script': 'super'}],
-            [{'list': 'ordered'}, {'list': 'bullet'}],
-            [{'indent': '-1'}, {'indent': '+1'}],
-            [{'align': []}],
-            ['blockquote', 'code-block'],
-            ['link', 'image'],
-            ['clean'],
-        ],
-    },
-    'placeholder': 'Start writing your story...',
-}
 
 # Static & media files
 # ---------------------------------------------------------------------------

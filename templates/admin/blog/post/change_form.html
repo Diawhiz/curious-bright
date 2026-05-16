@@ -1,408 +1,273 @@
-{% extends "admin/change_form.html" %}
-{% load i18n admin_urls static %}
+{% extends 'admin/change_form.html' %}
 
-{% block extrastyle %}
-{{ block.super }}
-<link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+{% block after_related_objects %}
+
+<!-- TipTap Styles -->
 <style>
-    /* Quill Editor Container */
-    .quill-wrapper {
-        position: relative;
-        width: 100%;
-        background: #fff;
-        border-radius: 4px;
-        overflow: hidden;
-    }
-    
-    #quill-editor {
-        min-height: 400px;
-        background: #fff;
-    }
-    
-    #quill-editor .ql-editor {
-        min-height: 400px;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif;
-        font-size: 16px;
-        line-height: 1.8;
-        padding: 24px;
-    }
-    
-    /* Quill Toolbar Styling - Jazzmin Compatible */
-    .ql-toolbar {
-        background: #f8f9fa;
-        border: 1px solid #dee2e6 !important;
-        border-bottom: none !important;
-        border-radius: 4px 4px 0 0;
-        padding: 12px !important;
-        position: sticky;
-        top: 60px;
-        z-index: 1020;
-    }
-    
-    .ql-container {
-        border: 1px solid #dee2e6 !important;
-        border-radius: 0 0 4px 4px;
-    }
-    
-    /* Toolbar buttons */
-    .ql-toolbar button {
-        height: 32px;
-        width: 32px;
-        padding: 4px !important;
-    }
-    
-    .ql-toolbar button:hover {
-        color: #F97316 !important;
-    }
-    
-    .ql-toolbar .ql-active {
-        color: #F97316 !important;
-        background: rgba(249, 115, 22, 0.1);
-    }
-    
-    /* Dropdown styling */
-    .ql-toolbar .ql-picker {
-        height: 32px;
-    }
-    
-    .ql-toolbar .ql-picker-label {
-        padding: 4px 8px;
-    }
-    
-    .ql-toolbar .ql-picker-options {
-        background: #fff;
-        border: 1px solid #dee2e6;
-        border-radius: 4px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        z-index: 1030;
-    }
-    
-    /* Color picker fix */
-    .ql-color-picker .ql-picker-options {
-        padding: 8px;
-        width: 180px;
-    }
-    
-    /* Editor content styling */
-    #quill-editor .ql-editor p {
-        margin-bottom: 1em;
-    }
-    
-    #quill-editor .ql-editor h1,
-    #quill-editor .ql-editor h2,
-    #quill-editor .ql-editor h3,
-    #quill-editor .ql-editor h4,
-    #quill-editor .ql-editor h5,
-    #quill-editor .ql-editor h6 {
-        margin: 1.5em 0 0.75em;
-        font-weight: 700;
-        line-height: 1.3;
-    }
-    
-    #quill-editor .ql-editor h1 { font-size: 2.5em; }
-    #quill-editor .ql-editor h2 { font-size: 2em; }
-    #quill-editor .ql-editor h3 { font-size: 1.5em; }
-    #quill-editor .ql-editor h4 { font-size: 1.25em; }
-    #quill-editor .ql-editor h5 { font-size: 1.1em; }
-    #quill-editor .ql-editor h6 { font-size: 1em; }
-    
-    #quill-editor .ql-editor blockquote {
-        border-left: 4px solid #F97316;
-        padding-left: 16px;
-        margin: 1.5em 0;
-        color: #6c757d;
-        font-style: italic;
-    }
-    
-    #quill-editor .ql-editor ul,
-    #quill-editor .ql-editor ol {
-        margin: 1em 0;
-        padding-left: 2em;
-    }
-    
-    #quill-editor .ql-editor li {
-        margin-bottom: 0.5em;
-    }
-    
-    #quill-editor .ql-editor img {
-        max-width: 100%;
-        height: auto;
-        border-radius: 4px;
-        margin: 1em 0;
-    }
-    
-    #quill-editor .ql-editor a {
-        color: #F97316;
-        text-decoration: underline;
-    }
-    
-    #quill-editor .ql-editor code {
-        background: #f8f9fa;
-        padding: 2px 6px;
-        border-radius: 3px;
-        font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
-        font-size: 0.9em;
-    }
-    
-    #quill-editor .ql-editor pre {
-        background: #1e1e2e;
-        color: #f8f9fa;
-        padding: 16px;
-        border-radius: 4px;
-        overflow-x: auto;
-        font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
-        margin: 1em 0;
-    }
-    
-    #quill-editor .ql-editor pre code {
-        background: transparent;
-        color: inherit;
-        padding: 0;
-    }
-    
-    /* Hide the original textarea */
-    textarea#id_content {
-        display: none !important;
-    }
-    
-    /* Fix for django-quill-widget if it exists */
-    .django-quill-widget {
-        display: none !important;
-    }
-    
-    /* Form row styling */
-    .form-row.field-content {
-        background: #fff;
-        border: 1px solid #dee2e6;
-        border-radius: 4px;
-        padding: 0;
-        overflow: hidden;
-    }
-    
-    .form-row.field-content > div {
-        padding: 0;
-    }
-    
-    .form-row.field-content label {
-        background: #f8f9fa;
-        padding: 12px 16px;
-        margin: 0;
-        border-bottom: 1px solid #dee2e6;
-        display: block;
-        font-weight: 600;
-    }
-    
-    /* SEO Preview */
-    .seo-preview {
-        background: white;
-        border: 1px solid #dee2e6;
-        border-radius: 4px;
-        padding: 16px;
-        margin-top: 16px;
-    }
-    
-    .seo-preview h4 {
-        margin: 0 0 8px 0;
-        font-size: 14px;
-        color: #1a0dab;
-        text-decoration: underline;
-        font-weight: 500;
-    }
-    
-    .seo-preview .url {
-        color: #006621;
-        font-size: 12px;
-        margin-bottom: 8px;
-    }
-    
-    .seo-preview .description {
-        color: #545454;
-        font-size: 13px;
-        line-height: 1.5;
-    }
-    
-    /* Image preview */
-    .field-featured_image .image-preview {
-        margin-top: 12px;
-        border-radius: 4px;
-        overflow: hidden;
-        max-width: 300px;
-    }
-    
-    .field-featured_image .image-preview img {
-        width: 100%;
-        height: auto;
-        display: block;
-    }
+  .tiptap-wrapper {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+    background: white;
+  }
+
+  .tiptap-menubar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 10px 12px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .tiptap-menubar button {
+    padding: 6px 10px;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    background: white;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    color: #333;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .tiptap-menubar button:hover {
+    background: #F97316;
+    color: white;
+    border-color: #F97316;
+  }
+
+  .tiptap-menubar button.is-active {
+    background: #F97316;
+    color: white;
+    border-color: #EA580C;
+  }
+
+  .tiptap-menubar .separator {
+    width: 1px;
+    background: #dee2e6;
+    margin: 0 4px;
+    align-self: stretch;
+  }
+
+  .tiptap-menubar select {
+    padding: 6px 8px;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    background: white;
+    font-size: 13px;
+    cursor: pointer;
+    color: #333;
+  }
+
+  .ProseMirror {
+    min-height: 500px;
+    padding: 24px 32px;
+    outline: none;
+    font-size: 16px;
+    line-height: 1.8;
+    color: #1a1a1a;
+    font-family: 'Inter', -apple-system, sans-serif;
+  }
+
+  .ProseMirror p { margin-bottom: 1rem; }
+  .ProseMirror h1 { font-size: 2rem; font-weight: 800; margin: 1.5rem 0 1rem; }
+  .ProseMirror h2 { font-size: 1.6rem; font-weight: 700; margin: 1.5rem 0 1rem; }
+  .ProseMirror h3 { font-size: 1.3rem; font-weight: 600; margin: 1.2rem 0 0.8rem; }
+  .ProseMirror ul, .ProseMirror ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+  .ProseMirror li { margin-bottom: 0.4rem; }
+  .ProseMirror blockquote {
+    border-left: 4px solid #F97316;
+    padding: 0.5rem 1rem;
+    margin: 1rem 0;
+    background: #FFF7ED;
+    color: #555;
+    border-radius: 0 8px 8px 0;
+  }
+  .ProseMirror code {
+    background: #f1f5f9;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    font-family: monospace;
+  }
+  .ProseMirror pre {
+    background: #1e293b;
+    color: #e2e8f0;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin-bottom: 1rem;
+  }
+  .ProseMirror pre code { background: none; color: inherit; padding: 0; }
+  .ProseMirror a { color: #F97316; text-decoration: underline; }
+  .ProseMirror img { max-width: 100%; border-radius: 8px; margin: 1rem 0; }
+  .ProseMirror hr { border: none; border-top: 2px solid #e2e8f0; margin: 2rem 0; }
+  .ProseMirror p.is-editor-empty:first-child::before {
+    content: attr(data-placeholder);
+    color: #aaa;
+    pointer-events: none;
+    float: left;
+    height: 0;
+  }
+
+  /* Word count bar */
+  .tiptap-footer {
+    padding: 8px 16px;
+    background: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+    font-size: 12px;
+    color: #666;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  /* Hide the original textarea */
+  #id_content { display: none !important; }
 </style>
+
 {% endblock %}
 
-{% block extrahead %}
+{% block content %}
 {{ block.super }}
-<script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
-{% endblock %}
 
-{% block field_sets %}
-{% for fieldset in adminform %}
-    {% if fieldset.name == "Content" %}
-        <fieldset class="module aligned {{ fieldset.classes }}">
-            {% if fieldset.description %}
-                <div class="description">{{ fieldset.description|safe }}</div>
-            {% endif %}
-            {% for line in fieldset %}
-                <div class="form-row{% if line.fields|length == 1 and line.errors %} errors{% endif %}{% if not line.has_visible_field %} hidden{% endif %}{% for field in line %}{% if field.field.name %} field-{{ field.field.name }}{% endif %}{% endfor %}">
-                    {% for field in line %}
-                        <div{% if not line.fields|length == 1 %} class="fieldBox{% if field.field.name %} field-{{ field.field.name }}{% endif %}{% if not field.is_readonly and field.errors %} errors{% endif %}{% if field.field.is_hidden %} hidden{% endif %}"{% elif field.is_checkbox %} class="checkbox-row"{% endif %}>
-                            {% if not line.fields|length == 1 and not field.is_readonly %}{{ field.errors }}{% endif %}
-                            {% if field.is_checkbox %}
-                                {{ field.field }}{{ field.label_tag }}
-                            {% else %}
-                                {{ field.label_tag }}
-                                {% if field.is_readonly %}
-                                    <div class="readonly">{{ field.contents }}</div>
-                                {% else %}
-                                    {% if field.field.name == "content" %}
-                                        <div class="quill-wrapper">
-                                            <div id="quill-editor"></div>
-                                            {{ field.field }}
-                                        </div>
-                                    {% else %}
-                                        {{ field.field }}
-                                    {% endif %}
-                                {% endif %}
-                            {% endif %}
-                            {% if field.field.help_text %}
-                                <div class="help"{% if field.field.id_for_label %} id="{{ field.field.id_for_label }}_helptext"{% endif %}>
-                                    {{ field.field.help_text|safe }}
-                                </div>
-                            {% endif %}
-                            {% if field.field.name == "excerpt" and original %}
-                                <div class="seo-preview">
-                                    <h4>{{ original.title|truncatechars:60 }}</h4>
-                                    <div class="url">curiousbright.com.ng/{{ original.slug }}</div>
-                                    <div class="description">{{ original.excerpt|truncatechars:160 }}</div>
-                                </div>
-                            {% endif %}
-                        </div>
-                    {% endfor %}
-                </div>
-            {% endfor %}
-        </fieldset>
-    {% else %}
-        {% include "admin/includes/fieldset.html" %}
-    {% endif %}
-{% endfor %}
-{% endblock %}
+<script src="https://unpkg.com/@tiptap/core@2.1.12/dist/index.umd.js"></script>
+<script src="https://unpkg.com/@tiptap/starter-kit@2.1.12/dist/index.umd.js"></script>
+<script src="https://unpkg.com/@tiptap/extension-placeholder@2.1.12/dist/index.umd.js"></script>
+<script src="https://unpkg.com/@tiptap/extension-underline@2.1.12/dist/index.umd.js"></script>
+<script src="https://unpkg.com/@tiptap/extension-link@2.1.12/dist/index.umd.js"></script>
+<script src="https://unpkg.com/@tiptap/extension-image@2.1.12/dist/index.umd.js"></script>
+<script src="https://unpkg.com/@tiptap/extension-text-align@2.1.12/dist/index.umd.js"></script>
+<script src="https://unpkg.com/@tiptap/extension-color@2.1.12/dist/index.umd.js"></script>
+<script src="https://unpkg.com/@tiptap/extension-text-style@2.1.12/dist/index.umd.js"></script>
+<script src="https://unpkg.com/@tiptap/extension-character-count@2.1.12/dist/index.umd.js"></script>
 
-{% block admin_change_form_document_ready %}
-{{ block.super }}
 <script>
-(function() {
-    'use strict';
-    
-    // Initialize Quill editor
-    const quillEditor = document.getElementById('quill-editor');
-    const contentTextarea = document.getElementById('id_content');
-    
-    if (!quillEditor || !contentTextarea) return;
-    
-    // Parse existing content (handle both HTML and Quill delta format)
-    let existingContent = '';
-    try {
-        const rawValue = contentTextarea.value || '';
-        if (rawValue.trim().startsWith('{')) {
-            // Try to parse as JSON (Quill delta format)
-            const delta = JSON.parse(rawValue);
-            if (delta && delta.html) {
-                existingContent = delta.html;
-            } else if (delta && delta.ops) {
-                // We'll let Quill handle the delta format
-                existingContent = rawValue;
-            }
-        } else {
-            existingContent = rawValue;
-        }
-    } catch (e) {
-        existingContent = contentTextarea.value || '';
+document.addEventListener('DOMContentLoaded', function() {
+  const textarea = document.getElementById('id_content');
+  if (!textarea) return;
+
+  // Build the editor wrapper
+  const wrapper = document.createElement('div');
+  wrapper.className = 'tiptap-wrapper';
+
+  // Toolbar
+  wrapper.innerHTML = `
+    <div class="tiptap-menubar" id="tiptap-toolbar">
+      <select id="heading-select">
+        <option value="0">Paragraph</option>
+        <option value="1">Heading 1</option>
+        <option value="2">Heading 2</option>
+        <option value="3">Heading 3</option>
+      </select>
+      <div class="separator"></div>
+      <button type="button" id="btn-bold" title="Bold"><b>B</b></button>
+      <button type="button" id="btn-italic" title="Italic"><i>I</i></button>
+      <button type="button" id="btn-underline" title="Underline"><u>U</u></button>
+      <button type="button" id="btn-strike" title="Strikethrough"><s>S</s></button>
+      <div class="separator"></div>
+      <button type="button" id="btn-bullet" title="Bullet List">• List</button>
+      <button type="button" id="btn-ordered" title="Ordered List">1. List</button>
+      <div class="separator"></div>
+      <button type="button" id="btn-blockquote" title="Blockquote">" Quote</button>
+      <button type="button" id="btn-code" title="Code Block">&lt;/&gt; Code</button>
+      <div class="separator"></div>
+      <button type="button" id="btn-align-left" title="Align Left">⬅</button>
+      <button type="button" id="btn-align-center" title="Align Center">☰</button>
+      <button type="button" id="btn-align-right" title="Align Right">➡</button>
+      <div class="separator"></div>
+      <button type="button" id="btn-link" title="Insert Link">🔗 Link</button>
+      <button type="button" id="btn-image" title="Insert Image">🖼 Image</button>
+      <button type="button" id="btn-hr" title="Divider">— HR</button>
+      <div class="separator"></div>
+      <button type="button" id="btn-undo" title="Undo">↩ Undo</button>
+      <button type="button" id="btn-redo" title="Redo">↪ Redo</button>
+    </div>
+    <div id="tiptap-editor-mount"></div>
+    <div class="tiptap-footer">
+      <span id="word-count">0 words</span>
+      <span id="char-count">0 characters</span>
+    </div>
+  `;
+
+  textarea.parentNode.insertBefore(wrapper, textarea);
+
+  // Initialize TipTap
+  const editor = new window.TiptapCore.Editor({
+    element: document.getElementById('tiptap-editor-mount'),
+    extensions: [
+      window.TiptapStarterKit.StarterKit,
+      window.TiptapExtensionPlaceholder.Placeholder.configure({
+        placeholder: 'Start writing your story here...',
+      }),
+      window.TiptapExtensionUnderline.Underline,
+      window.TiptapExtensionLink.Link.configure({ openOnClick: false }),
+      window.TiptapExtensionImage.Image,
+      window.TiptapExtensionTextAlign.TextAlign.configure({
+        types: ['heading', 'paragraph'],
+      }),
+      window.TiptapExtensionTextStyle.TextStyle,
+      window.TiptapExtensionColor.Color,
+    ],
+    content: textarea.value || '',
+    onUpdate({ editor }) {
+      textarea.value = editor.getHTML();
+      // Update word/char count
+      const text = editor.getText();
+      const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+      document.getElementById('word-count').textContent = words + ' words';
+      document.getElementById('char-count').textContent = text.length + ' characters';
+    },
+  });
+
+  // Toolbar button handlers
+  document.getElementById('btn-bold').onclick = () => editor.chain().focus().toggleBold().run();
+  document.getElementById('btn-italic').onclick = () => editor.chain().focus().toggleItalic().run();
+  document.getElementById('btn-underline').onclick = () => editor.chain().focus().toggleUnderline().run();
+  document.getElementById('btn-strike').onclick = () => editor.chain().focus().toggleStrike().run();
+  document.getElementById('btn-bullet').onclick = () => editor.chain().focus().toggleBulletList().run();
+  document.getElementById('btn-ordered').onclick = () => editor.chain().focus().toggleOrderedList().run();
+  document.getElementById('btn-blockquote').onclick = () => editor.chain().focus().toggleBlockquote().run();
+  document.getElementById('btn-code').onclick = () => editor.chain().focus().toggleCodeBlock().run();
+  document.getElementById('btn-align-left').onclick = () => editor.chain().focus().setTextAlign('left').run();
+  document.getElementById('btn-align-center').onclick = () => editor.chain().focus().setTextAlign('center').run();
+  document.getElementById('btn-align-right').onclick = () => editor.chain().focus().setTextAlign('right').run();
+  document.getElementById('btn-hr').onclick = () => editor.chain().focus().setHorizontalRule().run();
+  document.getElementById('btn-undo').onclick = () => editor.chain().focus().undo().run();
+  document.getElementById('btn-redo').onclick = () => editor.chain().focus().redo().run();
+
+  document.getElementById('btn-link').onclick = () => {
+    const url = prompt('Enter URL:');
+    if (url) editor.chain().focus().setLink({ href: url }).run();
+  };
+
+  document.getElementById('btn-image').onclick = () => {
+    const url = prompt('Enter image URL:');
+    if (url) editor.chain().focus().setImage({ src: url }).run();
+  };
+
+  document.getElementById('heading-select').onchange = function() {
+    const level = parseInt(this.value);
+    if (level === 0) {
+      editor.chain().focus().setParagraph().run();
+    } else {
+      editor.chain().focus().toggleHeading({ level }).run();
     }
-    
-    // Initialize Quill with comprehensive toolbar
-    const quill = new Quill('#quill-editor', {
-        theme: 'snow',
-        placeholder: 'Start writing your story...',
-        modules: {
-            toolbar: [
-                [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-                [{ 'font': [] }],
-                [{ 'size': ['small', false, 'large', 'huge'] }],
-                ['bold', 'italic', 'underline', 'strike'],
-                [{ 'color': [] }, { 'background': [] }],
-                [{ 'script': 'sub' }, { 'script': 'super' }],
-                [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-                [{ 'indent': '-1' }, { 'indent': '+1' }],
-                [{ 'align': [] }],
-                ['blockquote', 'code-block'],
-                ['link', 'image'],
-                ['clean']
-            ]
-        }
-    });
-    
-    // Load existing content
-    if (existingContent) {
-        if (existingContent.trim().startsWith('{')) {
-            try {
-                const delta = JSON.parse(existingContent);
-                if (delta.ops) {
-                    quill.setContents(delta.ops);
-                } else {
-                    quill.root.innerHTML = existingContent;
-                }
-            } catch (e) {
-                quill.root.innerHTML = existingContent;
-            }
-        } else {
-            quill.root.innerHTML = existingContent;
-        }
-    }
-    
-    // Sync Quill content to textarea on form submit
-    const form = document.querySelector('form#post_form, form[id$="_form"]');
-    if (form) {
-        form.addEventListener('submit', function(e) {
-            // Get HTML content
-            const htmlContent = quill.root.innerHTML;
-            
-            // Create a JSON structure that matches django-quill-editor format
-            const contentData = {
-                html: htmlContent,
-                delta: quill.getContents()
-            };
-            
-            contentTextarea.value = JSON.stringify(contentData);
-        });
-    }
-    
-    // Handle image uploads through base64 (for simplicity in admin)
-    quill.getModule('toolbar').addHandler('image', function() {
-        const input = document.createElement('input');
-        input.setAttribute('type', 'file');
-        input.setAttribute('accept', 'image/*');
-        input.click();
-        
-        input.onchange = function() {
-            const file = input.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const range = quill.getSelection(true);
-                    quill.insertEmbed(range.index, 'image', e.target.result);
-                    quill.setSelection(range.index + 1);
-                };
-                reader.readAsDataURL(file);
-            }
-        };
-    });
-})();
+  };
+
+  // Sync before form submit
+  const form = document.querySelector('form');
+  form.addEventListener('submit', function() {
+    textarea.value = editor.getHTML();
+  });
+});
 </script>
 {% endblock %}

@@ -6,25 +6,21 @@ from django import template
 
 register = template.Library()
 
-# Allowed tags for Quill editor content
+# Allowed tags for TipTap editor content
 ALLOWED_TAGS = [
-    'p', 'br', 'strong', 'em', 'u', 'h1', 'h2', 'h3', 'h4',
-    'h5', 'h6', 'ul', 'ol', 'li', 'a', 'img', 'blockquote',
-    'code', 'pre', 'span', 'div', 'sub', 'sup', 's', 'strike'
+    'p', 'br', 'strong', 'em', 'u', 's', 'strike', 'h1', 'h2', 'h3',
+    'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'a', 'img', 'blockquote',
+    'code', 'pre', 'span', 'div', 'hr', 'sub', 'sup',
 ]
 
 ALLOWED_ATTRIBUTES = {
-    'a': ['href', 'title', 'target'],
-    'img': ['src', 'alt', 'width', 'height'],
+    'a': ['href', 'title', 'target', 'rel'],
+    'img': ['src', 'alt', 'width', 'height', 'style'],
     'span': ['class', 'style'],
     'div': ['class', 'style'],
-    'p': ['class', 'style'],
-    'h1': ['class', 'style'],
-    'h2': ['class', 'style'],
-    'h3': ['class', 'style'],
-    'h4': ['class', 'style'],
-    'h5': ['class', 'style'],
-    'h6': ['class', 'style'],
+    'p': ['style'],
+    'h1': ['style'], 'h2': ['style'], 'h3': ['style'],
+    'h4': ['style'], 'h5': ['style'], 'h6': ['style'],
     'ul': ['class'],
     'ol': ['class'],
     'li': ['class'],
