@@ -3,7 +3,8 @@
 [cmd]: https://commandcode.ai/
 
 # Django
-- When removing a package with model fields, update ALL migration files that reference it, not just the current model. Confidence: 0.80
+- When removing a package with model fields, update ALL migration files that reference it, not just the current model. Confidence: 0.85
+- When replacing a package (like an editor), add the replacement to settings and verify the content field works, not just remove the old package. Confidence: 0.75
 
 # Blog Layout
 - Display featured posts in a dedicated hero/featured section at the top of the home page. Confidence: 0.75

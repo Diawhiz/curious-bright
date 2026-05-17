@@ -1,7 +1,8 @@
 {% extends 'admin/change_form.html' %}
+{% load i18n admin_urls static %}
 
-{% block after_related_objects %}
-
+{% block extrastyle %}
+{{ block.super }}
 <!-- TipTap Styles -->
 <style>
   .tiptap-wrapper {
@@ -20,8 +21,8 @@
     background: #f8f9fa;
     border-bottom: 1px solid #dee2e6;
     position: sticky;
-    top: 0;
-    z-index: 100;
+    top: 60px;
+    z-index: 1020;
   }
 
   .tiptap-menubar button {
@@ -130,15 +131,16 @@
     justify-content: space-between;
   }
 
-  /* Hide the original textarea */
-  #id_content { display: none !important; }
+  /* Hide the original textarea but keep it in DOM for form submission */
+  .field-content textarea {
+    display: none !important;
+  }
 </style>
-
 {% endblock %}
 
-{% block content %}
+{% block extrahead %}
 {{ block.super }}
-
+<!-- TipTap Scripts -->
 <script src="https://unpkg.com/@tiptap/core@2.1.12/dist/index.umd.js"></script>
 <script src="https://unpkg.com/@tiptap/starter-kit@2.1.12/dist/index.umd.js"></script>
 <script src="https://unpkg.com/@tiptap/extension-placeholder@2.1.12/dist/index.umd.js"></script>
@@ -148,10 +150,14 @@
 <script src="https://unpkg.com/@tiptap/extension-text-align@2.1.12/dist/index.umd.js"></script>
 <script src="https://unpkg.com/@tiptap/extension-color@2.1.12/dist/index.umd.js"></script>
 <script src="https://unpkg.com/@tiptap/extension-text-style@2.1.12/dist/index.umd.js"></script>
-<script src="https://unpkg.com/@tiptap/extension-character-count@2.1.12/dist/index.umd.js"></script>
+{% endblock %}
 
+{% block admin_change_form_document_ready %}
+{{ block.super }}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+(function() {
+  'use strict';
+  
   const textarea = document.getElementById('id_content');
   if (!textarea) return;
 
@@ -198,7 +204,8 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
   `;
 
-  textarea.parentNode.insertBefore(wrapper, textarea);
+  // Insert wrapper after textarea
+  textarea.parentNode.insertBefore(wrapper, textarea.nextSibling);
 
   // Initialize TipTap
   const editor = new window.TiptapCore.Editor({
@@ -265,9 +272,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Sync before form submit
   const form = document.querySelector('form');
-  form.addEventListener('submit', function() {
-    textarea.value = editor.getHTML();
-  });
-});
+  if (form) {
+    form.addEventListener('submit', function() {
+      textarea.value = editor.getHTML();
+    });
+  }
+})();
 </script>
 {% endblock %}
