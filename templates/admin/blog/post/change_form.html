@@ -1,32 +1,41 @@
 {% extends 'admin/change_form.html' %}
-{% load i18n admin_urls static %}
 
-{% block extrastyle %}
+{% block extrahead %}
 {{ block.super }}
-<!-- TipTap Styles -->
 <style>
-  .tiptap-wrapper {
+  /* Hide original textarea */
+  .field-content textarea,
+  textarea#id_content,
+  .form-row.field-content textarea {
+    display: none !important;
+  }
+
+  /* Editor Container */
+  .wp-editor-container {
     border: 1px solid #dee2e6;
     border-radius: 8px;
     overflow: hidden;
-    margin-bottom: 1rem;
     background: white;
+    margin-bottom: 1rem;
   }
 
-  .tiptap-menubar {
+  /* Sticky Toolbar */
+  .wp-toolbar {
     display: flex;
     flex-wrap: wrap;
     gap: 4px;
-    padding: 10px 12px;
+    padding: 12px 16px;
     background: #f8f9fa;
     border-bottom: 1px solid #dee2e6;
     position: sticky;
     top: 60px;
     z-index: 1020;
+    align-items: center;
   }
 
-  .tiptap-menubar button {
-    padding: 6px 10px;
+  .wp-toolbar button,
+  .wp-toolbar select {
+    padding: 8px 12px;
     border: 1px solid #dee2e6;
     border-radius: 5px;
     background: white;
@@ -35,248 +44,424 @@
     font-weight: 500;
     color: #333;
     transition: all 0.15s ease;
-    display: flex;
-    align-items: center;
-    gap: 4px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
 
-  .tiptap-menubar button:hover {
+  .wp-toolbar button:hover {
     background: #F97316;
     color: white;
     border-color: #F97316;
   }
 
-  .tiptap-menubar button.is-active {
-    background: #F97316;
+  .wp-toolbar button.active {
+    background: #EA580C;
     color: white;
     border-color: #EA580C;
   }
 
-  .tiptap-menubar .separator {
+  .wp-toolbar select {
+    padding: 8px;
+    min-width: 120px;
+  }
+
+  .wp-toolbar select:hover {
+    border-color: #F97316;
+  }
+
+  .wp-toolbar .separator {
     width: 1px;
     background: #dee2e6;
-    margin: 0 4px;
+    margin: 0 6px;
     align-self: stretch;
   }
 
-  .tiptap-menubar select {
-    padding: 6px 8px;
-    border: 1px solid #dee2e6;
+  /* Insert Bar */
+  .wp-insert-bar {
+    display: flex;
+    gap: 8px;
+    padding: 10px 16px;
+    background: #fff7ed;
+    border-bottom: 1px solid #dee2e6;
+    align-items: center;
+  }
+
+  .wp-insert-bar span {
+    font-size: 12px;
+    color: #666;
+    margin-right: 8px;
+    font-weight: 500;
+  }
+
+  .wp-insert-bar button {
+    padding: 6px 12px;
+    border: 1px solid #F97316;
     border-radius: 5px;
     background: white;
-    font-size: 13px;
     cursor: pointer;
-    color: #333;
+    font-size: 12px;
+    font-weight: 500;
+    color: #F97316;
+    transition: all 0.15s ease;
   }
 
-  .ProseMirror {
-    min-height: 500px;
-    padding: 24px 32px;
+  .wp-insert-bar button:hover {
+    background: #F97316;
+    color: white;
+  }
+
+  /* Writing Area */
+  .wp-editor {
+    min-height: 550px;
+    padding: 40px 60px;
     outline: none;
-    font-size: 16px;
-    line-height: 1.8;
+    font-size: 18px;
+    line-height: 1.85;
     color: #1a1a1a;
-    font-family: 'Inter', -apple-system, sans-serif;
+    font-family: Georgia, 'Times New Roman', serif;
+    caret-color: #F97316;
   }
 
-  .ProseMirror p { margin-bottom: 1rem; }
-  .ProseMirror h1 { font-size: 2rem; font-weight: 800; margin: 1.5rem 0 1rem; }
-  .ProseMirror h2 { font-size: 1.6rem; font-weight: 700; margin: 1.5rem 0 1rem; }
-  .ProseMirror h3 { font-size: 1.3rem; font-weight: 600; margin: 1.2rem 0 0.8rem; }
-  .ProseMirror ul, .ProseMirror ol { padding-left: 1.5rem; margin-bottom: 1rem; }
-  .ProseMirror li { margin-bottom: 0.4rem; }
-  .ProseMirror blockquote {
-    border-left: 4px solid #F97316;
-    padding: 0.5rem 1rem;
-    margin: 1rem 0;
-    background: #FFF7ED;
-    color: #555;
-    border-radius: 0 8px 8px 0;
+  .wp-editor p { margin-bottom: 1.2em; }
+  .wp-editor h1 { font-size: 2.5em; font-weight: 700; margin: 1.5em 0 0.8em; line-height: 1.2; }
+  .wp-editor h2 { font-size: 2em; font-weight: 600; margin: 1.3em 0 0.7em; line-height: 1.2; }
+  .wp-editor h3 { font-size: 1.6em; font-weight: 600; margin: 1.2em 0 0.6em; line-height: 1.3; }
+  .wp-editor h4 { font-size: 1.3em; font-weight: 600; margin: 1em 0 0.5em; line-height: 1.3; }
+  
+  .wp-editor ul, .wp-editor ol { 
+    padding-left: 2em; 
+    margin-bottom: 1.2em; 
   }
-  .ProseMirror code {
+  
+  .wp-editor li { margin-bottom: 0.5em; }
+  
+  .wp-editor blockquote {
+    border-left: 4px solid #F97316;
+    padding: 1em 1.5em;
+    margin: 1.5em 0;
+    background: #FFF7ED;
+    color: #444;
+    border-radius: 0 8px 8px 0;
+    font-style: italic;
+  }
+  
+  .wp-editor blockquote p:last-child { margin-bottom: 0; }
+  
+  .wp-editor code {
     background: #f1f5f9;
     padding: 2px 6px;
     border-radius: 4px;
     font-size: 0.9em;
-    font-family: monospace;
+    font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
   }
-  .ProseMirror pre {
-    background: #1e293b;
+  
+  .wp-editor pre {
+    background: #1e1e2e;
     color: #e2e8f0;
-    padding: 1rem 1.5rem;
+    padding: 1.5em;
     border-radius: 8px;
     overflow-x: auto;
-    margin-bottom: 1rem;
+    margin: 1.5em 0;
+    font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+    font-size: 0.95em;
+    line-height: 1.6;
   }
-  .ProseMirror pre code { background: none; color: inherit; padding: 0; }
-  .ProseMirror a { color: #F97316; text-decoration: underline; }
-  .ProseMirror img { max-width: 100%; border-radius: 8px; margin: 1rem 0; }
-  .ProseMirror hr { border: none; border-top: 2px solid #e2e8f0; margin: 2rem 0; }
-  .ProseMirror p.is-editor-empty:first-child::before {
-    content: attr(data-placeholder);
-    color: #aaa;
-    pointer-events: none;
-    float: left;
-    height: 0;
+  
+  .wp-editor pre code { 
+    background: transparent; 
+    color: inherit; 
+    padding: 0;
+    font-size: inherit;
+  }
+  
+  .wp-editor a { 
+    color: #F97316; 
+    text-decoration: underline;
+  }
+  
+  .wp-editor img { 
+    max-width: 100%; 
+    border-radius: 8px; 
+    margin: 1.5em 0; 
+    display: block;
+  }
+  
+  .wp-editor hr { 
+    border: none; 
+    border-top: 2px solid #e2e8f0; 
+    margin: 2em 0; 
   }
 
-  /* Word count bar */
-  .tiptap-footer {
-    padding: 8px 16px;
+  .wp-editor table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5em 0;
+  }
+  
+  .wp-editor th,
+  .wp-editor td {
+    border: 1px solid #dee2e6;
+    padding: 12px;
+    text-align: left;
+  }
+  
+  .wp-editor th {
+    background: #f8f9fa;
+    font-weight: 600;
+  }
+
+  /* Status Bar */
+  .wp-status-bar {
+    padding: 10px 16px;
     background: #f8f9fa;
     border-top: 1px solid #dee2e6;
-    font-size: 12px;
+    font-size: 13px;
     color: #666;
     display: flex;
     justify-content: space-between;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
 
-  /* Hide the original textarea but keep it in DOM for form submission */
-  .field-content textarea {
-    display: none !important;
+  .wp-status-bar span {
+    font-weight: 500;
+  }
+
+  /* Placeholder */
+  .wp-editor:empty:before {
+    content: 'Start writing your story here...';
+    color: #aaa;
+    pointer-events: none;
+    font-style: italic;
   }
 </style>
 {% endblock %}
 
-{% block extrahead %}
+{% block content %}
 {{ block.super }}
-<!-- TipTap Scripts -->
-<script src="https://unpkg.com/@tiptap/core@2.1.12/dist/index.umd.js"></script>
-<script src="https://unpkg.com/@tiptap/starter-kit@2.1.12/dist/index.umd.js"></script>
-<script src="https://unpkg.com/@tiptap/extension-placeholder@2.1.12/dist/index.umd.js"></script>
-<script src="https://unpkg.com/@tiptap/extension-underline@2.1.12/dist/index.umd.js"></script>
-<script src="https://unpkg.com/@tiptap/extension-link@2.1.12/dist/index.umd.js"></script>
-<script src="https://unpkg.com/@tiptap/extension-image@2.1.12/dist/index.umd.js"></script>
-<script src="https://unpkg.com/@tiptap/extension-text-align@2.1.12/dist/index.umd.js"></script>
-<script src="https://unpkg.com/@tiptap/extension-color@2.1.12/dist/index.umd.js"></script>
-<script src="https://unpkg.com/@tiptap/extension-text-style@2.1.12/dist/index.umd.js"></script>
-{% endblock %}
 
-{% block admin_change_form_document_ready %}
-{{ block.super }}
 <script>
 (function() {
   'use strict';
   
-  const textarea = document.getElementById('id_content');
-  if (!textarea) return;
-
-  // Build the editor wrapper
-  const wrapper = document.createElement('div');
-  wrapper.className = 'tiptap-wrapper';
-
-  // Toolbar
-  wrapper.innerHTML = `
-    <div class="tiptap-menubar" id="tiptap-toolbar">
-      <select id="heading-select">
-        <option value="0">Paragraph</option>
-        <option value="1">Heading 1</option>
-        <option value="2">Heading 2</option>
-        <option value="3">Heading 3</option>
+  // Find textarea with fallbacks
+  const textarea = document.getElementById('id_content') || 
+                   document.querySelector('textarea[name=content]') || 
+                   document.querySelector('.field-content textarea');
+  
+  if (!textarea) {
+    console.warn('WP Editor: Could not find content textarea. Editor not initialized.');
+    return;
+  }
+  
+  // Find the field container
+  const fieldContainer = textarea.closest('.field-content') || 
+                         textarea.closest('.form-row') || 
+                         textarea.parentElement;
+  
+  if (!fieldContainer) {
+    console.warn('WP Editor: Could not find field container. Editor not initialized.');
+    return;
+  }
+  
+  // Create editor container
+  const editorContainer = document.createElement('div');
+  editorContainer.className = 'wp-editor-container';
+  editorContainer.innerHTML = `
+    <div class="wp-toolbar" id="wp-toolbar">
+      <select id="wp-format">
+        <option value="p">Paragraph</option>
+        <option value="h1">Heading 1</option>
+        <option value="h2">Heading 2</option>
+        <option value="h3">Heading 3</option>
+        <option value="h4">Heading 4</option>
       </select>
       <div class="separator"></div>
-      <button type="button" id="btn-bold" title="Bold"><b>B</b></button>
-      <button type="button" id="btn-italic" title="Italic"><i>I</i></button>
-      <button type="button" id="btn-underline" title="Underline"><u>U</u></button>
-      <button type="button" id="btn-strike" title="Strikethrough"><s>S</s></button>
+      <button type="button" data-command="bold" title="Bold"><b>B</b></button>
+      <button type="button" data-command="italic" title="Italic"><i>I</i></button>
+      <button type="button" data-command="underline" title="Underline"><u>U</u></button>
+      <button type="button" data-command="strikeThrough" title="Strikethrough"><s>S</s></button>
       <div class="separator"></div>
-      <button type="button" id="btn-bullet" title="Bullet List">• List</button>
-      <button type="button" id="btn-ordered" title="Ordered List">1. List</button>
+      <button type="button" data-command="insertUnorderedList" title="Bullet List">• List</button>
+      <button type="button" data-command="insertOrderedList" title="Numbered List">1. List</button>
       <div class="separator"></div>
-      <button type="button" id="btn-blockquote" title="Blockquote">" Quote</button>
-      <button type="button" id="btn-code" title="Code Block">&lt;/&gt; Code</button>
+      <button type="button" data-command="formatBlock" data-value="BLOCKQUOTE" title="Blockquote">" Quote</button>
+      <button type="button" data-command="formatBlock" data-value="PRE" title="Code Block">&lt;/&gt; Code</button>
       <div class="separator"></div>
-      <button type="button" id="btn-align-left" title="Align Left">⬅</button>
-      <button type="button" id="btn-align-center" title="Align Center">☰</button>
-      <button type="button" id="btn-align-right" title="Align Right">➡</button>
+      <button type="button" id="wp-link" title="Insert Link">🔗 Link</button>
+      <button type="button" id="wp-image" title="Insert Image">🖼 Image</button>
+      <button type="button" data-command="insertHorizontalRule" title="Horizontal Rule">— HR</button>
       <div class="separator"></div>
-      <button type="button" id="btn-link" title="Insert Link">🔗 Link</button>
-      <button type="button" id="btn-image" title="Insert Image">🖼 Image</button>
-      <button type="button" id="btn-hr" title="Divider">— HR</button>
-      <div class="separator"></div>
-      <button type="button" id="btn-undo" title="Undo">↩ Undo</button>
-      <button type="button" id="btn-redo" title="Redo">↪ Redo</button>
+      <button type="button" data-command="undo" title="Undo">↩ Undo</button>
+      <button type="button" data-command="redo" title="Redo">↪ Redo</button>
     </div>
-    <div id="tiptap-editor-mount"></div>
-    <div class="tiptap-footer">
-      <span id="word-count">0 words</span>
-      <span id="char-count">0 characters</span>
+    <div class="wp-insert-bar">
+      <span>Quick Insert:</span>
+      <button type="button" id="wp-insert-image">Image Block</button>
+      <button type="button" id="wp-insert-quote">Quote Block</button>
+      <button type="button" id="wp-insert-code">Code Block</button>
+      <button type="button" id="wp-insert-divider">Divider</button>
+      <button type="button" id="wp-insert-table">Table</button>
+    </div>
+    <div class="wp-editor" id="wp-editor" contenteditable="true"></div>
+    <div class="wp-status-bar">
+      <span id="wp-word-count">0 words</span>
+      <span id="wp-char-count">0 characters</span>
     </div>
   `;
-
-  // Insert wrapper after textarea
-  textarea.parentNode.insertBefore(wrapper, textarea.nextSibling);
-
-  // Initialize TipTap
-  const editor = new window.TiptapCore.Editor({
-    element: document.getElementById('tiptap-editor-mount'),
-    extensions: [
-      window.TiptapStarterKit.StarterKit,
-      window.TiptapExtensionPlaceholder.Placeholder.configure({
-        placeholder: 'Start writing your story here...',
-      }),
-      window.TiptapExtensionUnderline.Underline,
-      window.TiptapExtensionLink.Link.configure({ openOnClick: false }),
-      window.TiptapExtensionImage.Image,
-      window.TiptapExtensionTextAlign.TextAlign.configure({
-        types: ['heading', 'paragraph'],
-      }),
-      window.TiptapExtensionTextStyle.TextStyle,
-      window.TiptapExtensionColor.Color,
-    ],
-    content: textarea.value || '',
-    onUpdate({ editor }) {
-      textarea.value = editor.getHTML();
-      // Update word/char count
-      const text = editor.getText();
-      const words = text.trim() ? text.trim().split(/\s+/).length : 0;
-      document.getElementById('word-count').textContent = words + ' words';
-      document.getElementById('char-count').textContent = text.length + ' characters';
-    },
-  });
-
+  
+  // Insert after field container
+  fieldContainer.parentNode.insertBefore(editorContainer, fieldContainer.nextSibling);
+  
+  const editor = document.getElementById('wp-editor');
+  const wordCount = document.getElementById('wp-word-count');
+  const charCount = document.getElementById('wp-char-count');
+  const formatSelect = document.getElementById('wp-format');
+  
+  // Load existing content
+  if (textarea.value) {
+    editor.innerHTML = textarea.value;
+  }
+  
+  // Update counts
+  function updateCounts() {
+    const text = editor.innerText || '';
+    const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+    wordCount.textContent = words + ' words';
+    charCount.textContent = text.length + ' characters';
+  }
+  
+  // Sync to textarea
+  function syncToTextarea() {
+    textarea.value = editor.innerHTML;
+    updateCounts();
+  }
+  
   // Toolbar button handlers
-  document.getElementById('btn-bold').onclick = () => editor.chain().focus().toggleBold().run();
-  document.getElementById('btn-italic').onclick = () => editor.chain().focus().toggleItalic().run();
-  document.getElementById('btn-underline').onclick = () => editor.chain().focus().toggleUnderline().run();
-  document.getElementById('btn-strike').onclick = () => editor.chain().focus().toggleStrike().run();
-  document.getElementById('btn-bullet').onclick = () => editor.chain().focus().toggleBulletList().run();
-  document.getElementById('btn-ordered').onclick = () => editor.chain().focus().toggleOrderedList().run();
-  document.getElementById('btn-blockquote').onclick = () => editor.chain().focus().toggleBlockquote().run();
-  document.getElementById('btn-code').onclick = () => editor.chain().focus().toggleCodeBlock().run();
-  document.getElementById('btn-align-left').onclick = () => editor.chain().focus().setTextAlign('left').run();
-  document.getElementById('btn-align-center').onclick = () => editor.chain().focus().setTextAlign('center').run();
-  document.getElementById('btn-align-right').onclick = () => editor.chain().focus().setTextAlign('right').run();
-  document.getElementById('btn-hr').onclick = () => editor.chain().focus().setHorizontalRule().run();
-  document.getElementById('btn-undo').onclick = () => editor.chain().focus().undo().run();
-  document.getElementById('btn-redo').onclick = () => editor.chain().focus().redo().run();
-
-  document.getElementById('btn-link').onclick = () => {
-    const url = prompt('Enter URL:');
-    if (url) editor.chain().focus().setLink({ href: url }).run();
-  };
-
-  document.getElementById('btn-image').onclick = () => {
-    const url = prompt('Enter image URL:');
-    if (url) editor.chain().focus().setImage({ src: url }).run();
-  };
-
-  document.getElementById('heading-select').onchange = function() {
-    const level = parseInt(this.value);
-    if (level === 0) {
-      editor.chain().focus().setParagraph().run();
+  document.querySelectorAll('#wp-toolbar button[data-command]').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      const command = this.dataset.command;
+      const value = this.dataset.value || null;
+      
+      document.execCommand(command, false, value);
+      editor.focus();
+      syncToTextarea();
+      updateActiveStates();
+    });
+  });
+  
+  // Format dropdown
+  formatSelect.addEventListener('change', function() {
+    const value = this.value;
+    if (value === 'p') {
+      document.execCommand('formatBlock', false, 'P');
     } else {
-      editor.chain().focus().toggleHeading({ level }).run();
+      document.execCommand('formatBlock', false, value.toUpperCase());
     }
-  };
-
-  // Sync before form submit
-  const form = document.querySelector('form');
+    editor.focus();
+    syncToTextarea();
+  });
+  
+  // Link button
+  document.getElementById('wp-link').addEventListener('click', function(e) {
+    e.preventDefault();
+    const url = prompt('Enter URL:');
+    if (url) {
+      document.execCommand('createLink', false, url);
+      editor.focus();
+      syncToTextarea();
+    }
+  });
+  
+  // Image button
+  document.getElementById('wp-image').addEventListener('click', function(e) {
+    e.preventDefault();
+    const url = prompt('Enter image URL:');
+    if (url) {
+      document.execCommand('insertImage', false, url);
+      editor.focus();
+      syncToTextarea();
+    }
+  });
+  
+  // Quick insert buttons
+  document.getElementById('wp-insert-image').addEventListener('click', function(e) {
+    e.preventDefault();
+    const url = prompt('Enter image URL:');
+    if (url) {
+      const img = '<p><img src="' + url + '" alt=""></p><p><br></p>';
+      document.execCommand('insertHTML', false, img);
+      editor.focus();
+      syncToTextarea();
+    }
+  });
+  
+  document.getElementById('wp-insert-quote').addEventListener('click', function(e) {
+    e.preventDefault();
+    const html = '<blockquote><p>Enter your quote here...</p></blockquote><p><br></p>';
+    document.execCommand('insertHTML', false, html);
+    editor.focus();
+    syncToTextarea();
+  });
+  
+  document.getElementById('wp-insert-code').addEventListener('click', function(e) {
+    e.preventDefault();
+    const html = '<pre><code>// Enter your code here...</code></pre><p><br></p>';
+    document.execCommand('insertHTML', false, html);
+    editor.focus();
+    syncToTextarea();
+  });
+  
+  document.getElementById('wp-insert-divider').addEventListener('click', function(e) {
+    e.preventDefault();
+    document.execCommand('insertHorizontalRule', false, null);
+    editor.focus();
+    syncToTextarea();
+  });
+  
+  document.getElementById('wp-insert-table').addEventListener('click', function(e) {
+    e.preventDefault();
+    const table = '<table><thead><tr><th>Header 1</th><th>Header 2</th></tr></thead><tbody><tr><td>Cell 1</td><td>Cell 2</td></tr><tr><td>Cell 3</td><td>Cell 4</td></tr></tbody></table><p><br></p>';
+    document.execCommand('insertHTML', false, table);
+    editor.focus();
+    syncToTextarea();
+  });
+  
+  // Update active states
+  function updateActiveStates() {
+    document.querySelectorAll('#wp-toolbar button[data-command]').forEach(function(btn) {
+      const command = btn.dataset.command;
+      if (document.queryCommandState(command)) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+    
+    // Update format dropdown
+    const block = document.queryCommandValue('formatBlock').toLowerCase();
+    if (['h1', 'h2', 'h3', 'h4'].includes(block)) {
+      formatSelect.value = block;
+    } else {
+      formatSelect.value = 'p';
+    }
+  }
+  
+  // Event listeners
+  editor.addEventListener('input', syncToTextarea);
+  editor.addEventListener('keyup', updateActiveStates);
+  editor.addEventListener('mouseup', updateActiveStates);
+  editor.addEventListener('click', updateActiveStates);
+  
+  // Form submit
+  const form = textarea.closest('form');
   if (form) {
     form.addEventListener('submit', function() {
-      textarea.value = editor.getHTML();
+      textarea.value = editor.innerHTML;
     });
   }
+  
+  // Initial update
+  updateCounts();
 })();
 </script>
 {% endblock %}
