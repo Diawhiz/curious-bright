@@ -1,49 +1,13 @@
 {% extends 'base.html' %}
 
-{% block title %}Our Mission — CuriousBright{% endblock %}
+{% block title %}{{ page.title }} — CuriousBright{% endblock %}
 
 {% block content %}
 <section style="padding: 12rem 0 6rem;">
     <div class="container" style="max-width: 800px;">
-        <span class="hero-tag">The Story</span>
-        <h1 style="font-size: clamp(3rem, 10vw, 5rem); font-weight: 900; letter-spacing: -0.05em; color: var(--text-heading); margin-bottom: 4rem;">
-            Illuminating <span>Curiosity</span>
-        </h1>
-        
-        <div class="content" style="font-size: 1.25rem; line-height: 1.8; color: var(--text-heading);">
-            <p style="margin-bottom: 2rem; font-weight: 700;">CuriousBright was born from a simple observation: the most interesting people are those who never stopped asking "why".</p>
-            
-            <p style="margin-bottom: 3rem;">We are a destination for those who seek to understand the world through the lens of curiosity, creativity, and conscious living. Our mission is to bridge the gap between abstract ideas and practical wisdom, providing a platform for voices that challenge the status quo.</p>
-            
-            <div style="background: var(--bg-main); padding: 3rem; border-radius: var(--radius-xl); border: 1px solid var(--border); margin-bottom: 4rem;">
-                <h2 style="margin-bottom: 1.5rem; font-weight: 900;">The Mission</h2>
-                <p>To cultivate a global community of lifelong learners and creative thinkers by delivering high-impact, editorial-grade content that inspires action and fosters growth.</p>
-            </div>
-
-            <h2 style="margin-bottom: 2rem; font-weight: 900;">Our Values</h2>
-            <ul style="list-style: none; display: grid; gap: 2rem;">
-                <li style="display: flex; gap: 1rem;">
-                    <i class="fas fa-check-circle" style="color: var(--primary); margin-top: 0.25rem;"></i>
-                    <div>
-                        <strong style="display: block; margin-bottom: 0.5rem;">Authenticity First</strong>
-                        <p style="font-size: 1.1rem; opacity: 0.7;">We prioritize deep research and genuine lived experience over clickbait.</p>
-                    </div>
-                </li>
-                <li style="display: flex; gap: 1rem;">
-                    <i class="fas fa-check-circle" style="color: var(--primary); margin-top: 0.25rem;"></i>
-                    <div>
-                        <strong style="display: block; margin-bottom: 0.5rem;">Design Excellence</strong>
-                        <p style="font-size: 1.1rem; opacity: 0.7;">We believe that beautiful ideas deserve a beautiful home.</p>
-                    </div>
-                </li>
-                <li style="display: flex; gap: 1rem;">
-                    <i class="fas fa-check-circle" style="color: var(--primary); margin-top: 0.25rem;"></i>
-                    <div>
-                        <strong style="display: block; margin-bottom: 0.5rem;">Global Perspective</strong>
-                        <p style="font-size: 1.1rem; opacity: 0.7;">Our stories span continents and cultures to provide a truly universal view.</p>
-                    </div>
-                </li>
-            </ul>
+        <h1>{{ page.title }}</h1>
+        <div class="content">
+            {{ page.content|safe }}
         </div>
     </div>
 </section>

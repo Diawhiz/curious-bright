@@ -8,7 +8,6 @@ from django.utils import timezone
 
 class Category(models.Model):
     title = models.CharField(max_length=200)
-    # FIX: db_index=True ensures fast lookups on slug
     slug = models.SlugField(unique=True, blank=True, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -32,7 +31,6 @@ class Post(models.Model):
     )
 
     title = models.CharField(max_length=200)
-    # FIX: db_index on slug for fast post lookups by URL
     slug = models.SlugField(unique=True, blank=True, db_index=True)
     excerpt = models.TextField(max_length=160, help_text="Used for SEO meta description. Keep under 160 characters.")
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
@@ -77,7 +75,6 @@ class Post(models.Model):
         return f"{protocol}://{domain}{self.get_absolute_url()}"
 
     class Meta:
-        # FIX: Composite indexes for the most common query patterns
         indexes = [
             models.Index(fields=['status', '-created_date'], name='idx_post_status_date'),
             models.Index(fields=['status', 'is_featured', 'featured_order'], name='idx_post_featured'),
@@ -125,27 +122,3 @@ class StaticPage(models.Model):
     class Meta:
         verbose_name = "Static Page"
         verbose_name_plural = "Static Pages"
-
-
-class SocialPost(models.Model):
-    """Tracks social media posts for blog posts."""
-    PLATFORM_CHOICES = (
-        ('facebook', 'Facebook'),
-        ('threads', 'Threads'),
-        ('quora', 'Quora'),
-    )
-    
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='social_posts')
-    platform = models.CharField(max_length=20, choices=PLATFORM_CHOICES)
-    platform_post_id = models.CharField(max_length=255, blank=True)
-    platform_post_url = models.URLField(blank=True)
-    posted_at = models.DateTimeField(auto_now_add=True)
-    success = models.BooleanField(default=True)
-    error_message = models.TextField(blank=True)
-    
-    class Meta:
-        unique_together = ['post', 'platform']
-        ordering = ['-posted_at']
-    
-    def __str__(self):
-        return f"{self.platform} - {self.post.title}"

@@ -181,9 +181,7 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static'] if (BASE_DIR / 'static').exists() else []
 
-# WhiteNoise configuration for production
 if not DEBUG:
-    # Use ManifestStaticFilesStorage for proper cache-busting hashes
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
     WHITENOISE_MAX_AGE = 31536000  # 1 year for immutable files
 else:
@@ -218,7 +216,7 @@ cloudinary.config(
 
 if not DEBUG:
     PREPEND_WWW = True
-    SECURE_SSL_REDIRECT = False
+    SECURE_SSL_REDIRECT = True
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
     SESSION_COOKIE_SECURE = True
@@ -227,10 +225,9 @@ if not DEBUG:
     SECURE_CONTENT_TYPE_NOSNIFF = True
     X_FRAME_OPTIONS = 'DENY'
     
-    # HSTS - Uncomment after HTTPS is fully verified working
-    # SECURE_HSTS_SECONDS = 31536000  # 1 year
-    # SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-    # SECURE_HSTS_PRELOAD = True
+    SECURE_HSTS_SECONDS = 31536000  # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
 
     CSRF_TRUSTED_ORIGINS = [
         'https://curiousbright.com.ng',
@@ -239,7 +236,6 @@ if not DEBUG:
 
     ]
     
-    # WhiteNoise security headers for static files
     def add_whitenoise_headers(headers, path, url):
         headers['X-Content-Type-Options'] = 'nosniff'
         headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
@@ -251,9 +247,6 @@ if not DEBUG:
 # ---------------------------------------------------------------------------
 # Caching
 # ---------------------------------------------------------------------------
-
-# Use database cache for serverless compatibility
-# For high-traffic sites, consider using Redis or Memcached
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
@@ -266,7 +259,6 @@ CACHES = {
     }
 }
 
-# For local development, use locmem cache (faster, per-process)
 if DEBUG:
     CACHES['default'] = {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
