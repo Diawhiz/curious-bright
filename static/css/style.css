@@ -725,29 +725,59 @@ footer {
     font-style: italic;
 }
 
-.prose {
-    max-width: 800px;
-    margin: 0 auto;
-    line-height: 1.8;
-    font-size: 1.15rem;
-    color: #333;
+.prose-content h1,
+.prose-content h2 {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--text-heading);
+    margin: 2.5rem 0 1rem;
+    letter-spacing: -0.03em;
 }
 
-.prose h2, .prose h3 {
-    margin-top: 2rem;
-    margin-bottom: 1rem;
-    color: #1a1a1a;
+.prose-content h3 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-heading);
+    margin: 2rem 0 0.8rem;
 }
 
-.prose p {
-    margin-bottom: 1.5rem;
+.prose-content p {
+    font-size: 1.1rem;
+    line-height: 1.85;
+    color: var(--text-body);
+    margin-bottom: 1.2rem;
 }
 
-.prose ul {
-    margin-bottom: 1.5rem;
+.prose-content strong {
+    color: var(--text-heading);
+    font-weight: 700;
+}
+
+.prose-content em {
+    color: var(--primary);
+    font-style: normal;
+    font-weight: 600;
+}
+
+.prose-content hr {
+    border: none;
+    border-top: 2px solid var(--border);
+    margin: 2.5rem 0;
+}
+
+.prose-content ul, .prose-content ol {
     padding-left: 1.5rem;
+    margin-bottom: 1.2rem;
 }
 
-.prose li {
-    margin-bottom: 0.5rem;
+.prose-content li {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--text-body);
+    margin-bottom: 0.4rem;
+}
+
+.prose-content a {
+    color: var(--primary);
+    text-decoration: underline;
 }
