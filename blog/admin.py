@@ -1,14 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Category, Post, Comment, StaticPage, SocialPost
-
-
-class SocialPostInline(admin.TabularInline):
-    model = SocialPost
-    extra = 0
-    readonly_fields = ['platform', 'platform_post_id', 'platform_post_url', 'posted_at', 'success', 'error_message']
-    can_delete = False
-    max_num = 0
+from .models import Category, Post, Comment, StaticPage
 
 
 @admin.register(Category)
@@ -26,7 +18,6 @@ class PostAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('title',)}
     readonly_fields = ['created_date', 'updated_date', 'image_preview', 'views']
     list_editable = ['is_featured', 'featured_order']  # Allows editing from list view
-    inlines = [SocialPostInline]
 
     fieldsets = (
         ('Basic Information', {
@@ -122,17 +113,3 @@ class StaticPageAdmin(admin.ModelAdmin):
             'fields': ('is_published',),
         }),
     )
-
-
-@admin.register(SocialPost)
-class SocialPostAdmin(admin.ModelAdmin):
-    list_display = ['post', 'platform', 'success', 'posted_at', 'platform_link']
-    list_filter = ['platform', 'success', 'posted_at']
-    search_fields = ['post__title', 'platform_post_id']
-    readonly_fields = ['post', 'platform', 'platform_post_id', 'platform_post_url', 'posted_at', 'success', 'error_message']
-    
-    def platform_link(self, obj):
-        if obj.platform_post_url:
-            return format_html('<a href="{}" target="_blank">View on {}</a>', obj.platform_post_url, obj.platform.title())
-        return "No link"
-    platform_link.short_description = 'Platform Link'

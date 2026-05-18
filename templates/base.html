@@ -33,6 +33,8 @@
     <!-- Design System -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml">
+
     {% block extra_css %}{% endblock %}
 </head>
 <body>
@@ -88,6 +90,218 @@
         {% block content %}{% endblock %}
     </main>
 
+    <!-- Cookie Consent Banner -->
+    <div id="cookie-consent-banner" style="
+        display: none;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 99999;
+        background: #1a1a2e;
+        color: #fff;
+        padding: 20px 24px;
+        box-shadow: 0 -4px 24px rgba(0,0,0,0.3);
+        font-family: 'Inter', -apple-system, sans-serif;
+    ">
+        <div style="
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            flex-wrap: wrap;
+        ">
+            <div style="flex: 1; min-width: 280px;">
+                <p style="margin: 0 0 6px; font-weight: 700; font-size: 15px; color: #F97316;">
+                    🍪 We use cookies
+                </p>
+                <p style="margin: 0; font-size: 13px; color: #ccc; line-height: 1.6;">
+                    CuriousBright uses cookies to improve your experience, analyse site traffic, and serve personalised ads via Google AdSense. By clicking <strong style="color:#fff">"Accept All"</strong>, you consent to our use of cookies. You can manage your preferences or learn more in our 
+                    <a href="/privacy/" style="color: #F97316; text-decoration: underline;">Privacy Policy</a>.
+                </p>
+            </div>
+            <div style="display: flex; gap: 10px; flex-shrink: 0; flex-wrap: wrap;">
+                <button id="cookie-reject" style="
+                    padding: 10px 20px;
+                    border: 1px solid #555;
+                    border-radius: 6px;
+                    background: transparent;
+                    color: #ccc;
+                    cursor: pointer;
+                    font-size: 13px;
+                    font-family: inherit;
+                    transition: all 0.2s;
+                ">Reject Non-Essential</button>
+                <button id="cookie-manage" style="
+                    padding: 10px 20px;
+                    border: 1px solid #F97316;
+                    border-radius: 6px;
+                    background: transparent;
+                    color: #F97316;
+                    cursor: pointer;
+                    font-size: 13px;
+                    font-family: inherit;
+                    transition: all 0.2s;
+                ">Manage Preferences</button>
+                <button id="cookie-accept" style="
+                    padding: 10px 24px;
+                    border: none;
+                    border-radius: 6px;
+                    background: #F97316;
+                    color: white;
+                    cursor: pointer;
+                    font-size: 13px;
+                    font-weight: 700;
+                    font-family: inherit;
+                    transition: all 0.2s;
+                ">Accept All</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Cookie Preferences Modal -->
+    <div id="cookie-modal" style="
+        display: none;
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0,0,0,0.7);
+        z-index: 999999;
+        align-items: center;
+        justify-content: center;
+    ">
+        <div style="
+            background: white;
+            border-radius: 12px;
+            padding: 32px;
+            width: 520px;
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            font-family: 'Inter', -apple-system, sans-serif;
+        ">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                <h2 style="margin: 0; font-size: 20px; color: #1a1a1a;">Cookie Preferences</h2>
+                <button id="cookie-modal-close" style="
+                    background: none;
+                    border: none;
+                    font-size: 24px;
+                    cursor: pointer;
+                    color: #666;
+                    padding: 0;
+                    line-height: 1;
+                ">×</button>
+            </div>
+    
+            <p style="color: #666; font-size: 14px; line-height: 1.6; margin-bottom: 24px;">
+                We use cookies to enhance your browsing experience, serve personalised content and ads, and analyse our traffic. You can choose which categories of cookies to allow below.
+            </p>
+    
+            <!-- Cookie Category: Essential -->
+            <div style="border: 1px solid #e8e8e8; border-radius: 8px; padding: 16px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <strong style="font-size: 14px; color: #1a1a1a;">Essential Cookies</strong>
+                    <span style="
+                        background: #e8f5e9;
+                        color: #2e7d32;
+                        padding: 3px 10px;
+                        border-radius: 20px;
+                        font-size: 12px;
+                        font-weight: 600;
+                    ">Always Active</span>
+                </div>
+                <p style="margin: 0; font-size: 13px; color: #666; line-height: 1.5;">
+                    Required for the website to function. These cannot be disabled. They include session management and security features.
+                </p>
+            </div>
+    
+            <!-- Cookie Category: Analytics -->
+            <div style="border: 1px solid #e8e8e8; border-radius: 8px; padding: 16px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <strong style="font-size: 14px; color: #1a1a1a;">Analytics Cookies</strong>
+                    <label style="position: relative; display: inline-block; width: 44px; height: 24px;">
+                        <input type="checkbox" id="analytics-toggle" style="opacity:0;width:0;height:0;" checked>
+                        <span id="analytics-slider" style="
+                            position: absolute;
+                            cursor: pointer;
+                            top: 0; left: 0; right: 0; bottom: 0;
+                            background: #F97316;
+                            border-radius: 24px;
+                            transition: 0.3s;
+                        ">
+                            <span style="
+                                position: absolute;
+                                content: '';
+                                height: 18px;
+                                width: 18px;
+                                left: 3px;
+                                bottom: 3px;
+                                background: white;
+                                border-radius: 50%;
+                                transition: 0.3s;
+                                transform: translateX(20px);
+                            "></span>
+                        </span>
+                    </label>
+                </div>
+                <p style="margin: 0; font-size: 13px; color: #666; line-height: 1.5;">
+                    Help us understand how visitors interact with our site by collecting anonymous data about page views and traffic sources.
+                </p>
+            </div>
+    
+            <!-- Cookie Category: Advertising -->
+            <div style="border: 1px solid #e8e8e8; border-radius: 8px; padding: 16px; margin-bottom: 24px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <strong style="font-size: 14px; color: #1a1a1a;">Advertising Cookies</strong>
+                    <label style="position: relative; display: inline-block; width: 44px; height: 24px;">
+                        <input type="checkbox" id="advertising-toggle" style="opacity:0;width:0;height:0;" checked>
+                        <span id="advertising-slider" style="
+                            position: absolute;
+                            cursor: pointer;
+                            top: 0; left: 0; right: 0; bottom: 0;
+                            background: #F97316;
+                            border-radius: 24px;
+                            transition: 0.3s;
+                        ">
+                            <span style="
+                                position: absolute;
+                                content: '';
+                                height: 18px;
+                                width: 18px;
+                                left: 3px;
+                                bottom: 3px;
+                                background: white;
+                                border-radius: 50%;
+                                transition: 0.3s;
+                                transform: translateX(20px);
+                            "></span>
+                        </span>
+                    </label>
+                </div>
+                <p style="margin: 0; font-size: 13px; color: #666; line-height: 1.5;">
+                    Used by Google AdSense to serve personalised advertisements based on your interests and browsing behaviour.
+                </p>
+            </div>
+    
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button id="cookie-save-preferences" style="
+                    padding: 12px 24px;
+                    border: none;
+                    border-radius: 6px;
+                    background: #F97316;
+                    color: white;
+                    cursor: pointer;
+                    font-size: 14px;
+                    font-weight: 700;
+                    font-family: inherit;
+                ">Save Preferences</button>
+            </div>
+        </div>
+    </div>
+
     <footer class="container">
         <div class="footer-grid">
             <div class="footer-brand">
@@ -129,7 +343,6 @@
             <span>Made with <i class="fas fa-heart" style="color: #ef4444;"></i> for the curious.</span>
         </div>
     </footer>
-
     <script>
         // Header scroll behavior
         const header = document.getElementById('mainHeader');
@@ -177,6 +390,145 @@
         mobileMenu.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', closeMenu);
         });
+
+        (function() {
+            const CONSENT_KEY = 'cb_cookie_consent';
+            const banner = document.getElementById('cookie-consent-banner');
+            const modal = document.getElementById('cookie-modal');
+        
+            // Show banner if no consent saved
+            function checkConsent() {
+                const consent = localStorage.getItem(CONSENT_KEY);
+                if (!consent) {
+                    setTimeout(function() {
+                        banner.style.display = 'block';
+                    }, 1500);
+                } else {
+                    applyConsent(JSON.parse(consent));
+                }
+            }
+        
+            // Save consent to localStorage
+            function saveConsent(analytics, advertising) {
+                const consent = {
+                    essential: true,
+                    analytics: analytics,
+                    advertising: advertising,
+                    timestamp: new Date().toISOString(),
+                };
+                localStorage.setItem(CONSENT_KEY, JSON.stringify(consent));
+                applyConsent(consent);
+                banner.style.display = 'none';
+                modal.style.display = 'none';
+            }
+        
+            // Apply consent — enable or disable Google AdSense
+            function applyConsent(consent) {
+                if (consent.advertising) {
+                    // Enable Google AdSense
+                    window.adsbygoogle = window.adsbygoogle || [];
+                    if (!document.getElementById('adsense-script')) {
+                        const script = document.createElement('script');
+                        script.id = 'adsense-script';
+                        script.async = true;
+                        script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1190045725751394';
+                        script.crossOrigin = 'anonymous';
+                        document.head.appendChild(script);
+                    }
+                }
+            }
+        
+            // Accept all
+            document.getElementById('cookie-accept').addEventListener('click', function() {
+                saveConsent(true, true);
+            });
+        
+            // Reject non-essential
+            document.getElementById('cookie-reject').addEventListener('click', function() {
+                saveConsent(false, false);
+            });
+        
+            // Open manage preferences modal
+            document.getElementById('cookie-manage').addEventListener('click', function() {
+                modal.style.display = 'flex';
+            });
+        
+            // Close modal
+            document.getElementById('cookie-modal-close').addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+        
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) modal.style.display = 'none';
+            });
+        
+            // Save preferences from modal
+            document.getElementById('cookie-save-preferences').addEventListener('click', function() {
+                const analytics = document.getElementById('analytics-toggle').checked;
+                const advertising = document.getElementById('advertising-toggle').checked;
+                saveConsent(analytics, advertising);
+            });
+        
+            // Toggle slider visual feedback
+            ['analytics-toggle', 'advertising-toggle'].forEach(function(id) {
+                const toggle = document.getElementById(id);
+                if (toggle) {
+                    toggle.addEventListener('change', function() {
+                        const slider = this.nextElementSibling;
+                        const dot = slider.querySelector('span');
+                        if (this.checked) {
+                            slider.style.background = '#F97316';
+                            dot.style.transform = 'translateX(20px)';
+                        } else {
+                            slider.style.background = '#ccc';
+                            dot.style.transform = 'translateX(0)';
+                        }
+                    });
+                }
+            });
+        
+            // Add floating cookie settings button (bottom left)
+            const settingsBtn = document.createElement('button');
+            settingsBtn.innerHTML = '🍪';
+            settingsBtn.title = 'Cookie Settings';
+            settingsBtn.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                left: 20px;
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                background: #1a1a2e;
+                border: 2px solid #F97316;
+                color: white;
+                font-size: 18px;
+                cursor: pointer;
+                z-index: 9998;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+                transition: transform 0.2s;
+            `;
+            settingsBtn.addEventListener('click', function() {
+                const consent = localStorage.getItem(CONSENT_KEY);
+                if (consent) {
+                    modal.style.display = 'flex';
+                } else {
+                    banner.style.display = 'block';
+                }
+            });
+            settingsBtn.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.1)';
+            });
+            settingsBtn.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1)';
+            });
+            document.body.appendChild(settingsBtn);
+        
+            // Initialize
+            checkConsent();
+        })();
     </script>
 
     {% block extra_js %}{% endblock %}
