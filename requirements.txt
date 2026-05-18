@@ -10,3 +10,4 @@ gunicorn==22.0.0
 django-jazzmin==3.0.1
 bleach==6.1.0
 requests==2.32.3
+django-tinymce==5.0.0
