@@ -46,7 +46,7 @@
             <ul class="nav-links">
                 <li><a href="{% url 'home' %}" class="nav-link">Home</a></li>
                 <li><a href="{% url 'all_posts' %}" class="nav-link">Archive</a></li>
-                {% for category in categories|slice:":4" %}
+                {% for category in categories %}
                     <li><a href="{% url 'category_posts' category.slug %}" class="nav-link">{{ category.title }}</a></li>
                 {% endfor %}
             </ul>

@@ -16,7 +16,7 @@ def categories_processor(request):
     """Add all categories to the context"""
     from .models import Category
     return {
-        'all_categories': Category.objects.all()
+        'categories': Category.objects.all()
     }
 
 
