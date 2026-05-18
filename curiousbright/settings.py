@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     # Third party
     'cloudinary',
     'cloudinary_storage',
+    'tinymce',
 
     # Local
     'blog',
@@ -366,4 +367,13 @@ JAZZMIN_UI_TWEAKS = {
         "success": "btn-success",
     },
     "actions_sticky_top": True,
+}
+
+TINYMCE_DEFAULT_CONFIG = {
+    "height": "500px",
+    "width": "auto",
+    "menubar": "file edit view insert format tools table help",
+    "plugins": "advlist autolink lists link image charmap print preview anchor searchreplace visualblocks code fullscreen insertdatetime media table paste code help wordcount",
+    "toolbar": "undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media template link anchor codesample | ltr rtl",
+    "custom_undo_redo_levels": 10,
 }

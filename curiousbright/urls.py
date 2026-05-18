@@ -25,6 +25,7 @@ urlpatterns = [
     path('sitemap.xml', sitemap_views.index, {'sitemaps': sitemaps}),
     path('sitemap-<section>.xml', sitemap_views.sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
     path('feed/', LatestPostsFeed(), name='feed'),
+    path('tinymce/', include('tinymce.urls')),
 ]
 
 if settings.DEBUG:

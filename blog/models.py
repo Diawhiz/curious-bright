@@ -4,6 +4,7 @@ from django.utils.text import slugify
 from django.urls import reverse
 from cloudinary.models import CloudinaryField
 from django.utils import timezone
+from tinymce.models import HTMLField
 
 
 class Category(models.Model):
@@ -35,7 +36,7 @@ class Post(models.Model):
     excerpt = models.TextField(max_length=160, help_text="Used for SEO meta description. Keep under 160 characters.")
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
     featured_image = CloudinaryField('image', folder='newsblog/featured')
-    content = models.TextField(blank=True, default='')
+    content = HTMLField(blank=True, default='')
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='posts')
     created_date = models.DateTimeField(default=timezone.now, db_index=True)
     updated_date = models.DateTimeField(auto_now=True)
@@ -110,7 +111,7 @@ class Comment(models.Model):
 class StaticPage(models.Model):
     title = models.CharField(max_length=200)
     slug = models.SlugField(unique=True)
-    content = models.TextField()
+    content = HTMLField()
     meta_description = models.CharField(max_length=300, blank=True)
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
