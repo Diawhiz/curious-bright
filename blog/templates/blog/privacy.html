@@ -1,14 +1,21 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ page.title }} — CuriousBright{% endblock %}
+{% block title %}{{ page.title }} - CuriousBright{% endblock %}
+{% block meta_description %}{{ page.meta_description }}{% endblock %}
 
 {% block content %}
-<section style="padding: 12rem 0 6rem;">
-    <div class="container" style="max-width: 800px;">
-        <h1>{{ page.title }}</h1>
-        <div class="content">
+<article class="static-page-container">
+    <header class="page-header">
+        <div class="container">
+            <h1 class="page-title">{{ page.title }}</h1>
+            <p class="last-updated">Last updated: {{ page.updated_date|date:"F d, Y" }}</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="static-content prose">
             {{ page.content|safe }}
         </div>
     </div>
-</section>
+</article>
 {% endblock %}
