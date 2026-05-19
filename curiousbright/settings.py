@@ -370,10 +370,50 @@ JAZZMIN_UI_TWEAKS = {
 }
 
 TINYMCE_DEFAULT_CONFIG = {
-    "height": "500px",
-    "width": "auto",
+    "height": "700px",
+    "width": "100%",
     "menubar": "file edit view insert format tools table help",
-    "plugins": "advlist autolink lists link image charmap print preview anchor searchreplace visualblocks code fullscreen insertdatetime media table paste code help wordcount",
-    "toolbar": "undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media template link anchor codesample | ltr rtl",
-    "custom_undo_redo_levels": 10,
+    "plugins": """
+        advlist autolink lists link image charmap print preview anchor 
+        searchreplace visualblocks code fullscreen insertdatetime media 
+        table paste code help wordcount imagetools
+    """,
+    "toolbar": """
+        undo redo | bold italic underline strikethrough | 
+        formatselect fontselect fontsizeselect | 
+        alignleft aligncenter alignright alignjustify | 
+        bullist numlist outdent indent | 
+        link image media | forecolor backcolor | 
+        removeformat | fullscreen preview code
+    """,
+    
+    # Important settings
+    "skin": "oxide",
+    "content_css": "default",
+    "image_advtab": True,
+    "automatic_uploads": True,
+    "file_picker_types": "image",
+    "images_upload_credentials": True,
+    
+    # Cloudinary Upload Handler
+    "images_upload_handler": """
+        function (blobInfo, success, failure, progress) {
+            var formData = new FormData();
+            formData.append('file', blobInfo.blob(), blobInfo.filename());
+            
+            fetch('/admin/upload-image/', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.location) success(data.location);
+                else failure(data.error || 'Upload failed');
+            })
+            .catch(error => failure('Upload error: ' + error));
+        }
+    """
 }
