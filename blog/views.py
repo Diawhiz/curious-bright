@@ -6,6 +6,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.admin.views.decorators import staff_member_required
 from django.views.decorators.cache import cache_page
 from django.views.decorators.vary import vary_on_cookie
+import cloudinary.uploader
 
 from .models import Post, Category, Comment, StaticPage
 
@@ -187,3 +188,22 @@ def custom_500(request):
 
 def custom_403(request, exception):
     return render(request, '403.html', status=403)
+
+@staff_member_required
+def upload_image(request):
+    """Handle image uploads from TinyMCE editor"""
+    if request.method == 'POST' and request.FILES.get('file'):
+        try:
+            upload_result = cloudinary.uploader.upload(
+                request.FILES['file'],
+                folder="blog/content_images/",
+                resource_type="image",
+                overwrite=True,
+            )
+            return JsonResponse({
+                'location': upload_result['secure_url']
+            })
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+    
+    return JsonResponse({'error': 'No file uploaded'}, status=400)
