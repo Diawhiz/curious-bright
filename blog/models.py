@@ -111,7 +111,7 @@ class Comment(models.Model):
 class StaticPage(models.Model):
     title = models.CharField(max_length=200)
     slug = models.SlugField(unique=True)
-    content = HTMLField()
+    content = HTMLField(blank=True, default='')
     meta_description = models.CharField(max_length=300, blank=True)
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)

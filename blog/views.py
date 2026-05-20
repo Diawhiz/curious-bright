@@ -191,19 +191,24 @@ def custom_403(request, exception):
 
 @staff_member_required
 def upload_image(request):
-    """Handle image uploads from TinyMCE editor"""
-    if request.method == 'POST' and request.FILES.get('file'):
+    if request.method == 'POST':
+        file = request.FILES.get('file')
+        if not file:
+            return JsonResponse({'error': 'No file provided'}, status=400)
         try:
-            upload_result = cloudinary.uploader.upload(
-                request.FILES['file'],
-                folder="blog/content_images/",
-                resource_type="image",
-                overwrite=True,
+            result = cloudinary.uploader.upload(
+                file,
+                folder='newsblog/content',
+                resource_type='image',
+                quality='auto',
+                fetch_format='auto',
+                transformation=[
+                    {'width': 1200, 'crop': 'limit'},
+                ]
             )
             return JsonResponse({
-                'location': upload_result['secure_url']
+                'location': result['secure_url'],
             })
         except Exception as e:
-            return JsonResponse({'error': str(e)}, status=400)
-    
-    return JsonResponse({'error': 'No file uploaded'}, status=400)
+            return JsonResponse({'error': str(e)}, status=500)
+    return JsonResponse({'error': 'POST required'}, status=405)

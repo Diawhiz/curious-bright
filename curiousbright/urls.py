@@ -21,7 +21,6 @@ urlpatterns = [
     ])),
     path('admin/', admin.site.urls),
     
-    path('admin/upload-image/', views.upload_image, name='upload_image'),
     path('tinymce/', include('tinymce.urls')),
 
     path('', include('blog.urls')),

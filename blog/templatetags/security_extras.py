@@ -6,27 +6,34 @@ from django import template
 
 register = template.Library()
 
-# Allowed tags for TipTap editor content
 ALLOWED_TAGS = [
-    'p', 'br', 'strong', 'em', 'u', 's', 'strike', 'h1', 'h2', 'h3',
-    'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'a', 'img', 'blockquote',
-    'code', 'pre', 'span', 'div', 'hr', 'sub', 'sup',
+    'p', 'br', 'strong', 'b', 'em', 'i', 'u', 's', 'strike',
+    'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+    'ul', 'ol', 'li',
+    'a', 'img',
+    'blockquote', 'code', 'pre',
+    'span', 'div',
+    'hr', 'br',
+    'table', 'thead', 'tbody', 'tr', 'th', 'td',
+    'figure', 'figcaption',
+    'sub', 'sup',
 ]
 
 ALLOWED_ATTRIBUTES = {
     'a': ['href', 'title', 'target', 'rel'],
-    'img': ['src', 'alt', 'width', 'height', 'style'],
-    'span': ['class', 'style'],
-    'div': ['class', 'style'],
-    'p': ['style'],
-    'h1': ['style'], 'h2': ['style'], 'h3': ['style'],
-    'h4': ['style'], 'h5': ['style'], 'h6': ['style'],
-    'ul': ['class'],
-    'ol': ['class'],
-    'li': ['class'],
+    'img': ['src', 'alt', 'width', 'height', 'style', 'class'],
+    'span': ['style', 'class'],
+    'div': ['style', 'class'],
+    'p': ['style', 'class'],
+    'h1': ['style'], 'h2': ['style'], 'h3': ['style'], 'h4': ['style'],
     'blockquote': ['class'],
     'code': ['class'],
     'pre': ['class'],
+    'table': ['style', 'class', 'border', 'cellpadding', 'cellspacing'],
+    'td': ['style', 'colspan', 'rowspan'],
+    'th': ['style', 'colspan', 'rowspan'],
+    'figure': ['class', 'style'],
+    'figcaption': ['class'],
 }
 
 ALLOWED_STYLES = [

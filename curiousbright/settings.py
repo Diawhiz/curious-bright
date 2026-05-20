@@ -370,50 +370,112 @@ JAZZMIN_UI_TWEAKS = {
 }
 
 TINYMCE_DEFAULT_CONFIG = {
-    "height": "700px",
-    "width": "100%",
-    "menubar": "file edit view insert format tools table help",
-    "plugins": """
-        advlist autolink lists link image charmap print preview anchor 
-        searchreplace visualblocks code fullscreen insertdatetime media 
-        table paste code help wordcount imagetools
-    """,
-    "toolbar": """
-        undo redo | bold italic underline strikethrough | 
-        formatselect fontselect fontsizeselect | 
-        alignleft aligncenter alignright alignjustify | 
-        bullist numlist outdent indent | 
-        link image media | forecolor backcolor | 
-        removeformat | fullscreen preview code
-    """,
-    
-    # Important settings
-    "skin": "oxide",
-    "content_css": "default",
-    "image_advtab": True,
-    "automatic_uploads": True,
-    "file_picker_types": "image",
-    "images_upload_credentials": True,
-    
-    # Cloudinary Upload Handler
-    "images_upload_handler": """
-        function (blobInfo, success, failure, progress) {
-            var formData = new FormData();
-            formData.append('file', blobInfo.blob(), blobInfo.filename());
-            
-            fetch('/admin/upload-image/', {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.location) success(data.location);
-                else failure(data.error || 'Upload failed');
-            })
-            .catch(error => failure('Upload error: ' + error));
+    'height': 600,
+    'width': '100%',
+    'cleanup_on_startup': True,
+    'custom_undo_redo_levels': 20,
+    'selector': 'textarea',
+    'theme': 'silver',
+    'plugins': [
+        'advlist', 'autolink', 'lists', 'link', 'image', 'charmap',
+        'preview', 'anchor', 'searchreplace', 'visualblocks', 'code',
+        'fullscreen', 'insertdatetime', 'media', 'table', 'wordcount',
+        'emoticons', 'codesample', 'hr', 'pagebreak', 'nonbreaking',
+        'quickbars', 'autosave',
+    ],
+    'toolbar': (
+        'undo redo | styles | bold italic underline strikethrough | '
+        'alignleft aligncenter alignright alignjustify | '
+        'bullist numlist outdent indent | '
+        'link image media table | '
+        'forecolor backcolor | '
+        'blockquote codesample hr | '
+        'removeformat | fullscreen preview code'
+    ),
+    'toolbar_mode': 'sliding',
+    'style_formats': [
+        {'title': 'Headings', 'items': [
+            {'title': 'Heading 1', 'format': 'h1'},
+            {'title': 'Heading 2', 'format': 'h2'},
+            {'title': 'Heading 3', 'format': 'h3'},
+            {'title': 'Heading 4', 'format': 'h4'},
+        ]},
+        {'title': 'Inline', 'items': [
+            {'title': 'Bold', 'format': 'bold'},
+            {'title': 'Italic', 'format': 'italic'},
+            {'title': 'Underline', 'format': 'underline'},
+            {'title': 'Code', 'format': 'code'},
+        ]},
+        {'title': 'Blocks', 'items': [
+            {'title': 'Paragraph', 'format': 'p'},
+            {'title': 'Blockquote', 'format': 'blockquote'},
+            {'title': 'Pre', 'format': 'pre'},
+        ]},
+    ],
+    'content_style': '''
+        body {
+            font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+            font-size: 16px;
+            line-height: 1.8;
+            color: #1a1a1a;
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 24px;
         }
-    """
+        h1 { font-size: 2rem; font-weight: 800; margin: 1.5rem 0 1rem; }
+        h2 { font-size: 1.6rem; font-weight: 700; margin: 1.4rem 0 0.8rem; }
+        h3 { font-size: 1.3rem; font-weight: 600; margin: 1.2rem 0 0.6rem; }
+        p { margin-bottom: 1.2rem; }
+        blockquote {
+            border-left: 4px solid #F97316;
+            background: #FFF7ED;
+            margin: 1.5rem 0;
+            padding: 1rem 1.5rem;
+            border-radius: 0 6px 6px 0;
+            font-style: italic;
+            color: #555;
+        }
+        code {
+            background: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9em;
+            color: #e83e8c;
+        }
+        pre {
+            background: #1e1e2e;
+            color: #cdd6f4;
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+        a { color: #F97316; }
+        table { border-collapse: collapse; width: 100%; }
+        td, th { border: 1px solid #ddd; padding: 8px 12px; }
+        th { background: #f5f5f5; font-weight: 600; }
+    ''',
+    'images_upload_url': '/admin/upload-image/',
+    'images_upload_handler': 'customImageUploadHandler',
+    'automatic_uploads': True,
+    'file_picker_types': 'image',
+    'images_reuse_filename': True,
+    'quickbars_selection_toolbar': 'bold italic link | h2 h3 blockquote',
+    'quickbars_insert_toolbar': 'image media table hr',
+    'contextmenu': 'link image table',
+    'skin': 'oxide',
+    'content_css': 'default',
+    'branding': False,
+    'elementpath': False,
+    'resize': True,
+    'statusbar': True,
+    'menubar': 'file edit view insert format tools table help',
 }
+
+TINYMCE_COMPRESSOR = False

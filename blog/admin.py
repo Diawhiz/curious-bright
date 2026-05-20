@@ -26,7 +26,7 @@ class PostAdmin(admin.ModelAdmin):
     list_editable = ['is_featured', 'featured_order']
 
     formfield_overrides = {
-            HTMLField: {'widget': TinyMCE()},
+            HTMLField: {'widget': TinyMCE(attrs={'cols': 80, 'rows': 30})},
         }
 
     fieldsets = (
@@ -103,6 +103,10 @@ class StaticPageAdmin(admin.ModelAdmin):
     list_filter = ['is_published', 'created_date']
     search_fields = ['title', 'content']
     prepopulated_fields = {'slug': ('title',)}
+
+    formfield_overrides = {
+            HTMLField: {'widget': TinyMCE(attrs={'cols': 80, 'rows': 20})},
+        }
     
     fieldsets = (
         ('Page Information', {
