@@ -9,6 +9,7 @@ import cloudinary.uploader
 import cloudinary.api
 import dj_database_url
 from dotenv import load_dotenv
+from csp.constants import SELF
 
 # Load environment variables
 load_dotenv()
@@ -54,6 +55,7 @@ INSTALLED_APPS = [
     'cloudinary',
     'cloudinary_storage',
     'tinymce',
+    'csp',
 
     # Local
     'blog',
@@ -73,6 +75,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'csp.middleware.CSPMiddleware',
 ]
 
 ROOT_URLCONF = 'curiousbright.urls'
@@ -177,6 +180,15 @@ USE_TZ = True
 # Static & media files
 # ---------------------------------------------------------------------------
 
+CONTENT_SECURITY_POLICY = {
+    "DIRECTIVES": {
+        "default-src": [SELF],
+        "img-src": [SELF, "data:", "https:"],
+        "style-src": [SELF, "'unsafe-inline'"],
+        "script-src": [SELF],
+        "frame-ancestors": [SELF],
+    },
+}
 
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
@@ -214,7 +226,6 @@ cloudinary.config(
 # ---------------------------------------------------------------------------
 # Security (production only)
 # ---------------------------------------------------------------------------
-
 if not DEBUG:
     PREPEND_WWW = True
     SECURE_SSL_REDIRECT = True
