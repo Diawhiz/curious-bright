@@ -183,9 +183,10 @@ USE_TZ = True
 CONTENT_SECURITY_POLICY = {
     "DIRECTIVES": {
         "default-src": [SELF],
-        "img-src": [SELF, "data:", "https:"],
-        "style-src": [SELF, "'unsafe-inline'"],
+        "style-src":  [SELF, "'unsafe-inline'", "https://fonts.googleapis.com"],
+        "font-src":   [SELF, "https://fonts.gstatic.com"],
         "script-src": [SELF],
+        "img-src":    [SELF, "data:", "https:"],
         "frame-ancestors": [SELF],
     },
 }
