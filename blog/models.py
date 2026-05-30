@@ -92,6 +92,7 @@ class Comment(models.Model):
     content = models.TextField()
     parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='replies')
     likes = models.ManyToManyField(User, related_name='liked_comments', blank=True)
+    like_count = models.PositiveIntegerField(default=0)
     created_date = models.DateTimeField(auto_now_add=True)
     is_approved = models.BooleanField(default=True)
 
@@ -99,7 +100,7 @@ class Comment(models.Model):
         return f'Comment by {self.user.username if self.user else self.name} on {self.post.title}'
 
     def total_likes(self):
-        return self.likes.count()
+        return self.like_count
 
     class Meta:
         indexes = [

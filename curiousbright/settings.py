@@ -184,10 +184,29 @@ CONTENT_SECURITY_POLICY = {
     "EXCLUDE_URL_PREFIXES": ["/admin/", "/tinymce/"],
     "DIRECTIVES": {
         "default-src": [SELF],
-        "style-src":  [SELF, "'unsafe-inline'", "https://fonts.googleapis.com"],
-        "font-src":   [SELF, "https://fonts.gstatic.com"],
-        "script-src": [SELF],
-        "img-src":    [SELF, "data:", "https:"],
+        "style-src": [
+            SELF,
+            "'unsafe-inline'",
+            "https://fonts.googleapis.com",
+            "https://cdnjs.cloudflare.com",
+        ],
+        "font-src": [
+            SELF,
+            "https://fonts.gstatic.com",
+            "https://cdnjs.cloudflare.com",
+        ],
+        # 'unsafe-inline' is required because the site uses GTM, AdSense consent,
+        # and cookie-banner scripts that are inline. XSS protection comes from
+        # Django's template auto-escaping and the sanitize_html bleach filter.
+        "script-src": [
+            SELF,
+            "'unsafe-inline'",
+            "https://www.googletagmanager.com",
+            "https://pagead2.googlesyndication.com",
+            "https://cdn.jsdelivr.net",
+        ],
+        "img-src": [SELF, "data:", "https:"],
+        "connect-src": [SELF, "https://www.googletagmanager.com"],
         "frame-ancestors": [SELF],
     },
 }
@@ -310,8 +329,10 @@ JAZZMIN_SETTINGS = {
     "site_title": "CuriousBright CMS",
     "site_header": "CuriousBright",
     "site_brand": "CuriousBright",
-    "site_logo": "/images/cb_favicon.png",
-    "login_logo": "/images/cb_favicon.png",
+    "site_logo": "images/cb_favicon.png",
+    "login_logo": "images/cb_favicon.png",
+    "custom_css": "admin/css/custom.css",
+    "custom_js": "admin/js/tinymce_upload.js",
     "welcome_sign": "Welcome to CuriousBright CMS",
     "copyright": "CuriousBright © 2026",
     "search_model": "blog.Post",

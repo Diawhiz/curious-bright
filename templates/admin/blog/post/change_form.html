@@ -1,6 +1,871 @@
-{% extends 'admin/change_form.html' %}
+{% extends "admin/change_form.html" %}
+{% load i18n static admin_urls %}
 
 {% block extrahead %}
 {{ block.super }}
-<script src="/static/admin/js/tinymce_upload.js"></script>
+{{ adminform.media }}
+<script src="{% static 'admin/js/tinymce_upload.js' %}"></script>
+{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+/* ============================================================
+   WordPress Gutenberg-Inspired Post Editor
+   ============================================================ */
+
+/* ── Reset chrome that we replace ── */
+#content { padding: 0 !important; }
+#content-main { padding: 0 !important; background: transparent !important; }
+.breadcrumbs { display: none !important; }
+
+/* ── Page wrapper ── */
+.wp-editor { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+
+/* ========== TOP HEADER BAR ========== */
+.wp-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 800;
+    display: flex;
+    align-items: center;
+    height: 56px;
+    padding: 0 16px;
+    background: #fff;
+    border-bottom: 1px solid #ddd;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06);
+    gap: 12px;
+}
+
+.wp-topbar-left { display: flex; align-items: center; gap: 10px; flex: 1; }
+.wp-topbar-center { flex: 0 0 auto; }
+.wp-topbar-right { display: flex; align-items: center; gap: 8px; flex: 1; justify-content: flex-end; }
+
+.wp-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #3c434a;
+    text-decoration: none;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+    background: #f6f7f7;
+    transition: all .15s;
+    white-space: nowrap;
+}
+.wp-back-btn:hover { background: #fff; border-color: #8c8f94; color: #2271b1; text-decoration: none; }
+
+.wp-save-indicator {
+    font-size: 12px;
+    color: #8c8f94;
+    font-style: italic;
+}
+
+.wp-post-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1d2327;
+}
+
+/* Buttons */
+.wp-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    font-family: inherit;
+    text-decoration: none;
+    transition: all .15s;
+    white-space: nowrap;
+    line-height: 1.4;
+}
+.wp-btn i { font-size: 11px; }
+
+.wp-btn-ghost {
+    background: #f6f7f7;
+    color: #3c434a;
+    border-color: #c3c4c7;
+}
+.wp-btn-ghost:hover { background: #fff; border-color: #8c8f94; }
+
+.wp-btn-preview {
+    background: transparent;
+    color: #2271b1;
+    border-color: #2271b1;
+}
+.wp-btn-preview:hover { background: #f0f5fb; text-decoration: none; }
+
+.wp-btn-primary {
+    background: #2271b1;
+    color: #fff;
+    border-color: #2271b1;
+}
+.wp-btn-primary:hover { background: #135e96; border-color: #135e96; }
+
+/* ========== BODY (two-column) ========== */
+.wp-body {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    min-height: calc(100vh - 56px);
+    align-items: start;
+}
+
+/* ========== MAIN (left) ========== */
+.wp-main {
+    background: #f0f0f1;
+    padding: 32px 32px 80px;
+    min-height: calc(100vh - 56px);
+}
+
+/* Error banner */
+.wp-errors {
+    background: #fef2f2;
+    border: 1px solid #fca5a5;
+    border-radius: 4px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    color: #b91c1c;
+}
+.wp-errors ul { margin: 6px 0 0 18px; padding: 0; }
+.wp-errors li { margin-bottom: 3px; }
+
+/* Title card */
+.wp-title-card {
+    background: #fff;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.1);
+    padding: 24px 28px 18px;
+    margin-bottom: 4px;
+}
+
+.wp-title-input {
+    width: 100%;
+    border: none;
+    outline: none;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1d2327;
+    font-family: inherit;
+    line-height: 1.3;
+    padding: 0;
+    background: transparent;
+    resize: none;
+    overflow: hidden;
+    display: block;
+}
+.wp-title-input::placeholder { color: #c3c4c7; font-weight: 400; }
+
+.wp-permalink {
+    margin-top: 10px;
+    font-size: 12px;
+    color: #646970;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    flex-wrap: wrap;
+}
+.wp-permalink a { color: #2271b1; text-decoration: none; }
+.wp-permalink a:hover { text-decoration: underline; }
+#wp-slug-display {
+    color: #2271b1;
+    font-weight: 500;
+}
+
+/* Content card (TinyMCE wrapper) */
+.wp-content-card {
+    background: #fff;
+    border-radius: 0 0 4px 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.1);
+    overflow: hidden;
+}
+
+.wp-content-card .form-row { padding: 0; border: none; margin: 0; }
+
+/* Override TinyMCE container border radius */
+.wp-content-card .mce-panel { border-radius: 0 !important; }
+
+/* ========== SIDEBAR (right) ========== */
+.wp-sidebar {
+    background: #fff;
+    border-left: 1px solid #ddd;
+    min-height: calc(100vh - 56px);
+    position: sticky;
+    top: 56px;
+    max-height: calc(100vh - 56px);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #ddd transparent;
+}
+.wp-sidebar::-webkit-scrollbar { width: 4px; }
+.wp-sidebar::-webkit-scrollbar-thumb { background: #ddd; border-radius: 2px; }
+
+/* ── Sidebar Panels ── */
+.wp-panel { border-bottom: 1px solid #ddd; }
+
+.wp-panel-hd {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 13px 16px;
+    cursor: pointer;
+    user-select: none;
+    background: #fff;
+    transition: background .1s;
+}
+.wp-panel-hd:hover { background: #f9f9f9; }
+
+.wp-panel-hd-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1d2327;
+}
+.wp-panel-hd-title i { color: #646970; font-size: 12px; }
+
+.wp-panel-arrow {
+    font-size: 9px;
+    color: #8c8f94;
+    transition: transform .2s;
+}
+.wp-panel.is-closed .wp-panel-arrow { transform: rotate(-90deg); }
+.wp-panel.is-closed .wp-panel-bd { display: none; }
+
+.wp-panel-bd { padding: 4px 16px 16px; }
+
+/* Publish panel action row */
+.wp-panel-actions {
+    display: flex;
+    gap: 8px;
+    padding: 10px 16px 14px;
+    border-top: 1px solid #f0f0f1;
+}
+.wp-panel-actions .wp-btn { flex: 1; justify-content: center; font-size: 12px; padding: 6px 10px; }
+
+/* Status rows */
+.wp-stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 7px 0;
+    font-size: 13px;
+    border-bottom: 1px solid #f0f0f1;
+}
+.wp-stat-row:last-child { border-bottom: none; }
+.wp-stat-key { color: #646970; }
+.wp-stat-val { font-weight: 600; color: #1d2327; }
+
+/* Status badge */
+.wp-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 9px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+}
+.wp-status-badge::before {
+    content: "";
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    display: inline-block;
+}
+.wp-status-badge.is-published { background: #edfaef; color: #00a32a; }
+.wp-status-badge.is-draft { background: #f0f0f1; color: #646970; }
+
+/* Field labels inside sidebar */
+.wp-field { margin-bottom: 12px; }
+.wp-field:last-child { margin-bottom: 0; }
+
+.wp-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    color: #646970;
+    margin-bottom: 5px;
+}
+
+/* Sidebar inputs */
+.wp-panel-bd select,
+.wp-panel-bd input[type="text"],
+.wp-panel-bd input[type="number"],
+.wp-panel-bd textarea {
+    width: 100%;
+    padding: 6px 10px;
+    font-size: 13px;
+    font-family: inherit;
+    color: #1d2327;
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    border-radius: 3px;
+    transition: border-color .15s, box-shadow .15s;
+    box-sizing: border-box;
+}
+.wp-panel-bd select:focus,
+.wp-panel-bd input[type="text"]:focus,
+.wp-panel-bd input[type="number"]:focus,
+.wp-panel-bd textarea:focus {
+    border-color: #2271b1;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(34,113,177,.15);
+}
+.wp-panel-bd textarea { resize: vertical; min-height: 80px; }
+
+/* Toggle switch */
+.wp-toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0;
+}
+.wp-toggle-label { font-size: 13px; color: #1d2327; }
+
+.wp-switch { position: relative; width: 36px; height: 20px; flex-shrink: 0; }
+.wp-switch input { opacity: 0; width: 0; height: 0; }
+.wp-switch-track {
+    position: absolute;
+    inset: 0;
+    background: #c3c4c7;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background .2s;
+}
+.wp-switch-track:before {
+    content: "";
+    position: absolute;
+    width: 14px; height: 14px;
+    left: 3px; top: 3px;
+    background: #fff;
+    border-radius: 50%;
+    transition: transform .2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,.2);
+}
+.wp-switch input:checked + .wp-switch-track { background: #2271b1; }
+.wp-switch input:checked + .wp-switch-track:before { transform: translateX(16px); }
+
+/* Featured image */
+.wp-featured-img {
+    width: 100%;
+    aspect-ratio: 16/9;
+    object-fit: cover;
+    border-radius: 3px;
+    margin-bottom: 8px;
+    display: block;
+}
+.wp-feat-placeholder {
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: #f0f0f1;
+    border-radius: 3px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #8c8f94;
+    font-size: 12px;
+    gap: 6px;
+    margin-bottom: 8px;
+    border: 2px dashed #c3c4c7;
+}
+.wp-feat-placeholder i { font-size: 24px; }
+
+/* Django's file widget styling */
+.wp-panel-bd .clearablefileinput,
+.wp-panel-bd input[type="file"] {
+    font-size: 12px;
+    color: #646970;
+    width: 100%;
+}
+.wp-panel-bd p.help { font-size: 11px; color: #8c8f94; margin: 6px 0 0; }
+
+/* Char counter */
+.wp-char-counter {
+    font-size: 11px;
+    color: #8c8f94;
+    text-align: right;
+    margin-top: 4px;
+}
+.wp-char-counter.is-near { color: #dba617; }
+.wp-char-counter.is-over { color: #d63638; }
+
+/* Help / hint text */
+.wp-hint { font-size: 11px; color: #8c8f94; line-height: 1.5; margin-top: 5px; }
+.wp-hint a { color: #2271b1; text-decoration: none; }
+.wp-hint a:hover { text-decoration: underline; }
+
+/* Field error */
+.wp-field-error {
+    font-size: 11px;
+    color: #d63638;
+    margin-top: 4px;
+}
+.wp-field-error ul { margin: 0; padding: 0 0 0 16px; }
+.wp-field-error li { margin-bottom: 2px; }
+
+/* Remove default Django widget styling we don't want */
+.wp-panel-bd .related-widget-wrapper { display: block; }
+.wp-panel-bd .related-widget-wrapper select { width: 100%; }
+
+/* Responsive */
+@media (max-width: 980px) {
+    .wp-body { grid-template-columns: 1fr; }
+    .wp-sidebar {
+        position: static;
+        border-left: none;
+        border-top: 1px solid #ddd;
+        max-height: none;
+    }
+}
+</style>
+{% endblock %}
+
+{# Suppress Django's default title and breadcrumbs #}
+{% block content_title %}{% endblock %}
+
+{% block content %}
+{% block object_tools %}{% endblock %}
+
+<div class="wp-editor">
+
+  {# ============ TOP HEADER BAR ============ #}
+  <div class="wp-topbar">
+    <div class="wp-topbar-left">
+      <a href="{% url 'admin:blog_post_changelist' %}" class="wp-back-btn">
+        <i class="fas fa-chevron-left"></i> All Posts
+      </a>
+      <span class="wp-save-indicator" id="wpSaveIndicator">
+        {% if original %}All changes saved{% else %}New post — unsaved{% endif %}
+      </span>
+    </div>
+
+    <div class="wp-topbar-center">
+      <span class="wp-post-label">
+        <i class="fas fa-newspaper" style="color:#646970;margin-right:5px;"></i>
+        {% if original %}Edit Post{% else %}New Post{% endif %}
+      </span>
+    </div>
+
+    <div class="wp-topbar-right">
+      <button type="button" class="wp-btn wp-btn-ghost" onclick="wpAction('draft')">
+        <i class="fas fa-save"></i> Save Draft
+      </button>
+      {% if original %}
+      <a href="{{ original.get_absolute_url }}" target="_blank" class="wp-btn wp-btn-preview">
+        <i class="fas fa-external-link-alt"></i> View
+      </a>
+      {% endif %}
+      <button type="button" class="wp-btn wp-btn-primary" onclick="wpAction('publish')" id="wpPublishBtn">
+        <i class="fas fa-rocket"></i>
+        {% if original and original.status == 'published' %}Update{% else %}Publish{% endif %}
+      </button>
+    </div>
+  </div>
+
+  {# ============ MAIN FORM ============ #}
+  <form id="wp_post_form" method="post" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
+    {# Hidden submit triggers — Django admin looks for these #}
+    <input type="hidden" name="_save" value="Save" id="wpFormAction">
+
+    <div class="wp-body">
+
+      {# ===== LEFT: MAIN EDITOR ===== #}
+      <div class="wp-main">
+
+        {# Validation errors #}
+        {% if adminform.form.errors %}
+        <div class="wp-errors">
+          <strong>Please correct the following errors:</strong>
+          <ul>
+            {% for field, errors in adminform.form.errors.items %}
+              {% for error in errors %}
+                <li>{{ field|capfirst }}: {{ error }}</li>
+              {% endfor %}
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+
+        {# Title card #}
+        <div class="wp-title-card">
+          {% if adminform.form.title.errors %}
+          <div class="wp-field-error">{{ adminform.form.title.errors }}</div>
+          {% endif %}
+          <input
+            type="text"
+            name="title"
+            id="id_title"
+            class="wp-title-input"
+            value="{{ adminform.form.title.value|default:'' }}"
+            placeholder="Add title"
+            autocomplete="off"
+          >
+          <div class="wp-permalink">
+            <span>Permalink:&nbsp;</span>
+            <span style="color:#646970;">https://curiousbright.com.ng/post/</span>
+            <span id="wpSlugDisplay">{{ adminform.form.slug.value|default:'' }}</span>
+            <span style="color:#646970;">/</span>
+          </div>
+          {# Hidden slug — auto-filled by JS on new posts, preserved on edit #}
+          <input
+            type="hidden"
+            name="slug"
+            id="id_slug"
+            value="{{ adminform.form.slug.value|default:'' }}"
+          >
+        </div>
+
+        {# TinyMCE content editor #}
+        <div class="wp-content-card">
+          {{ adminform.form.content }}
+          {% if adminform.form.content.errors %}
+          <div class="wp-field-error" style="padding:8px 16px;">{{ adminform.form.content.errors }}</div>
+          {% endif %}
+        </div>
+
+      </div>{# /wp-main #}
+
+
+      {# ===== RIGHT: SIDEBAR ===== #}
+      <aside class="wp-sidebar">
+
+        {# -- Publish panel -- #}
+        <div class="wp-panel" id="publishPanel">
+          <div class="wp-panel-hd" onclick="wpTogglePanel(this)">
+            <span class="wp-panel-hd-title">
+              <i class="fas fa-rocket"></i> Publish
+            </span>
+            <span class="wp-panel-arrow">▼</span>
+          </div>
+          <div class="wp-panel-bd" style="padding-bottom:4px;">
+            <div class="wp-stat-row">
+              <span class="wp-stat-key">Status</span>
+              <span id="wpStatusBadge">
+                {% if original and original.status == 'published' %}
+                  <span class="wp-status-badge is-published">Published</span>
+                {% else %}
+                  <span class="wp-status-badge is-draft">Draft</span>
+                {% endif %}
+              </span>
+            </div>
+            <div class="wp-stat-row">
+              <span class="wp-stat-key">Visibility</span>
+              <span class="wp-stat-val">Public</span>
+            </div>
+            {% if original %}
+            <div class="wp-stat-row">
+              <span class="wp-stat-key">Created</span>
+              <span class="wp-stat-val" style="font-size:12px;">{{ original.created_date|date:"M d, Y" }}</span>
+            </div>
+            <div class="wp-stat-row">
+              <span class="wp-stat-key">Updated</span>
+              <span class="wp-stat-val" style="font-size:12px;">{{ original.updated_date|date:"M d, Y" }}</span>
+            </div>
+            <div class="wp-stat-row">
+              <span class="wp-stat-key">Views</span>
+              <span class="wp-stat-val">{{ original.views|default:0 }}</span>
+            </div>
+            {% endif %}
+          </div>
+          <div class="wp-panel-actions">
+            <button type="button" class="wp-btn wp-btn-ghost" onclick="wpAction('draft')">Save Draft</button>
+            <button type="button" class="wp-btn wp-btn-primary" onclick="wpAction('publish')">
+              {% if original and original.status == 'published' %}Update{% else %}Publish{% endif %}
+            </button>
+          </div>
+        </div>
+
+        {# -- Status & Visibility panel -- #}
+        <div class="wp-panel" id="statusPanel">
+          <div class="wp-panel-hd" onclick="wpTogglePanel(this)">
+            <span class="wp-panel-hd-title">
+              <i class="fas fa-eye"></i> Status &amp; Visibility
+            </span>
+            <span class="wp-panel-arrow">▼</span>
+          </div>
+          <div class="wp-panel-bd">
+            <div class="wp-field">
+              <label class="wp-label" for="id_status">Post Status</label>
+              <select name="status" id="id_status" onchange="wpOnStatusChange(this)">
+                <option value="draft" {% if not original or original.status == 'draft' %}selected{% endif %}>Draft</option>
+                <option value="published" {% if original and original.status == 'published' %}selected{% endif %}>Published</option>
+              </select>
+            </div>
+            <div class="wp-toggle-row">
+              <span class="wp-toggle-label">Featured Post</span>
+              <label class="wp-switch">
+                <input type="checkbox" name="is_featured" id="id_is_featured"
+                       {% if original and original.is_featured %}checked{% endif %}
+                       onchange="wpOnFeaturedChange(this)">
+                <span class="wp-switch-track"></span>
+              </label>
+            </div>
+            <div class="wp-field" id="featuredOrderWrap"
+                 style="{% if not original or not original.is_featured %}display:none;{% endif %}">
+              <label class="wp-label" for="id_featured_order">Featured Order</label>
+              <input type="number" name="featured_order" id="id_featured_order"
+                     value="{{ original.featured_order|default:0 }}" min="0">
+              <p class="wp-hint">Lower number = appears first in the hero (e.g. 1, 2, 3).</p>
+            </div>
+          </div>
+        </div>
+
+        {# -- Category panel -- #}
+        <div class="wp-panel" id="categoryPanel">
+          <div class="wp-panel-hd" onclick="wpTogglePanel(this)">
+            <span class="wp-panel-hd-title">
+              <i class="fas fa-tag"></i> Category
+            </span>
+            <span class="wp-panel-arrow">▼</span>
+          </div>
+          <div class="wp-panel-bd">
+            <div class="wp-field" style="margin:0;">
+              {% if adminform.form.category.errors %}
+              <div class="wp-field-error">{{ adminform.form.category.errors }}</div>
+              {% endif %}
+              <select name="category" id="id_category">
+                {% for obj in adminform.form.fields.category.queryset %}
+                <option value="{{ obj.pk }}"
+                  {% if original and original.category_id == obj.pk %}selected
+                  {% elif not original and forloop.first %}selected{% endif %}>
+                  {{ obj }}
+                </option>
+                {% endfor %}
+              </select>
+              <p class="wp-hint" style="margin-top:8px;">
+                <a href="{% url 'admin:blog_category_add' %}" target="_blank">
+                  <i class="fas fa-plus" style="font-size:10px;"></i> Add New Category
+                </a>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {# -- Featured Image panel -- #}
+        <div class="wp-panel" id="featImagePanel">
+          <div class="wp-panel-hd" onclick="wpTogglePanel(this)">
+            <span class="wp-panel-hd-title">
+              <i class="fas fa-image"></i> Featured Image
+            </span>
+            <span class="wp-panel-arrow">▼</span>
+          </div>
+          <div class="wp-panel-bd">
+            {% if adminform.form.featured_image.errors %}
+            <div class="wp-field-error">{{ adminform.form.featured_image.errors }}</div>
+            {% endif %}
+            {% if original and original.featured_image %}
+              <img src="{{ original.featured_image.url }}" alt="Featured image" class="wp-featured-img">
+            {% else %}
+              <div class="wp-feat-placeholder">
+                <i class="fas fa-image"></i>
+                <span>No image selected</span>
+              </div>
+            {% endif %}
+            <div class="wp-field" style="margin:0;">
+              {{ adminform.form.featured_image }}
+              <p class="wp-hint">Recommended: 1200 × 630 px (JPG, PNG, WebP).</p>
+            </div>
+          </div>
+        </div>
+
+        {# -- Excerpt panel -- #}
+        <div class="wp-panel" id="excerptPanel">
+          <div class="wp-panel-hd" onclick="wpTogglePanel(this)">
+            <span class="wp-panel-hd-title">
+              <i class="fas fa-align-left"></i> Excerpt / SEO
+            </span>
+            <span class="wp-panel-arrow">▼</span>
+          </div>
+          <div class="wp-panel-bd">
+            {% if adminform.form.excerpt.errors %}
+            <div class="wp-field-error">{{ adminform.form.excerpt.errors }}</div>
+            {% endif %}
+            <textarea
+              name="excerpt"
+              id="id_excerpt"
+              rows="4"
+              maxlength="160"
+              placeholder="Short summary used for SEO meta description…"
+            >{{ adminform.form.excerpt.value|default:'' }}</textarea>
+            <div class="wp-char-counter" id="excerptCounter">
+              <span id="excerptLen">{{ adminform.form.excerpt.value|default:''|length }}</span> / 160
+            </div>
+            <p class="wp-hint" style="margin-top:2px;">Keep under 160 characters for best SEO results.</p>
+          </div>
+        </div>
+
+        {# -- Author & Slug panel (collapsed by default) -- #}
+        <div class="wp-panel is-closed" id="authorPanel">
+          <div class="wp-panel-hd" onclick="wpTogglePanel(this)">
+            <span class="wp-panel-hd-title">
+              <i class="fas fa-user-cog"></i> Author &amp; Slug
+            </span>
+            <span class="wp-panel-arrow">▼</span>
+          </div>
+          <div class="wp-panel-bd">
+            <div class="wp-field">
+              <label class="wp-label" for="id_author">Author</label>
+              <select name="author" id="id_author">
+                {% for obj in adminform.form.fields.author.queryset %}
+                <option value="{{ obj.pk }}"
+                  {% if original and original.author_id == obj.pk %}selected
+                  {% elif not original and obj == request.user %}selected{% endif %}>
+                  {{ obj.get_full_name|default:obj.username }}
+                </option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="wp-field" style="margin:0;">
+              <label class="wp-label" for="id_slug_edit">URL Slug</label>
+              <input type="text" id="id_slug_edit"
+                     value="{{ adminform.form.slug.value|default:'' }}"
+                     placeholder="auto-generated-from-title"
+                     oninput="wpSyncSlug(this.value)">
+              <p class="wp-hint" style="margin-top:4px;">
+                Leave blank to auto-generate from the title.
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </aside>{# /wp-sidebar #}
+
+    </div>{# /wp-body #}
+  </form>
+
+</div>{# /wp-editor #}
+
+
+<script>
+(function () {
+    'use strict';
+
+    /* ── Panel toggle ── */
+    window.wpTogglePanel = function (hd) {
+        hd.closest('.wp-panel').classList.toggle('is-closed');
+    };
+
+    /* ── Status change ── */
+    window.wpOnStatusChange = function (sel) {
+        const badge = document.getElementById('wpStatusBadge');
+        if (!badge) return;
+        const isPublished = sel.value === 'published';
+        badge.innerHTML = isPublished
+            ? '<span class="wp-status-badge is-published">Published</span>'
+            : '<span class="wp-status-badge is-draft">Draft</span>';
+
+        const pubBtn = document.getElementById('wpPublishBtn');
+        if (pubBtn) {
+            pubBtn.querySelector('i').className = isPublished ? 'fas fa-check' : 'fas fa-rocket';
+            pubBtn.childNodes[pubBtn.childNodes.length - 1].textContent =
+                ' ' + (isPublished ? 'Update' : 'Publish');
+        }
+    };
+
+    /* ── Featured toggle ── */
+    window.wpOnFeaturedChange = function (cb) {
+        const wrap = document.getElementById('featuredOrderWrap');
+        if (wrap) wrap.style.display = cb.checked ? '' : 'none';
+    };
+
+    /* ── Excerpt counter ── */
+    const excerptTA = document.getElementById('id_excerpt');
+    const excerptLen = document.getElementById('excerptLen');
+    const excerptCounter = document.getElementById('excerptCounter');
+    if (excerptTA && excerptLen) {
+        excerptTA.addEventListener('input', function () {
+            const len = this.value.length;
+            excerptLen.textContent = len;
+            if (excerptCounter) {
+                excerptCounter.className = 'wp-char-counter' +
+                    (len > 160 ? ' is-over' : len > 140 ? ' is-near' : '');
+            }
+        });
+    }
+
+    /* ── Slug utilities ── */
+    function slugify(str) {
+        return str
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[̀-ͯ]/g, '')
+            .replace(/[^a-z0-9\s-]/g, '')
+            .trim()
+            .replace(/\s+/g, '-')
+            .replace(/-+/g, '-');
+    }
+
+    window.wpSyncSlug = function (val) {
+        const slug = slugify(val);
+        const hiddenSlug = document.getElementById('id_slug');
+        const display = document.getElementById('wpSlugDisplay');
+        if (hiddenSlug) hiddenSlug.value = slug;
+        if (display) display.textContent = slug;
+    };
+
+    /* ── Title → slug auto-fill (only when slug is empty / new post) ── */
+    const titleInput = document.getElementById('id_title');
+    const hiddenSlug = document.getElementById('id_slug');
+    const slugDisplay = document.getElementById('wpSlugDisplay');
+    const slugEdit = document.getElementById('id_slug_edit');
+    const isNewPost = !hiddenSlug || !hiddenSlug.value;
+
+    if (titleInput) {
+        titleInput.addEventListener('input', function () {
+            if (isNewPost || !hiddenSlug.value) {
+                const slug = slugify(this.value);
+                if (hiddenSlug) hiddenSlug.value = slug;
+                if (slugDisplay) slugDisplay.textContent = slug;
+                if (slugEdit) slugEdit.value = slug;
+            }
+        });
+        /* Auto-resize title textarea-like input */
+        titleInput.style.overflowY = 'hidden';
+    }
+
+    /* ── Form submission (draft / publish) ── */
+    window.wpAction = function (action) {
+        const statusSel = document.getElementById('id_status');
+        if (statusSel && action === 'publish') {
+            statusSel.value = 'published';
+        } else if (statusSel && action === 'draft') {
+            statusSel.value = 'draft';
+        }
+
+        const indicator = document.getElementById('wpSaveIndicator');
+        if (indicator) indicator.textContent = 'Saving…';
+
+        const form = document.getElementById('wp_post_form');
+        if (form) form.submit();
+    };
+
+    /* ── Style title input ── */
+    if (titleInput) {
+        titleInput.setAttribute('autocomplete', 'off');
+        titleInput.setAttribute('spellcheck', 'true');
+    }
+
+    /* ── Mark dirty on any change ── */
+    const indicator = document.getElementById('wpSaveIndicator');
+    document.getElementById('wp_post_form')?.addEventListener('change', function () {
+        if (indicator) indicator.textContent = 'Unsaved changes';
+    });
+
+}());
+</script>
+
 {% endblock %}

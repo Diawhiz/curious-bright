@@ -88,7 +88,7 @@
                 <p class="card-excerpt-simple">{{ post.excerpt|default:post.content|striptags|truncatewords:20 }}</p>
                 <div class="card-meta-simple">
                     <span>{{ post.author.username }}</span>
-                    <span>{{ post.content.html|reading_time }} min read</span>
+                    <span>{{ post.content|reading_time }} min read</span>
                 </div>
             </div>
         </article>

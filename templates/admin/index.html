@@ -229,12 +229,9 @@
             <a href="{% url 'admin:blog_post_add' %}" class="action-btn">
                 <i class="fas fa-plus"></i> New Post
             </a>
-            <a href="{% url 'admin:blog_category_add' %}"> <i class="fas fa-tag"></i> New Category
-            </a>
-            <a href="{% url 'admin:blog_staticpage_add' %}"> <i class="fas fa-file-alt"></i> New Page
-            </a>
-            <a href="/admin/analytics/"> <i class="fas fa-chart-line"></i> Analytics
-            </a>
+            <a href="{% url 'admin:blog_category_add' %}" class="action-btn"><i class="fas fa-tag"></i> New Category</a>
+            <a href="{% url 'admin:blog_staticpage_add' %}" class="action-btn"><i class="fas fa-file-alt"></i> New Page</a>
+            <a href="/admin/analytics/" class="action-btn"><i class="fas fa-chart-line"></i> Analytics</a>
         </div>
     </div>
     {% endif %}

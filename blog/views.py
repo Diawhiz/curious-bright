@@ -6,6 +6,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.admin.views.decorators import staff_member_required
 from django.views.decorators.cache import cache_page
 from django.views.decorators.vary import vary_on_cookie
+from django.views.decorators.http import require_POST
 import cloudinary.uploader
 
 from .models import Post, Category, Comment, StaticPage
@@ -97,41 +98,50 @@ def all_posts(request):
     return render(request, 'blog/all_posts.html', context)
 
 
+@require_POST
 def like_comment(request, comment_id):
     comment = get_object_or_404(Comment, id=comment_id)
     liked_comments = request.session.get('liked_comments', [])
-    
+
     if comment_id in liked_comments:
         liked_comments.remove(comment_id)
+        Comment.objects.filter(pk=comment_id, like_count__gt=0).update(like_count=F('like_count') - 1)
         liked = False
     else:
         liked_comments.append(comment_id)
+        Comment.objects.filter(pk=comment_id).update(like_count=F('like_count') + 1)
         liked = True
-    
+
     request.session['liked_comments'] = liked_comments
+    comment.refresh_from_db(fields=['like_count'])
     return JsonResponse({'liked': liked, 'total_likes': comment.total_likes()})
 
 
+@require_POST
 def add_comment(request, slug):
     post = get_object_or_404(Post, slug=slug)
-    if request.method == 'POST':
-        parent_id = request.POST.get('parent_id')
-        content = request.POST.get('content', '').strip()
-        name = request.POST.get('name', '').strip()
-        email = request.POST.get('email', '').strip()
+    parent_id = request.POST.get('parent_id')
+    content = request.POST.get('content', '').strip()[:2000]
+    name = request.POST.get('name', '').strip()[:100]
+    email = request.POST.get('email', '').strip()[:254]
 
-        if content:
-            comment_data = {
-                'post': post,
-                'content': content,
-                'parent_id': parent_id if parent_id else None,
-                'name': name if name else 'Anonymous',
-                'email': email,
-            }
+    resolved_parent_id = None
+    if parent_id:
+        try:
+            resolved_parent_id = int(parent_id)
+        except (ValueError, TypeError):
+            resolved_parent_id = None
 
-            Comment.objects.create(**comment_data)
-            messages.success(request, 'Comment added successfully! It will appear once approved.')
-            
+    if content:
+        Comment.objects.create(
+            post=post,
+            content=content,
+            parent_id=resolved_parent_id,
+            name=name if name else 'Anonymous',
+            email=email,
+        )
+        messages.success(request, 'Comment added successfully! It will appear once approved.')
+
     return redirect('post_detail', slug=post.slug)
 
 

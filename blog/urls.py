@@ -11,9 +11,8 @@ urlpatterns = [
     path('post/<slug:slug>/comment/', views.add_comment, name='add_comment'),
     
     path('admin/stats/', views.admin_stats, name='admin_stats'),
-    path('admin/upload-image/', views.upload_image, name='upload_image'),
-    
-    path('posts/', views.all_posts, name='all_posts'), 
+
+    path('posts/', views.all_posts, name='all_posts'),
     path('about/', views.about, name='about'),
     path('privacy/', views.privacy, name='privacy'),
     path('terms/', views.terms, name='terms'),
