@@ -22,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Core
 # ---------------------------------------------------------------------------
 
-SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-!2cuway20jozk_y2b7ot(f)&81hskg@#el9s6@8l30fcs+upuu')
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
@@ -181,6 +181,7 @@ USE_TZ = True
 # ---------------------------------------------------------------------------
 
 CONTENT_SECURITY_POLICY = {
+    "EXCLUDE_URL_PREFIXES": ["/admin/", "/tinymce/"],
     "DIRECTIVES": {
         "default-src": [SELF],
         "style-src":  [SELF, "'unsafe-inline'", "https://fonts.googleapis.com"],
