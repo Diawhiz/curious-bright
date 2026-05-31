@@ -81,6 +81,8 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'curiousbright.urls'
 WSGI_APPLICATION = 'curiousbright.wsgi.application'
 
+SITE_ID = 1
+
 
 # ---------------------------------------------------------------------------
 # Templates
