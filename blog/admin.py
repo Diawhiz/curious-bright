@@ -26,8 +26,8 @@ class PostAdmin(admin.ModelAdmin):
     list_editable = ['is_featured', 'featured_order']
 
     formfield_overrides = {
-            HTMLField: {'widget': TinyMCE(attrs={'cols': 80, 'rows': 30})},
-        }
+        HTMLField: {'widget': TinyMCE(attrs={'cols': 80, 'rows': 30})},
+    }
 
     fieldsets = (
         ('Basic Information', {
@@ -93,7 +93,7 @@ class CommentAdmin(admin.ModelAdmin):
     user_or_name.short_description = 'User/Commenter'
 
     def likes_count(self, obj):
-        return obj.likes.count()
+        return obj.like_count
     likes_count.short_description = 'Likes'
 
 

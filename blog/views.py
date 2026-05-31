@@ -32,8 +32,6 @@ def home(request):
     return render(request, 'blog/home.html', context)
 
 
-@cache_page(60 * 15)
-@vary_on_cookie
 def post_detail(request, slug):
     post = get_object_or_404(
         Post.objects.select_related('author', 'category'),
@@ -114,7 +112,7 @@ def like_comment(request, comment_id):
 
     request.session['liked_comments'] = liked_comments
     comment.refresh_from_db(fields=['like_count'])
-    return JsonResponse({'liked': liked, 'total_likes': comment.total_likes()})
+    return JsonResponse({'liked': liked, 'total_likes': comment.like_count})
 
 
 @require_POST
@@ -140,24 +138,14 @@ def add_comment(request, slug):
             name=name if name else 'Anonymous',
             email=email,
         )
-        messages.success(request, 'Comment added successfully! It will appear once approved.')
+        messages.success(request, 'Comment added successfully!')
 
     return redirect('post_detail', slug=post.slug)
 
 
-def about(request):
-    page = get_object_or_404(StaticPage, slug='about', is_published=True)
-    return render(request, 'blog/about.html', {'page': page})
-
-
-def privacy(request):
-    page = get_object_or_404(StaticPage, slug='privacy', is_published=True)
-    return render(request, 'blog/privacy.html', {'page': page})
-
-
-def terms(request):
-    page = get_object_or_404(StaticPage, slug='terms', is_published=True)
-    return render(request, 'blog/terms.html', {'page': page})
+def static_page(request, slug):
+    page = get_object_or_404(StaticPage, slug=slug, is_published=True)
+    return render(request, f'blog/{slug}.html', {'page': page})
 
 
 @staff_member_required
@@ -173,17 +161,17 @@ def admin_stats(request):
 def search(request):
     query = request.GET.get('q', '').strip()
     posts = []
-    
+
     if query:
-        posts = Post.objects.filter(
+        posts = list(Post.objects.filter(
             Q(title__icontains=query) | Q(content__icontains=query),
             status='published'
-        ).select_related('author', 'category').order_by('-created_date')
-    
+        ).select_related('author', 'category').order_by('-created_date'))
+
     context = {
         'query': query,
         'posts': posts,
-        'count': posts.count() if query else 0,
+        'count': len(posts),
     }
     return render(request, 'blog/search_results.html', context)
 

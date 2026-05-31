@@ -19,7 +19,7 @@ class LatestPostsFeed(Feed):
         return item.excerpt or ''
 
     def item_link(self, item):
-        return f"https://curiousbright.com.ng/post/{item.slug}/"
+        return item.get_full_url()
 
     def item_pubdate(self, item):
         return item.created_date

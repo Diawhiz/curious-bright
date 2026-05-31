@@ -10,11 +10,10 @@ import json
 import logging
 
 from .models import Post, Comment, Category
+from .signals import ANALYTICS_CACHE_KEY
 
 logger = logging.getLogger(__name__)
 
-# Cache keys and timeout
-ANALYTICS_CACHE_KEY = 'admin_analytics_dashboard'
 ANALYTICS_CACHE_TIMEOUT = 300  # 5 minutes
 
 

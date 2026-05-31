@@ -13,9 +13,9 @@ urlpatterns = [
     path('admin/stats/', views.admin_stats, name='admin_stats'),
 
     path('posts/', views.all_posts, name='all_posts'),
-    path('about/', views.about, name='about'),
-    path('privacy/', views.privacy, name='privacy'),
-    path('terms/', views.terms, name='terms'),
+    path('about/', views.static_page, {'slug': 'about'}, name='about'),
+    path('privacy/', views.static_page, {'slug': 'privacy'}, name='privacy'),
+    path('terms/', views.static_page, {'slug': 'terms'}, name='terms'),
     path('search/', views.search, name='search'),
     path('feed/', LatestPostsFeed(), name='feed'),
 ]

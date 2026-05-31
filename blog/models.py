@@ -99,9 +99,6 @@ class Comment(models.Model):
     def __str__(self):
         return f'Comment by {self.user.username if self.user else self.name} on {self.post.title}'
 
-    def total_likes(self):
-        return self.like_count
-
     class Meta:
         indexes = [
             models.Index(fields=['post', 'parent', 'is_approved'], name='idx_comment_post'),
