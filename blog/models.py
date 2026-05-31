@@ -37,7 +37,7 @@ class Post(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
     featured_image = CloudinaryField('image', folder='newsblog/featured')
     content = HTMLField(blank=True, default='')
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='posts')
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='posts')
     created_date = models.DateTimeField(default=timezone.now, db_index=True)
     updated_date = models.DateTimeField(auto_now=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft', db_index=True)
