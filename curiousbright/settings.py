@@ -34,6 +34,7 @@ else:
         'localhost',
         '.herokuapp.com',
         '.curiousbright.com.ng',
+        '.pxxl.click',
     ]
 
 # ---------------------------------------------------------------------------
