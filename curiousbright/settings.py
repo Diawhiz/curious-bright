@@ -32,9 +32,8 @@ else:
     ALLOWED_HOSTS = [
         '127.0.0.1',
         'localhost',
-        '.herokuapp.com',
         '.curiousbright.com.ng',
-        '.pxxl.click',
+        'curiousbright.pxxl.click',
     ]
 
 # ---------------------------------------------------------------------------
@@ -118,12 +117,12 @@ if DATABASE_URL and not os.environ.get('USE_SQLITE'):
         'default': dj_database_url.config(
             default=DATABASE_URL,
             conn_max_age=600,
-            ssl_require=True,
+            ssl_require=False,
         )
     }
     if not DEBUG:
         DATABASES['default']['OPTIONS'] = {
-            'sslmode': 'require',
+            'sslmode': 'disable',
             'connect_timeout': 10,
         }
         DATABASES['default']['CONN_MAX_AGE'] = 300
