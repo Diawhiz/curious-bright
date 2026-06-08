@@ -32,7 +32,7 @@ else:
     ALLOWED_HOSTS = [
         '127.0.0.1',
         'localhost',
-        '10.89.173.4',
+        '10.89.164.3',
         '0.0.0.0',
         'curiousbright.com.ng',
         'curiousbright.pxxl.click',
