@@ -56,5 +56,44 @@ curious-bright/
 - **Cross-Platform Access:** Responsive web portal and mobile app (Expo) ensuring seamless participation anywhere.
 - **Event-Driven Messaging & State Sync:** High-performance real-time gateway utilizing Socket.io and Redis.
 
+---
+
+## Getting Started & Development Setup
+
+### Prerequisites
+- Node.js (v18+)
+- `pnpm` (`npm i -g pnpm`)
+- Docker & Docker Compose
+
+### 1. Start Infrastructure Dependencies
+Launch PostgreSQL, Redis, LiveKit, and MinIO storage services:
+```bash
+docker compose up -d
+```
+
+### 2. Install Monorepo Dependencies
+```bash
+pnpm install
+```
+
+### 3. Database Migration & Generation
+Generate Prisma Client and apply database migrations:
+```bash
+pnpm --filter database run build
+```
+
+### 4. Launch Development Workspace
+Run all apps and services in parallel using Turborepo:
+```bash
+pnpm run dev
+```
+
+---
+
+## License
+
+This project is open-source software licensed under the **GNU Affero General Public License v3.0** ([AGPL-3.0](LICENSE)).
+
+
 
 
