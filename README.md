@@ -8,3 +8,27 @@ By bridging the gap between open-access publication and real-time interactive le
 > [!NOTE]
 > **A Note on the Name:**
 > Curious Bright (`curiousbright.com.ng`) was originally reserved for a personal blog for posting intellectual and thought pieces. The idea evolved into this platform instead.
+
+---
+
+## System Architecture
+
+Curious Bright is architected as a high-performance TypeScript monorepo managed with **Turborepo** and **PNPM Workspaces**:
+
+```text
+curious-bright/
+├── apps/
+│   ├── backend/             # Express.js REST API & Business Logic
+│   ├── mobile/              # React Native + Expo Mobile Application
+│   ├── realtime-gateway/    # Socket.io & Redis State Synchronization
+│   ├── signaling-service/   # WebRTC Signaling Service
+│   └── web/                 # React + Vite Web Client
+├── packages/
+│   ├── database/            # PostgreSQL & Prisma ORM Schema & Client
+│   ├── realtime-contracts/  # Shared Realtime Gateway Event Specs
+│   ├── types/               # Shared TypeScript Type Definitions
+│   ├── ui-kit/              # Shared UI Component Library
+│   ├── validation/          # Shared Zod Data Validation Schemas
+│   └── whiteboard-engine/   # Yjs CRDT Real-time Whiteboard Engine
+```
+
