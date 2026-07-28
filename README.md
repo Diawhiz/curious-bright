@@ -32,3 +32,18 @@ curious-bright/
 │   └── whiteboard-engine/   # Yjs CRDT Real-time Whiteboard Engine
 ```
 
+---
+
+## Tech Stack & Infrastructure
+
+- **Monorepo Build Tooling:** [Turborepo](https://turbo.build/) & [PNPM Workspaces](https://pnpm.io/)
+- **Backend API:** Express.js REST API (TypeScript)
+- **Database & ORM:** PostgreSQL database with [Prisma ORM](https://www.prisma.io/)
+- **Web Application:** React 18 & Vite
+- **Mobile Application:** React Native with Expo
+- **Real-Time Gateway:** Socket.io paired with Redis for pub/sub messaging and state sync
+- **Collaborative Canvas:** [Yjs](https://yjs.dev/) CRDT framework for real-time shared whiteboards
+- **Video & Audio Infrastructure:** [LiveKit](https://livekit.io/) WebRTC server infrastructure
+- **Object Storage:** S3-compatible object storage (MinIO for local development)
+
+
