@@ -46,4 +46,15 @@ curious-bright/
 - **Video & Audio Infrastructure:** [LiveKit](https://livekit.io/) WebRTC server infrastructure
 - **Object Storage:** S3-compatible object storage (MinIO for local development)
 
+---
+
+## Key Features
+
+- **Open Academic Publishing & Peer Review:** Publish academic articles, research papers, and preprints across various disciplines with built-in community peer-review tools.
+- **Real-Time Interactive Whiteboard:** Collaborative canvas using CRDTs (`Yjs` + `whiteboard-engine`) enabling low-latency concurrent drawing and document annotation.
+- **High-Definition Video Conferencing:** Integrated LiveKit WebRTC conferencing for live research meetings, virtual classrooms, and study groups.
+- **Cross-Platform Access:** Responsive web portal and mobile app (Expo) ensuring seamless participation anywhere.
+- **Event-Driven Messaging & State Sync:** High-performance real-time gateway utilizing Socket.io and Redis.
+
+
 
