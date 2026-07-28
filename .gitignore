@@ -1,24 +1,33 @@
-# Python
-__pycache__/
-*.py[cod]
-*.pyo
+# Dependencies
+node_modules/
 
-# Django
-*.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
+# Build outputs
+dist/
+.next/
 
-# Environment — NEVER commit secrets
+# Environment files
 .env
-.env.*
+.env.local
+packages/database/.env
+
+# Prisma
+packages/database/prisma/migrations/
+
+# IDE
+.vscode/
+.idea/
 
 # OS
 .DS_Store
 Thumbs.db
 
-# Editor
-.vscode/
-.idea/
-*.swp
-*.swo
+# Turbo
+.turbo/
+
+# Docker volumes
+pgdata/
+miniodata/
+
+# Misc
+*.log
+.commandcode/

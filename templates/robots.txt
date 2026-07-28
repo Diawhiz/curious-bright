@@ -1,7 +1,0 @@
-User-agent: *
-Allow: /
-Sitemap: https://curiousbright.com.ng/sitemap.xml
-Disallow: /admin/
-Disallow: /accounts/
-Disallow: /logout/
-Disallow: /login/

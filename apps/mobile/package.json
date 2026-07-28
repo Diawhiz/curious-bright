@@ -1,0 +1,35 @@
+{
+  "name": "mobile",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.js",
+  "dependencies": {
+    "@curious-bright/realtime-contracts": "workspace:*",
+    "@curious-bright/types": "workspace:*",
+    "@curious-bright/validation": "workspace:*",
+    "@curious-bright/whiteboard-engine": "workspace:*",
+    "@livekit/react-native": "^2.12.0",
+    "expo": "~49.0.0",
+    "expo-constants": "^57.0.7",
+    "expo-document-picker": "^57.0.1",
+    "expo-linking": "^57.0.4",
+    "expo-router": "^57.0.8",
+    "expo-secure-store": "^57.0.1",
+    "expo-status-bar": "^57.0.1",
+    "react": "18.2.0",
+    "react-native": "0.72.3",
+    "react-native-blob-util": "^0.24.10",
+    "react-native-pdf": "^7.0.4",
+    "react-native-safe-area-context": "^5.8.0",
+    "react-native-screens": "^4.26.2",
+    "react-native-svg": "^15.15.5",
+    "react-native-webrtc": "^124.0.8",
+    "socket.io-client": "^4.8.3",
+    "uuid": "^14.0.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.0",
+    "@types/react": "~18.2.45",
+    "typescript": "^5.1.3"
+  }
+}
