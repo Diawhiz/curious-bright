@@ -56,8 +56,13 @@ router.get('/:id/read', async (req: Request, res: Response) => {
           data: { cacheStatus: 'CACHING' },
         });
 
+        if (!book.originUrl) {
+          throw new Error('Book origin URL is missing');
+        }
+
         console.log(`[Book Cache] Fetching origin file from ${book.originUrl}...`);
         const originRes = await fetch(book.originUrl);
+
 
         if (!originRes.ok) {
           throw new Error(`Failed to fetch from origin: ${originRes.statusText}`);
