@@ -8,8 +8,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Diawhiz/curiousbright.git"
+    "url": "git+https://github.com/curious-bright/curious-bright.git"
   },
+
   "dependencies": {
 
     "zod": "^3.21.0"

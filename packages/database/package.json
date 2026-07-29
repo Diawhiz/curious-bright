@@ -8,8 +8,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Diawhiz/curiousbright.git"
+    "url": "git+https://github.com/curious-bright/curious-bright.git"
   },
+
   "dependencies": {
 
     "@prisma/client": "^5.0.0"
