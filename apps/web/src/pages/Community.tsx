@@ -148,11 +148,13 @@ export default function Community() {
                   <span className="badge badge-level">
                     {room.topic || 'General'}
                   </span>
-                  <span className="text-xs text-muted">
-                    👥 {room._count?.members ?? 0} {room._count?.members === 1 ? 'Member' : 'Members'}
+                  <span className="flex items-center gap-1.5 text-xs font-medium text-marginnote">
+                    <span className="inline-block w-2 h-2 rounded-full bg-marginnote animate-pulse"></span>
+                    Live Room • {room._count?.members ?? 0} {room._count?.members === 1 ? 'Member' : 'Members'}
                   </span>
                 </div>
-                <h3 className="mb-2">{room.name}</h3>
+                <h3 className="mb-2 font-display">{room.name}</h3>
+
               </div>
 
               <div className="pt-4 mt-4" style={{ borderTop: '1px solid var(--glass-border)' }}>

@@ -6,7 +6,9 @@
   "dependencies": {
     "@curious-bright/realtime-contracts": "workspace:*",
     "@curious-bright/types": "workspace:*",
+    "@curious-bright/ui-kit": "workspace:*",
     "@curious-bright/validation": "workspace:*",
+
     "@curious-bright/whiteboard-engine": "workspace:*",
     "@livekit/react-native": "^2.12.0",
     "expo": "~49.0.0",
