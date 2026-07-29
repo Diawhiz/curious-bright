@@ -60,19 +60,28 @@ app.post('/webhook', async (req, res) => {
     const event = await webhookReceiver.receive(req.body, req.get('Authorization'));
     
     if (event.event === 'room_started') {
-      await prisma.callSession.upsert({
-        where: { roomId: event.room!.name },
-        create: {
-          roomId: event.room!.name,
-          status: 'ONGOING',
-        },
-        update: {
-          status: 'ONGOING',
-          startedAt: new Date(),
-          endedAt: null,
-        }
+      const existingSession = await prisma.callSession.findFirst({
+        where: { roomId: event.room!.name, status: 'ONGOING' },
       });
+      if (existingSession) {
+        await prisma.callSession.update({
+          where: { id: existingSession.id },
+          data: {
+            status: 'ONGOING',
+            startedAt: new Date(),
+            endedAt: null,
+          },
+        });
+      } else {
+        await prisma.callSession.create({
+          data: {
+            roomId: event.room!.name,
+            status: 'ONGOING',
+          },
+        });
+      }
     } else if (event.event === 'room_finished') {
+
       await prisma.callSession.updateMany({
         where: { roomId: event.room!.name, status: 'ONGOING' },
         data: { status: 'ENDED', endedAt: new Date() }
