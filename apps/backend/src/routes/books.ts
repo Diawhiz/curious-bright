@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express';
 import { prisma } from '../lib/prisma';
 import { uploadBufferToS3 } from '../lib/s3';
 import { runBookIngestion } from '../jobs/ingestBooks';
-import fetch from 'node-fetch';
+
 
 const router = Router();
 
@@ -90,7 +90,8 @@ router.get('/:id/read', async (req: Request, res: Response) => {
           data: { cacheStatus: 'NOT_CACHED' },
         });
         // Fallback to origin URL on error
-        return book.originUrl;
+        return book.originUrl || '';
+
       } finally {
         inFlightFetches.delete(book.id);
       }

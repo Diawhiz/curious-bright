@@ -1,11 +1,12 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import { prisma } from '../lib/prisma';
 import { requireAuth } from '../middleware/auth';
 
 const router = Router();
 
 // POST /users/:id/block
-router.post('/:id/block', requireAuth, async (req, res) => {
+router.post('/:id/block', requireAuth, async (req: Request, res: Response) => {
+
   try {
     const blockedId = req.params.id;
     const blockerId = req.user!.id;
@@ -31,7 +32,7 @@ router.post('/:id/block', requireAuth, async (req, res) => {
 });
 
 // GET /users/blocked
-router.get('/blocked', requireAuth, async (req, res) => {
+router.get('/blocked', requireAuth, async (req: Request, res: Response) => {
   try {
     const blocks = await prisma.userBlock.findMany({
       where: { blockerId: req.user!.id },
@@ -47,7 +48,8 @@ router.get('/blocked', requireAuth, async (req, res) => {
 });
 
 // GET /users/notifications
-router.get('/notifications', requireAuth, async (req, res) => {
+router.get('/notifications', requireAuth, async (req: Request, res: Response) => {
+
   try {
     const notifications = await prisma.notification.findMany({
       where: { userId: req.user!.id },

@@ -1,5 +1,5 @@
 import { prisma } from '../lib/prisma';
-import fetch from 'node-fetch';
+
 
 // Filtering rules for scope: Curious Bright targets HIGH_SCHOOL and above only.
 // Exclude children/early reader content at ingestion time.

@@ -1,11 +1,12 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import { prisma } from '../lib/prisma';
 import { requireAuth } from '../middleware/auth';
 
 const router = Router();
 
 // POST /reports
-router.post('/', requireAuth, async (req, res) => {
+router.post('/', requireAuth, async (req: Request, res: Response) => {
+
   try {
     const { targetType, targetId, reason } = req.body;
     
@@ -29,7 +30,7 @@ router.post('/', requireAuth, async (req, res) => {
 });
 
 // GET /reports (Admin dashboard)
-router.get('/', requireAuth, async (req, res) => {
+router.get('/', requireAuth, async (req: Request, res: Response) => {
   try {
     // Only admins/moderators can view all reports
     if (req.user!.role !== 'ADMIN' && req.user!.role !== 'MODERATOR') {
@@ -50,7 +51,8 @@ router.get('/', requireAuth, async (req, res) => {
 });
 
 // PATCH /reports/:id (Admin resolve)
-router.patch('/:id', requireAuth, async (req, res) => {
+router.patch('/:id', requireAuth, async (req: Request, res: Response) => {
+
   try {
     if (req.user!.role !== 'ADMIN' && req.user!.role !== 'MODERATOR') {
       return res.status(403).json({ error: 'Forbidden' });

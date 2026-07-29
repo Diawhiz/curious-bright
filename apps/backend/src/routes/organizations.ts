@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import { prisma } from '../lib/prisma';
 import { requireAuth } from '../middleware/auth';
 import { requireRole } from '../middleware/role';
@@ -6,7 +6,8 @@ import { requireRole } from '../middleware/role';
 const router = Router();
 
 // Used by the institutional billing service to create orgs
-router.post('/', async (req, res) => {
+router.post('/', async (req: Request, res: Response) => {
+
   // In a real app, protect this with an internal API key or service-to-service auth
   const { name, domain } = req.body;
   try {
@@ -24,7 +25,7 @@ router.post('/', async (req, res) => {
 });
 
 // Update an organization's subscription status (called by billing webhooks)
-router.patch('/:id/subscription', async (req, res) => {
+router.patch('/:id/subscription', async (req: Request, res: Response) => {
   const { id } = req.params;
   const { status, provider, providerRef, currentPeriodEnd } = req.body;
   
@@ -53,7 +54,8 @@ router.patch('/:id/subscription', async (req, res) => {
 });
 
 // Add users to an organization (the bulk invite calls this for each user)
-router.post('/:id/users', async (req, res) => {
+router.post('/:id/users', async (req: Request, res: Response) => {
+
   const { id } = req.params;
   const { email } = req.body;
 
