@@ -46,6 +46,7 @@
   animation: inkShimmer 1.8s infinite ease-in-out;
 }
 
+:root {
   --bg-dark: #080a0f;
   --bg-surface: #0f131d;
   --bg-surface-elevated: #161c2b;
@@ -86,6 +87,7 @@
   --radius-lg: 16px;
   --radius-full: 9999px;
 }
+
 
 * {
   box-sizing: border-box;
