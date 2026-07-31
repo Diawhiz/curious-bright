@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { apiFetch } from '../lib/api';
+import { CommentCornerCard } from '../components/CommentCornerCard';
+import { HighlighterText } from '../components/HighlighterText';
 
 export default function Register() {
   const navigate = useNavigate();
@@ -46,17 +48,19 @@ export default function Register() {
 
       navigate('/browse');
     } catch (err: any) {
-      setError(err.message || 'Registration failed');
+      setError(err.message || 'We could not complete your account registration.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div style={{ maxWidth: '440px', margin: '2rem auto' }}>
-      <div className="glass-card animate-fade-in">
-        <h2 className="text-center mb-2">Join Curious Bright</h2>
-        <p className="text-center text-muted text-sm mb-6">Create an account to join academic discussions and submit research</p>
+    <div style={{ maxWidth: '460px', margin: '3rem auto' }}>
+      <CommentCornerCard commentPreview="Join co-authors on Curious Bright">
+        <h2 className="text-center mb-2">
+          <HighlighterText color="#FF5A36">Join Curious Bright</HighlighterText>
+        </h2>
+        <p className="text-center text-muted text-sm mb-6">Create your co-author account to join study rooms & share papers</p>
 
         {error && (
           <div className="alert alert-error mb-4">
@@ -109,7 +113,7 @@ export default function Register() {
             </label>
             <input
               type="text"
-              placeholder="e.g. MIT, Khan Academy, or leave blank"
+              placeholder="e.g. Oxford, Independent Learner"
               value={form.schoolName}
               onChange={set('schoolName')}
             />
@@ -125,13 +129,13 @@ export default function Register() {
           </button>
         </form>
 
-        <div className="text-center mt-6 pt-4" style={{ borderTop: '1px solid var(--glass-border)' }}>
-          <span className="text-secondary text-sm">
+        <div className="text-center mt-6 pt-4" style={{ borderTop: '1.5px solid var(--color-line)' }}>
+          <span className="text-muted text-sm">
             Already have an account?{' '}
-            <Link to="/login" style={{ color: 'var(--accent)', fontWeight: 600 }}>Login</Link>
+            <Link to="/login" style={{ color: 'var(--color-ink)', fontWeight: 700 }}>Sign In</Link>
           </span>
         </div>
-      </div>
+      </CommentCornerCard>
     </div>
   );
 }

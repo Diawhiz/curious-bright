@@ -5,6 +5,8 @@ import { RealtimeEvents } from '@curious-bright/realtime-contracts';
 import { apiFetch } from '../lib/api';
 import { Whiteboard } from '../components/Whiteboard';
 import { VideoCall } from '../components/VideoCall';
+import { CommentCornerCard } from '../components/CommentCornerCard';
+import { CursorTag } from '../components/CursorTag';
 
 interface Message {
   id: string;
@@ -52,12 +54,28 @@ export default function Room() {
   const [error, setError] = useState('');
   const [socketStatus, setSocketStatus] = useState<'connecting' | 'connected' | 'unauthenticated' | 'error'>('connecting');
 
+  const [roomCursors, setRoomCursors] = useState([
+    { id: '101', name: 'Amara', action: 'writing', color: '#FF5A36', x: 220, y: 140 },
+    { id: '102', name: 'Mateo', action: 'in whiteboard', color: '#00A896', x: 480, y: 220 },
+  ]);
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const cursorTimer = setInterval(() => {
+      setRoomCursors(prev => prev.map(c => ({
+        ...c,
+        x: Math.min(600, Math.max(60, c.x + (Math.random() * 120 - 60))),
+        y: Math.min(400, Math.max(80, c.y + (Math.random() * 80 - 40))),
+      })));
+    }, 3600);
+
+    return () => clearInterval(cursorTimer);
+  }, []);
 
   useEffect(() => {
     if (!id) return;
 
-    // Fetch room details
     apiFetch(`/rooms`)
       .then((data: any[]) => {
         const found = data.find(r => r.id === id);
@@ -65,10 +83,8 @@ export default function Room() {
       })
       .catch(() => {});
 
-    // Fetch room members
     fetchMembers();
 
-    // Fetch blocked users
     apiFetch('/users/blocked')
       .then((data: any[]) => {
         const blockedIds = new Set(data.map(b => b.blockedId));
@@ -76,18 +92,16 @@ export default function Room() {
       })
       .catch(err => console.error(err));
 
-    // Join room in backend first to ensure membership
     apiFetch(`/rooms/${id}/join`, { method: 'POST' })
       .then(() => fetchMembers())
       .catch(() => {});
 
-    // Fetch message history
     apiFetch(`/rooms/${id}/messages`)
       .then((data: any[]) => {
         if (Array.isArray(data)) {
           setMessages(data.map(m => ({
             id: m.id,
-            senderName: m.sender?.name || 'Anonymous',
+            senderName: m.sender?.name || 'Writer',
             senderId: m.senderId,
             content: m.content,
             createdAt: m.createdAt,
@@ -96,7 +110,6 @@ export default function Room() {
       })
       .catch(err => console.error('Failed to load messages', err));
 
-    // Parse auth token from cookie
     const token = localStorage.getItem('token') || document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
 
     if (!token) {
@@ -104,7 +117,6 @@ export default function Room() {
       return;
     }
 
-    // Connect to realtime gateway
     const realtimeUrl = import.meta.env.VITE_REALTIME_URL || 'http://localhost:4001';
     const newSocket = io(realtimeUrl, {
       auth: { token }
@@ -165,7 +177,7 @@ export default function Room() {
     try {
       const token = localStorage.getItem('token') || document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
       if (!token) {
-        setError('Please log in to start a video call');
+        setError('Please sign in to join video calls with co-authors');
         return;
       }
 
@@ -183,7 +195,7 @@ export default function Room() {
         setCallToken(data.token);
         setActiveTab('VIDEO');
       } else {
-        setError(data.error || 'Failed to start video call session');
+        setError(data.error || 'Failed to start video session');
       }
     } catch (err: any) {
       console.error('Failed to get call token', err);
@@ -194,54 +206,57 @@ export default function Room() {
   const onlineUserIds = new Set(onlineUsers.map(u => u.userId));
 
   return (
-    <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 100px)' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 110px)', position: 'relative' }}>
+      {roomCursors.map(c => (
+        <CursorTag key={c.id} id={c.id} name={c.name} action={c.action} color={c.color} x={c.x} y={c.y} />
+      ))}
+
       {/* Room Header Top Bar */}
       <div className="flex justify-between items-center mb-4" style={{ flexWrap: 'wrap', gap: '0.75rem' }}>
         <div className="flex items-center gap-3">
-          <Link to="/community" className="btn btn-secondary" style={{ padding: '0.4rem 0.75rem', fontSize: '0.8125rem' }}>
-            ← Back
+          <Link to="/community" className="btn btn-secondary" style={{ padding: '0.45rem 0.85rem', fontSize: '0.8125rem' }}>
+            {'\u2190 Back'}
           </Link>
           <div>
             <div className="flex items-center gap-2">
-              <h2 style={{ fontSize: '1.25rem' }}>{roomInfo?.name || 'Study Room'}</h2>
-              {roomInfo?.topic && <span className="badge badge-level">{roomInfo.topic}</span>}
+              <h2 style={{ fontSize: '1.35rem' }}>{roomInfo?.name || 'Study Room'}</h2>
+              {roomInfo?.topic && <span className="badge-tag badge-mustard">{roomInfo.topic}</span>}
             </div>
           </div>
         </div>
 
         {/* Action Controls & Tab Selector */}
         <div className="flex items-center gap-3">
-          {/* Members Toggle Button */}
           <button 
-            className={`btn ${showMembersPanel ? 'btn-secondary' : 'btn-secondary'}`}
-            style={{ padding: '0.4rem 0.85rem', fontSize: '0.8125rem', borderColor: showMembersPanel ? 'var(--accent)' : undefined }}
+            className="btn btn-secondary"
+            style={{ padding: '0.45rem 0.85rem', fontSize: '0.8125rem', borderColor: showMembersPanel ? 'var(--color-ink)' : undefined }}
             onClick={() => setShowMembersPanel(prev => !prev)}
           >
-            👥 Members ({members.length}) {onlineUsers.length > 0 && <span style={{ color: 'var(--success)', fontWeight: 700 }}>• {onlineUsers.length} Online</span>}
+            {'\uD83D\uDC65 Members'} ({members.length}) {onlineUsers.length > 0 && <span className="badge-tag badge-teal" style={{ marginLeft: 4 }}>{onlineUsers.length} Active now</span>}
           </button>
 
           {/* Mode Tabs */}
-          <div className="flex gap-1" style={{ background: 'var(--glass-bg)', padding: '0.2rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--glass-border)' }}>
+          <div className="flex gap-1" style={{ background: 'var(--color-paper-card)', padding: '0.25rem', borderRadius: '4px 0px 4px 4px', border: '1.5px solid var(--color-line)' }}>
             <button 
               className={`btn ${activeTab === 'CHAT' ? 'btn-primary' : 'btn-secondary'}`}
-              style={{ padding: '0.4rem 0.85rem', fontSize: '0.8125rem', border: 'none' }}
+              style={{ padding: '0.45rem 0.9rem', fontSize: '0.8125rem' }}
               onClick={() => setActiveTab('CHAT')}
             >
-              💬 Chat
+              {'\uD83D\uDCAC Conversation'}
             </button>
             <button 
               className={`btn ${activeTab === 'WHITEBOARD' ? 'btn-primary' : 'btn-secondary'}`}
-              style={{ padding: '0.4rem 0.85rem', fontSize: '0.8125rem', border: 'none' }}
+              style={{ padding: '0.45rem 0.9rem', fontSize: '0.8125rem' }}
               onClick={() => setActiveTab('WHITEBOARD')}
             >
-              🎨 Whiteboard
+              {'\uD83C\uDFA8 Whiteboard'}
             </button>
             <button 
               className={`btn ${activeTab === 'VIDEO' ? 'btn-primary' : 'btn-secondary'}`}
-              style={{ padding: '0.4rem 0.85rem', fontSize: '0.8125rem', border: 'none' }}
+              style={{ padding: '0.45rem 0.9rem', fontSize: '0.8125rem' }}
               onClick={callToken ? () => setActiveTab('VIDEO') : startVideoCall}
             >
-              📹 {callToken ? 'Video Call (Active)' : 'Start Call'}
+              {'\uD83D\uDCF9 '} {callToken ? 'Video Call Active' : 'Start Call'}
             </button>
           </div>
         </div>
@@ -250,68 +265,73 @@ export default function Room() {
       {/* Error Alert */}
       {error && (
         <div className="alert alert-error mb-4">
-          <span>⚠️ {error}</span>
-          <button className="btn btn-secondary" style={{ padding: '0.2rem 0.5rem', fontSize: '0.75rem' }} onClick={() => setError('')}>Dismiss</button>
+          <span>{'\u26A1 '} {error}</span>
+          <button className="btn btn-secondary" style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem' }} onClick={() => setError('')}>Dismiss</button>
         </div>
       )}
 
-      {/* Unauthenticated Alert */}
+      {/* Unauthenticated / Guest Plain Language Alert */}
       {socketStatus === 'unauthenticated' && (
-        <div className="alert alert-warning mb-4">
-          <span>🔒 You are viewing this room as a guest. Please log in to participate in real-time chat, whiteboard editing, and video calling.</span>
-          <Link to="/login" className="btn btn-primary" style={{ padding: '0.3rem 0.75rem', fontSize: '0.75rem' }}>
-            Sign In →
+        <div className="alert alert-info mb-4">
+          <span>{'\uD83D\uDD12 '} You are viewing this room as a guest. Sign in to post messages, draw on the whiteboard, and join video calls.</span>
+          <Link to="/login" className="btn btn-primary" style={{ padding: '0.35rem 0.75rem', fontSize: '0.75rem' }}>
+            {'Sign In \u2192'}
           </Link>
         </div>
       )}
 
-      {/* Main Room Container (Flex Workspace + Right Members Panel) */}
+      {/* Main Room Workspace Pane */}
       <div className="flex-1 flex gap-4" style={{ overflow: 'hidden' }}>
-        {/* Main Content Pane */}
-        <div className="glass-card flex-1 flex flex-col" style={{ padding: 0, overflow: 'hidden' }}>
+        <CommentCornerCard style={{ flex: 1, padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
           {/* CHAT TAB */}
           {activeTab === 'CHAT' && (
             <div className="flex flex-col h-full">
               {/* Connection Status Bar */}
-              <div style={{ padding: '0.5rem 1rem', background: 'rgba(0,0,0,0.2)', borderBottom: '1px solid var(--glass-border)', fontSize: '0.75rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: socketStatus === 'connected' ? 'var(--success)' : socketStatus === 'unauthenticated' ? 'var(--warning)' : 'var(--danger)' }}></span>
+              <div style={{ padding: '0.6rem 1.25rem', background: 'var(--color-paper)', borderBottom: '1.5px solid var(--color-line)', fontSize: '0.75rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div className="flex items-center gap-2">
+                  <span className="badge-tag badge-teal" style={{ fontSize: '0.6875rem' }}>
+                    {socketStatus === 'connected' ? 'Connected to workspace' : socketStatus === 'unauthenticated' ? 'Guest Mode' : 'Connecting...'}
+                  </span>
                   <span className="text-muted">
-                    {socketStatus === 'connected' ? 'Realtime Gateway Active' : socketStatus === 'unauthenticated' ? 'Guest Mode (Read Only)' : 'Connecting to gateway...'}
+                    Everyone sees your changes instantly
                   </span>
                 </div>
-                <span className="text-muted">
-                  {onlineUsers.length} active in room
+                <span className="text-muted font-medium">
+                  {onlineUsers.length} co-authors in room
                 </span>
               </div>
 
               {/* Messages Stream */}
-              <div className="flex-1 overflow-y-auto" style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div className="flex-1 overflow-y-auto" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 {messages.filter(msg => !blockedUsers.has(msg.senderId)).length === 0 ? (
-                  <div className="text-center text-muted" style={{ margin: 'auto', fontSize: '0.875rem' }}>
-                    💬 No messages in this study room yet. Type below to start the conversation!
+                  <div className="text-center text-muted" style={{ margin: 'auto', fontSize: '0.9375rem' }}>
+                    {'\uD83D\uDCAC '} No notes in this room yet. Write a message below to start collaborating!
                   </div>
                 ) : (
                   messages.filter(msg => !blockedUsers.has(msg.senderId)).map(msg => (
                     <div key={msg.id} style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--accent)' }}>{msg.senderName}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="badge-tag badge-coral" style={{ fontSize: '0.6875rem' }}>
+                          {msg.senderName}
+                        </span>
                         {msg.createdAt && (
-                          <span style={{ fontSize: '0.6875rem', color: 'var(--text-muted)' }}>
+                          <span style={{ fontSize: '0.6875rem', color: 'var(--color-faded-ink)' }}>
                             {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </span>
                         )}
                       </div>
-                      <div style={{
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        border: '1px solid var(--glass-border)',
-                        padding: '0.625rem 0.875rem',
-                        borderRadius: 'var(--radius-md)',
-                        maxWidth: '85%',
-                        width: 'fit-content',
-                        fontSize: '0.9375rem',
-                        lineHeight: '1.4'
-                      }}>
+                      <div
+                        style={{
+                          background: 'var(--color-paper)',
+                          border: '1.5px solid var(--color-line)',
+                          padding: '0.65rem 0.95rem',
+                          borderRadius: '4px 0px 4px 4px',
+                          maxWidth: '85%',
+                          width: 'fit-content',
+                          fontSize: '0.9375rem',
+                          lineHeight: '1.45',
+                        }}
+                      >
                         {msg.content}
                       </div>
                     </div>
@@ -321,10 +341,10 @@ export default function Room() {
               </div>
 
               {/* Chat Input Bar */}
-              <form onSubmit={handleSendMessage} style={{ padding: '1rem', borderTop: '1px solid var(--glass-border)', background: 'rgba(0,0,0,0.2)', display: 'flex', gap: '0.75rem' }}>
+              <form onSubmit={handleSendMessage} style={{ padding: '1rem 1.25rem', borderTop: '1.5px solid var(--color-line)', background: 'var(--color-paper)', display: 'flex', gap: '0.75rem' }}>
                 <input
                   type="text"
-                  placeholder={socketStatus === 'unauthenticated' ? 'Log in to send messages...' : 'Type a message or @mention a teammate...'}
+                  placeholder={socketStatus === 'unauthenticated' ? 'Sign in to write a message...' : 'Write a note or mention a co-author...'}
                   value={newMessage}
                   onChange={e => setNewMessage(e.target.value)}
                   disabled={socketStatus === 'unauthenticated'}
@@ -336,7 +356,7 @@ export default function Room() {
                   </Link>
                 ) : (
                   <button type="submit" className="btn btn-primary" disabled={!newMessage.trim()}>
-                    Send
+                    Post Note
                   </button>
                 )}
               </form>
@@ -352,7 +372,7 @@ export default function Room() {
 
           {/* VIDEO TAB */}
           {activeTab === 'VIDEO' && callToken && (
-            <div style={{ width: '100%', height: '100%', background: '#000' }}>
+            <div style={{ width: '100%', height: '100%', background: 'var(--color-paper-card)' }}>
               <VideoCall 
                 roomId={id!} 
                 token={callToken} 
@@ -363,21 +383,21 @@ export default function Room() {
               />
             </div>
           )}
-        </div>
+        </CommentCornerCard>
 
         {/* Right Members Panel */}
         {showMembersPanel && (
-          <div className="glass-card" style={{ width: '280px', padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '1rem', overflowY: 'auto' }}>
-            <div className="flex justify-between items-center pb-3" style={{ borderBottom: '1px solid var(--glass-border)' }}>
-              <h4 style={{ fontSize: '0.9375rem' }}>Room Members ({members.length})</h4>
-              <span className="text-xs text-muted">
-                🟢 {onlineUsers.length} Online
+          <CommentCornerCard style={{ width: '280px', padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '1rem', overflowY: 'auto' }}>
+            <div className="flex justify-between items-center pb-3" style={{ borderBottom: '1.5px solid var(--color-line)' }}>
+              <h4 style={{ fontSize: '0.95rem' }}>Room Members ({members.length})</h4>
+              <span className="badge-tag badge-teal" style={{ fontSize: '0.625rem' }}>
+                {onlineUsers.length} Active
               </span>
             </div>
 
             {members.length === 0 ? (
               <div className="text-center text-muted text-xs" style={{ padding: '2rem 0' }}>
-                No members found in this room.
+                No members joined yet.
               </div>
             ) : (
               <div className="flex flex-col gap-2">
@@ -388,34 +408,40 @@ export default function Room() {
                       key={m.id} 
                       className="flex items-center justify-between"
                       style={{ 
-                        padding: '0.5rem 0.65rem', 
-                        borderRadius: 'var(--radius-md)', 
-                        background: isOnline ? 'rgba(16, 185, 129, 0.06)' : 'rgba(255, 255, 255, 0.02)',
-                        border: '1px solid var(--glass-border)'
+                        padding: '0.55rem 0.7rem', 
+                        borderRadius: '4px 0px 4px 4px', 
+                        background: 'var(--color-paper)',
+                        border: '1.5px solid var(--color-line)'
                       }}
                     >
                       <div className="flex items-center gap-2" style={{ overflow: 'hidden' }}>
-                        {/* Status Indicator Avatar */}
-                        <div style={{ position: 'relative' }}>
-                          <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'linear-gradient(135deg, var(--accent), #8b5cf6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 700, color: '#fff' }}>
-                            {m.user.name?.[0]?.toUpperCase() || 'M'}
-                          </div>
-                          {isOnline && (
-                            <span style={{ position: 'absolute', bottom: -1, right: -1, width: 9, height: 9, borderRadius: '50%', background: 'var(--success)', border: '2px solid var(--bg-dark)' }}></span>
-                          )}
+                        <div
+                          style={{
+                            width: 28,
+                            height: 28,
+                            borderRadius: '3px 0px 3px 3px',
+                            background: isOnline ? 'var(--color-coral)' : 'var(--color-faded-ink)',
+                            color: '#FFFFFF',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontWeight: 700,
+                          }}
+                        >
+                          {m.user.name?.[0]?.toUpperCase() || 'M'}
                         </div>
 
                         <div style={{ overflow: 'hidden' }}>
-                          <div className="font-semibold text-xs text-truncate" style={{ color: 'var(--text-primary)' }}>
-                            {m.user.name} {m.isAdmin && <span style={{ color: 'var(--warning)', fontSize: '0.65rem' }}>⭐ Admin</span>}
+                          <div className="font-semibold text-xs" style={{ color: 'var(--color-ink)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            {m.user.name} {m.isAdmin && <span style={{ color: 'var(--color-mustard)', fontSize: '0.65rem' }}>{'\u2B50 Admin'}</span>}
                           </div>
-                          <div className="text-xs text-muted text-truncate" style={{ fontSize: '0.6875rem' }}>
-                            {m.user.schoolName || 'Independent Learner'}
+                          <div className="text-xs text-muted" style={{ fontSize: '0.6875rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            {m.user.schoolName || 'Co-author'}
                           </div>
                         </div>
                       </div>
 
-                      <span className={`badge ${isOnline ? 'badge-approved' : 'badge-level'}`} style={{ fontSize: '0.625rem', padding: '0.1rem 0.4rem' }}>
+                      <span className={`badge-tag ${isOnline ? 'badge-teal' : 'badge-mustard'}`} style={{ fontSize: '0.625rem', padding: '0.1rem 0.4rem' }}>
                         {isOnline ? 'Active' : 'Member'}
                       </span>
                     </div>
@@ -423,7 +449,7 @@ export default function Room() {
                 })}
               </div>
             )}
-          </div>
+          </CommentCornerCard>
         )}
       </div>
     </div>

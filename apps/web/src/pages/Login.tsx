@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { apiFetch } from '../lib/api';
+import { CommentCornerCard } from '../components/CommentCornerCard';
+import { HighlighterText } from '../components/HighlighterText';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -30,17 +32,19 @@ export default function Login() {
 
       navigate('/browse');
     } catch (err: any) {
-      setError(err.message || 'Invalid email or password');
+      setError(err.message || 'Check your email and password to sign in.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div style={{ maxWidth: '420px', margin: '2rem auto' }}>
-      <div className="glass-card animate-fade-in">
-        <h2 className="text-center mb-2">Welcome Back</h2>
-        <p className="text-center text-muted text-sm mb-6">Log in to access your research papers and study rooms</p>
+    <div style={{ maxWidth: '440px', margin: '3rem auto' }}>
+      <CommentCornerCard commentPreview="Welcome back to Curious Bright">
+        <h2 className="text-center mb-2">
+          <HighlighterText color="#F4B43D">Welcome Back</HighlighterText>
+        </h2>
+        <p className="text-center text-muted text-sm mb-6">Sign in to open your shared notebooks and study rooms</p>
         
         {error && (
           <div className="alert alert-error mb-4">
@@ -76,13 +80,13 @@ export default function Login() {
           </button>
         </form>
 
-        <div className="text-center mt-6 pt-4" style={{ borderTop: '1px solid var(--glass-border)' }}>
-          <span className="text-secondary text-sm">
+        <div className="text-center mt-6 pt-4" style={{ borderTop: '1.5px solid var(--color-line)' }}>
+          <span className="text-muted text-sm">
             Don't have an account?{' '}
-            <Link to="/register" style={{ color: 'var(--accent)', fontWeight: 600 }}>Sign Up</Link>
+            <Link to="/register" style={{ color: 'var(--color-ink)', fontWeight: 700 }}>Join co-authors</Link>
           </span>
         </div>
-      </div>
+      </CommentCornerCard>
     </div>
   );
 }

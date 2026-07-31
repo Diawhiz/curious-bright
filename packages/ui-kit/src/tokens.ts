@@ -1,43 +1,49 @@
 /**
- * Marginalia Design System Tokens
- * Source of truth for color palette, dark mode variants, status indicators, and typography scale.
+ * Curious Bright Design System Tokens
+ * Source of truth for color palette, collaborator accents, typography, and container shape.
  */
 
 export const colors = {
-  // Light Mode - Marginalia Palette
-  paper: '#f7f6f2',        // Background
-  ink: '#14141a',          // Primary text, headers, navigation
-  highlighter: '#f4b43d',  // Mustard
-  marginnote: '#00a896',   // Teal
-  fadedInk: '#52525b',     // Muted text
-  line: '#e2ddd5',         // Borders
-  coral: '#ff5a36',        // Coral accent
+  // Curious Bright Core Palette
+  paper: '#F7F6F2',        // Warm paper background
+  paperElevated: '#FFFFFF',// Card/panel surface
+  ink: '#14141A',          // Primary text & solid ink-black buttons
+  fadedInk: '#6B685C',     // Muted text, timestamps, secondary labels
+  line: '#E2DFC9',         // Warm rules, dividers, subtle borders
+  lineHover: '#C8C4B0',    // Border hover state
 
-  // Status Colors
-  statusPending: '#f4b43d',
-  statusApproved: '#00a896',
-  statusRejected: '#ff5a36',
+  // Collaborator Accents
+  coral: '#FF5A36',        // Primary collaborator accent / cursor
+  teal: '#00A896',         // Secondary collaborator accent / cursor
+  mustard: '#F4B43D',      // Tertiary collaborator accent / cursor
 
-  // Dark Mode Variants
+  // Highlights & Status (using plain words, no status dots!)
+  highlighter: '#F4B43D',  // Highlighter draw-on accent
+  marginnote: '#00A896',   // Live feature accent
+
+  statusPending: '#F4B43D',
+  statusApproved: '#00A896',
+  statusRejected: '#FF5A36',
+
+  // Dark variant mappings to preserve system token structure
   dark: {
-    paper: '#14141a',        
-    ink: '#f7f6f2',          
-    highlighter: '#f4b43d',  
-    marginnote: '#00a896',   
-    fadedInk: '#a1a1aa',     
-    line: '#27272a',         
-    coral: '#ff5a36',
-    statusPending: '#f4b43d',
-    statusApproved: '#00a896',
-    statusRejected: '#ff5a36',
+    paper: '#F7F6F2',
+    ink: '#14141A',
+    highlighter: '#F4B43D',
+    marginnote: '#00A896',
+    fadedInk: '#6B685C',
+    line: '#E2DFC9',
+    statusPending: '#F4B43D',
+    statusApproved: '#00A896',
+    statusRejected: '#FF5A36',
   },
 } as const;
 
 export const typography = {
   fontFamily: {
-    display: ['Clash Display', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+    display: ['Clash Display', 'Georgia', 'serif'],
     body: ['General Sans', 'Satoshi', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-    mono: ['JetBrains Mono', 'monospace'],
+    mono: ['JetBrains Mono', 'Menlo', 'monospace'],
   },
   fontSize: {
     xs: ['0.75rem', { lineHeight: '1rem' }],
@@ -55,10 +61,10 @@ export const Theme = {
   colors,
   typography,
   borderRadius: {
-    sm: '0.25rem',
-    md: '0.375rem',
-    lg: '0.5rem',
-    full: '9999px',
+    sm: '2px',
+    md: '4px',
+    lg: '6px',
+    commentCorner: '0px 14px 0px 0px',
   },
 } as const;
 
