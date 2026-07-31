@@ -81,14 +81,14 @@ router.get('/', async (req: Request, res: Response) => {
     try {
       const { verifyToken } = require('../lib/jwt');
       const decoded = verifyToken(token);
-      isAdmin = decoded.role === 'ADMIN';
+      isAdmin = decoded.role === 'ADMIN' || decoded.role === 'MODERATOR';
     } catch (e) {}
   }
 
   const requestedStatus = (status as string) || 'APPROVED';
   
   if (requestedStatus !== 'APPROVED' && !isAdmin) {
-    return res.status(403).json({ error: 'Only admins can view non-approved submissions' });
+    return res.status(403).json({ error: 'Only moderators and admins can view non-approved submissions' });
   }
 
   const filter = {
@@ -130,7 +130,7 @@ router.get('/:id', async (req: Request, res: Response) => {
 });
 
 // 5. PATCH /submissions/:id/status - Moderation
-router.patch('/:id/status', requireRole(['ADMIN']), async (req: Request, res: Response) => {
+router.patch('/:id/status', requireRole(['ADMIN', 'MODERATOR']), async (req: Request, res: Response) => {
   const { status, reason } = req.body;
   
   if (status !== 'APPROVED' && status !== 'REJECTED') {

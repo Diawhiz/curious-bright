@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { verifyToken } from '../lib/jwt';
+import { prisma } from '../lib/prisma';
 
 declare global {
   namespace Express {
@@ -12,7 +13,7 @@ declare global {
   }
 }
 
-export const requireAuth = (req: Request, res: Response, next: NextFunction) => {
+export const requireAuth = async (req: Request, res: Response, next: NextFunction) => {
   let token = req.headers.authorization?.split(' ')[1];
 
   if (!token && req.headers.cookie) {
@@ -30,9 +31,19 @@ export const requireAuth = (req: Request, res: Response, next: NextFunction) => 
 
   try {
     const decoded = verifyToken(token);
-    req.user = decoded;
+
+    // Always fetch the live role from DB so promotions take effect immediately
+    const user = await prisma.user.findUnique({
+      where: { id: decoded.id },
+      select: { id: true, role: true },
+    });
+
+    if (!user) return res.status(401).json({ error: 'Unauthorized' });
+
+    req.user = { id: user.id, role: user.role };
     next();
   } catch (error) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 };
+

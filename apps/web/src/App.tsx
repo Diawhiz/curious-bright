@@ -9,6 +9,10 @@ import Moderate from './pages/Moderate';
 import Community from './pages/Community';
 import Room from './pages/Room';
 import Search from './pages/Search';
+import ModeratorLogin from './pages/ModeratorLogin';
+import About from './pages/About';
+import ApplyModerator from './pages/ApplyModerator';
+import ApplyInstitution from './pages/ApplyInstitution';
 
 function App() {
   return (
@@ -27,6 +31,10 @@ function App() {
             <Route path="/community" element={<Community />} />
             <Route path="/room/:id" element={<Room />} />
             <Route path="/search" element={<Search />} />
+            <Route path="/mod-login" element={<ModeratorLogin />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/apply-moderator" element={<ApplyModerator />} />
+            <Route path="/apply-institution" element={<ApplyInstitution />} />
           </Routes>
         </main>
       </div>

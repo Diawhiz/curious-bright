@@ -6,9 +6,8 @@ import { requireRole } from '../middleware/role';
 const router = Router();
 
 // Used by the institutional billing service to create orgs
-router.post('/', async (req: Request, res: Response) => {
+router.post('/', requireAuth, async (req: Request, res: Response) => {
 
-  // In a real app, protect this with an internal API key or service-to-service auth
   const { name, domain } = req.body;
   try {
     const org = await prisma.organization.create({
@@ -18,6 +17,13 @@ router.post('/', async (req: Request, res: Response) => {
         planTier: 'FREE'
       }
     });
+    
+    // Link the user who created it
+    await prisma.user.update({
+      where: { id: req.user!.id },
+      data: { organizationId: org.id }
+    });
+
     res.json(org);
   } catch (error: any) {
     res.status(500).json({ error: error.message });

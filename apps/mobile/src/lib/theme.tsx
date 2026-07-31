@@ -11,6 +11,7 @@ interface ThemeContextType {
     marginnote: string;
     fadedInk: string;
     line: string;
+    coral: string;
     statusPending: string;
     statusApproved: string;
     statusRejected: string;
@@ -33,6 +34,7 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         marginnote: colors.dark.marginnote,
         fadedInk: colors.dark.fadedInk,
         line: colors.dark.line,
+        coral: colors.dark.coral,
         statusPending: colors.dark.statusPending,
         statusApproved: colors.dark.statusApproved,
         statusRejected: colors.dark.statusRejected,
@@ -44,6 +46,7 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         marginnote: colors.marginnote,
         fadedInk: colors.fadedInk,
         line: colors.line,
+        coral: colors.coral,
         statusPending: colors.statusPending,
         statusApproved: colors.statusApproved,
         statusRejected: colors.statusRejected,

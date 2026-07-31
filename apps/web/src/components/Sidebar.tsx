@@ -113,12 +113,40 @@ export default function Sidebar() {
           <span>Submit Paper</span>
         </Link>
 
+        <Link to="/about" className={`sidebar-nav-item ${isActive('/about') ? 'active' : ''}`}>
+          <span className="sidebar-nav-icon">ℹ️</span>
+          <span>About</span>
+        </Link>
+
         <div className="nav-section-title" style={{ marginTop: '1rem' }}>Admin</div>
 
-        <Link to="/moderate" className={`sidebar-nav-item ${isActive('/moderate') ? 'active' : ''}`}>
-          <span className="sidebar-nav-icon">🛡️</span>
-          <span>Moderation</span>
-        </Link>
+        {(user?.role === 'MODERATOR' || user?.role === 'ADMIN') && (
+          <>
+            <Link to="/moderate" className={`sidebar-nav-item ${isActive('/moderate') ? 'active' : ''}`}>
+              <span className="sidebar-nav-icon">🛡️</span>
+              <span>Moderation</span>
+            </Link>
+
+            <Link to="/mod-login" className={`sidebar-nav-item ${isActive('/mod-login') ? 'active' : ''}`}>
+              <span className="sidebar-nav-icon">🔐</span>
+              <span>Mod Login</span>
+            </Link>
+          </>
+        )}
+
+        {(!user?.role || user?.role === 'USER' || user?.role === 'EXPERT') && (
+          <>
+            <Link to="/apply-moderator" className={`sidebar-nav-item ${isActive('/apply-moderator') ? 'active' : ''}`}>
+              <span className="sidebar-nav-icon">📝</span>
+              <span>Apply as Mod</span>
+            </Link>
+            
+            <Link to="/apply-institution" className={`sidebar-nav-item ${isActive('/apply-institution') ? 'active' : ''}`}>
+              <span className="sidebar-nav-icon">🏛️</span>
+              <span>For Institutions</span>
+            </Link>
+          </>
+        )}
       </nav>
 
       {/* User / Auth Bottom Card */}
@@ -126,7 +154,7 @@ export default function Sidebar() {
         {isAuthenticated ? (
           <>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', overflow: 'hidden' }}>
-              <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'linear-gradient(135deg, var(--accent), #8b5cf6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8125rem', fontWeight: 700, color: '#fff', flexShrink: 0 }}>
+              <div style={{ width: 32, height: 32, border: '1.5px solid var(--color-border-dark)', background: 'var(--color-coral)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8125rem', fontWeight: 700, color: '#fff', flexShrink: 0 }}>
                 {user?.name?.[0]?.toUpperCase() || 'U'}
               </div>
               <div style={{ overflow: 'hidden' }}>

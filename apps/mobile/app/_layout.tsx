@@ -4,18 +4,18 @@ import { StatusBar } from 'expo-status-bar';
 export default function RootLayout() {
   return (
     <>
-      <StatusBar style="light" />
+      <StatusBar style="dark" />
       <Stack
         screenOptions={{
           headerStyle: {
-            backgroundColor: '#1a1a1a',
+            backgroundColor: '#f7f6f2',
           },
-          headerTintColor: '#fff',
+          headerTintColor: '#14141a',
           headerTitleStyle: {
             fontWeight: 'bold',
           },
           contentStyle: {
-            backgroundColor: '#121212',
+            backgroundColor: '#f7f6f2',
           },
         }}
       >

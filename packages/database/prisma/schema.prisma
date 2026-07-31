@@ -10,6 +10,7 @@ datasource db {
 enum Role {
   USER
   EXPERT
+  MODERATOR
   ADMIN
 }
 
@@ -63,6 +64,7 @@ model User {
   blockedBy      UserBlock[]  @relation("UserBlocked")
   pushToken      String?
   notifications  Notification[]
+  moderatorApplication ModeratorApplication?
 }
 
 model Submission {
@@ -251,4 +253,25 @@ model Subscription {
   currentPeriodEnd DateTime?
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt
+}
+
+enum ModApplicationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model ModeratorApplication {
+  id          String               @id @default(uuid())
+  userId      String
+  user        User                 @relation(fields: [userId], references: [id])
+  motivation  String
+  experience  String
+  subjects    String[]
+  status      ModApplicationStatus @default(PENDING)
+  reviewNote  String?
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+
+  @@unique([userId])
 }

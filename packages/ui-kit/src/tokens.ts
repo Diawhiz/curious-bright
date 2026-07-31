@@ -5,37 +5,39 @@
 
 export const colors = {
   // Light Mode - Marginalia Palette
-  paper: '#F7F7F2',        // Background
-  ink: '#1E2A4A',          // Primary text, headers, navigation
-  highlighter: '#E8A93B',  // Primary accent - CTAs, active states, repository/reading features
-  marginnote: '#2E9E83',   // Secondary accent - Live features ONLY (chat presence, calls, whiteboard cursors)
-  fadedInk: '#6B7690',     // Muted text, timestamps, secondary labels
-  line: '#DDD9CC',         // Hairline rules, dividers, subtle borders
+  paper: '#f7f6f2',        // Background
+  ink: '#14141a',          // Primary text, headers, navigation
+  highlighter: '#f4b43d',  // Mustard
+  marginnote: '#00a896',   // Teal
+  fadedInk: '#52525b',     // Muted text
+  line: '#e2ddd5',         // Borders
+  coral: '#ff5a36',        // Coral accent
 
   // Status Colors
-  statusPending: '#E8A93B',  // Highlighter
-  statusApproved: '#2E9E83', // Marginnote
-  statusRejected: '#B85C4A', // Muted brick
+  statusPending: '#f4b43d',
+  statusApproved: '#00a896',
+  statusRejected: '#ff5a36',
 
   // Dark Mode Variants
   dark: {
-    paper: '#10141F',        // Near-black navy background
-    ink: '#F7F7F2',          // Paper text color for contrast
-    highlighter: '#E8A93B',  // Holds contrast on dark
-    marginnote: '#2E9E83',   // Holds contrast on dark
-    fadedInk: '#94A0B8',     // Adjusted faded ink for dark readability
-    line: '#242F48',         // Subtle dark divider line
-    statusPending: '#E8A93B',
-    statusApproved: '#2E9E83',
-    statusRejected: '#D46A58',
+    paper: '#14141a',        
+    ink: '#f7f6f2',          
+    highlighter: '#f4b43d',  
+    marginnote: '#00a896',   
+    fadedInk: '#a1a1aa',     
+    line: '#27272a',         
+    coral: '#ff5a36',
+    statusPending: '#f4b43d',
+    statusApproved: '#00a896',
+    statusRejected: '#ff5a36',
   },
 } as const;
 
 export const typography = {
   fontFamily: {
-    display: ['Newsreader', 'Georgia', 'serif'],
-    body: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
-    mono: ['JetBrains Mono', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
+    display: ['Clash Display', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+    body: ['General Sans', 'Satoshi', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+    mono: ['JetBrains Mono', 'monospace'],
   },
   fontSize: {
     xs: ['0.75rem', { lineHeight: '1rem' }],

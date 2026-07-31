@@ -95,11 +95,13 @@ export default function BrowseScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#f7f6f2',
   },
   center: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#f7f6f2',
   },
   header: {
     flexDirection: 'row',
@@ -108,13 +110,18 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   button: {
-    backgroundColor: '#333333',
+    backgroundColor: '#14141a',
     paddingHorizontal: 16,
     paddingVertical: 8,
-    borderRadius: 8,
+    borderWidth: 1.5,
+    borderColor: '#14141a',
+    shadowColor: '#ff5a36',
+    shadowOffset: { width: 2, height: 2 },
+    shadowOpacity: 1,
+    elevation: 3,
   },
   logoutButton: {
-    backgroundColor: '#ff4444',
+    backgroundColor: '#ff5a36',
   },
   buttonText: {
     color: '#ffffff',
@@ -125,25 +132,28 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   card: {
-    backgroundColor: '#1a1a1a',
+    backgroundColor: '#ffffff',
     padding: 16,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#333',
+    borderWidth: 2,
+    borderColor: '#14141a',
+    shadowColor: '#14141a',
+    shadowOffset: { width: 4, height: 4 },
+    shadowOpacity: 1,
+    elevation: 4,
   },
   title: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#ffffff',
+    color: '#14141a',
     marginBottom: 8,
   },
   description: {
     fontSize: 14,
-    color: '#aaaaaa',
+    color: '#52525b',
     marginBottom: 12,
   },
   meta: {
     fontSize: 12,
-    color: '#777777',
+    color: '#6b7280',
   },
 });

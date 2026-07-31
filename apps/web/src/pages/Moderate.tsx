@@ -100,19 +100,44 @@ export default function Moderate() {
     }
   };
 
+  // Refresh stored user so role promotions reflect without re-login
+  useEffect(() => {
+    const token = localStorage.getItem('token') ||
+      document.cookie.split('; ').find(r => r.startsWith('token='))?.split('=')[1];
+    if (token) {
+      apiFetch('/auth/me')
+        .then((userData: any) => {
+          if (userData?.id) localStorage.setItem('user', JSON.stringify(userData));
+        })
+        .catch(() => {});
+    }
+  }, []);
+
   if (isForbidden) {
+    const user = (() => { try { return JSON.parse(localStorage.getItem('user') || 'null'); } catch { return null; } })();
+    const isLoggedIn = !!localStorage.getItem('token');
+
     return (
       <div className="animate-fade-in" style={{ maxWidth: '540px', margin: '3rem auto' }}>
         <div className="glass-card text-center">
           <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🛡️</div>
-          <h3>Moderator & Admin Access Required</h3>
+          <h3>Moderator Access Required</h3>
           <p className="text-secondary text-sm mt-2 mb-6">
-            The moderation dashboard, report resolution queue, and platform analytics are restricted to verified MODERATOR and ADMIN accounts.
+            The moderation dashboard is restricted to verified <strong>Moderator</strong> and <strong>Admin</strong> accounts.
+            {isLoggedIn && (!user?.role || user?.role === 'USER' || user?.role === 'EXPERT') && (
+              <> You can apply to become a moderator and access this dashboard once approved.</>
+            )}
           </p>
-          <div className="flex justify-center gap-4">
-            <Link to="/login" className="btn btn-primary">
-              Log in as Moderator →
-            </Link>
+          <div className="flex justify-center gap-4" style={{ flexWrap: 'wrap' }}>
+            {isLoggedIn ? (
+              <Link to="/apply-moderator" className="btn btn-primary">
+                Apply as Moderator →
+              </Link>
+            ) : (
+              <Link to="/mod-login" className="btn btn-primary">
+                Log in as Moderator →
+              </Link>
+            )}
             <Link to="/browse" className="btn btn-secondary">
               Browse Open Library
             </Link>

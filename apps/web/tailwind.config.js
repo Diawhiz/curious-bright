@@ -26,6 +26,10 @@ export default {
           DEFAULT: colors.marginnote,
           dark: colors.dark.marginnote,
         },
+        coral: {
+          DEFAULT: colors.coral,
+          dark: colors.dark.coral,
+        },
         'faded-ink': {
           DEFAULT: colors.fadedInk,
           dark: colors.dark.fadedInk,
