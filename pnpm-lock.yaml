@@ -82,6 +82,52 @@ importers:
         specifier: ^5.0.0
         version: 5.9.3
 
+  apps/landing-page:
+    dependencies:
+      '@curious-bright/types':
+        specifier: workspace:*
+        version: link:../../packages/types
+      '@curious-bright/ui-kit':
+        specifier: workspace:*
+        version: link:../../packages/ui-kit
+      framer-motion:
+        specifier: ^12.42.2
+        version: 12.42.2(react-dom@18.3.1(react@18.2.0))(react@18.2.0)
+      lucide-react:
+        specifier: ^1.27.0
+        version: 1.27.0(react@18.2.0)
+      react:
+        specifier: ^18.2.0
+        version: 18.2.0
+      react-dom:
+        specifier: ^18.2.0
+        version: 18.3.1(react@18.2.0)
+    devDependencies:
+      '@types/react':
+        specifier: ^18.2.15
+        version: 18.2.79
+      '@types/react-dom':
+        specifier: ^18.2.7
+        version: 18.3.7(@types/react@18.2.79)
+      '@vitejs/plugin-react':
+        specifier: ^4.0.3
+        version: 4.7.0(vite@4.5.14(@types/node@20.19.43)(lightningcss@1.19.0)(terser@5.49.0))
+      autoprefixer:
+        specifier: ^10.4.16
+        version: 10.5.4(postcss@8.5.24)
+      postcss:
+        specifier: ^8.4.32
+        version: 8.5.24
+      tailwindcss:
+        specifier: ^3.4.0
+        version: 3.4.19(yaml@2.9.0)
+      typescript:
+        specifier: ^5.0.2
+        version: 5.9.3
+      vite:
+        specifier: ^4.4.5
+        version: 4.5.14(@types/node@20.19.43)(lightningcss@1.19.0)(terser@5.49.0)
+
   apps/mobile:
     dependencies:
       '@curious-bright/realtime-contracts':
@@ -10589,7 +10635,6 @@ snapshots:
   '@types/react-dom@18.3.7(@types/react@18.2.79)':
     dependencies:
       '@types/react': 18.2.79
-    optional: true
 
   '@types/react-dom@18.3.7(@types/react@18.3.31)':
     dependencies:

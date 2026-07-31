@@ -1,0 +1,274 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ==========================================================================
+   CURIOUS BRIGHT — LANDING PAGE & DESIGN SYSTEM ENGINE
+   Source of Truth: @curious-bright/ui-kit
+   ========================================================================== */
+
+:root {
+  --color-paper: #F7F6F2;
+  --color-paper-card: #FFFFFF;
+  --color-paper-hover: #FCFBF8;
+  --color-ink: #14141A;
+  --color-faded-ink: #6B685C;
+  --color-line: #E2DFC9;
+  --color-line-dark: #C8C4B0;
+  
+  /* Collaborator Accents */
+  --color-coral: #FF5A36;
+  --color-teal: #00A896;
+  --color-mustard: #F4B43D;
+  --color-highlighter: #F4B43D;
+  --color-marginnote: #00A896;
+
+  --font-display: 'Clash Display', -apple-system, sans-serif;
+  --font-body: 'General Sans', 'Satoshi', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.6;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+/* Notebook Grid Background Texture */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-image: 
+    linear-gradient(to right, rgba(226, 223, 201, 0.25) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(226, 223, 201, 0.25) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Typography Hierarchy */
+h1, h2, h3, h4, h5, h6, .font-display {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--color-ink);
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+/* Comment Corner Folded Card Styling */
+.comment-corner-card {
+  position: relative;
+  background: var(--color-paper-card);
+  border: 1.5px solid var(--color-line);
+  border-radius: 4px 0px 4px 4px;
+  padding: 1.75rem;
+  box-shadow: 0 4px 16px rgba(20, 20, 26, 0.04);
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), 
+              border-color 0.2s ease, 
+              box-shadow 0.2s ease;
+  overflow: visible;
+}
+
+.comment-corner-ear {
+  position: absolute;
+  top: -1.5px;
+  right: -1.5px;
+  width: 22px;
+  height: 22px;
+  background: var(--color-paper);
+  border-left: 1.5px solid var(--color-line);
+  border-bottom: 1.5px solid var(--color-line);
+  border-bottom-left-radius: 3px;
+  box-shadow: -2px 2px 5px rgba(20, 20, 26, 0.06);
+  cursor: pointer;
+  z-index: 5;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.comment-corner-card:hover .comment-corner-ear,
+.comment-corner-ear:hover {
+  transform: translate(-3px, 3px) rotate(-8deg);
+  background: #EFECE1;
+  border-color: var(--color-faded-ink);
+}
+
+.comment-corner-card:hover {
+  border-color: var(--color-line-dark);
+  box-shadow: 0 8px 24px rgba(20, 20, 26, 0.07);
+}
+
+/* Highlighter Stroke Animation */
+.highlight-stroke {
+  position: relative;
+  display: inline-block;
+  z-index: 1;
+}
+
+.highlight-stroke::after {
+  content: '';
+  position: absolute;
+  bottom: 0.15em;
+  left: -0.1em;
+  right: -0.1em;
+  height: 0.4em;
+  background: var(--color-highlighter);
+  opacity: 0.4;
+  z-index: -1;
+  transform: rotate(-0.5deg);
+  border-radius: 2px;
+  transition: height 0.2s ease, opacity 0.2s ease;
+}
+
+.highlight-stroke:hover::after {
+  height: 0.65em;
+  opacity: 0.65;
+}
+
+.highlight-stroke-coral::after {
+  background: var(--color-coral);
+}
+
+.highlight-stroke-teal::after {
+  background: var(--color-teal);
+}
+
+/* Live Cursor Tags (No Status Dots!) */
+.live-cursor-tag {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.28rem 0.6rem;
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #FFFFFF;
+  pointer-events: none;
+  z-index: 50;
+  box-shadow: 2px 3px 6px rgba(20, 20, 26, 0.12);
+  white-space: nowrap;
+}
+
+.live-cursor-tag.cursor-coral {
+  background-color: var(--color-coral);
+}
+
+.live-cursor-tag.cursor-teal {
+  background-color: var(--color-teal);
+}
+
+.live-cursor-tag.cursor-mustard {
+  background-color: var(--color-mustard);
+  color: var(--color-ink);
+}
+
+.live-cursor-pointer {
+  width: 9px;
+  height: 9px;
+  fill: currentColor;
+}
+
+/* Primary Ink Button */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--color-ink);
+  color: var(--color-paper);
+  border: 1.5px solid var(--color-ink);
+  border-radius: 4px 0px 4px 4px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 2px 8px rgba(20, 20, 26, 0.12);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(20, 20, 26, 0.2);
+  background: #24242F;
+}
+
+/* Secondary Highlighter Button */
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--color-paper-card);
+  color: var(--color-ink);
+  border: 1.5px solid var(--color-line);
+  border-radius: 4px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+  position: relative;
+}
+
+.btn-secondary::before {
+  content: '';
+  position: absolute;
+  bottom: 4px;
+  left: 10px;
+  right: 10px;
+  height: 4px;
+  background: var(--color-highlighter);
+  opacity: 0;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease;
+  z-index: 0;
+}
+
+.btn-secondary:hover::before {
+  opacity: 0.6;
+  transform: scaleX(1);
+}
+
+.btn-secondary:hover {
+  border-color: var(--color-faded-ink);
+  transform: translateY(-1px);
+}
+
+/* Custom minimal scrollbars */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-paper);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-line-dark);
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-faded-ink);
+}

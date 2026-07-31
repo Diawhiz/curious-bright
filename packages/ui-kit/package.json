@@ -2,6 +2,7 @@
   "name": "@curious-bright/ui-kit",
   "version": "1.0.0",
   "main": "./src/index.ts",
+  "type": "module",
   "types": "./src/index.ts",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
