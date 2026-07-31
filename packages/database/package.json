@@ -2,7 +2,14 @@
   "name": "@curious-bright/database",
   "version": "1.0.0",
   "main": "./src/index.ts",
+  "type": "module",
   "types": "./src/index.ts",
+  "scripts": {
+    "generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev",
+    "db:studio": "prisma studio"
+  },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },
@@ -10,9 +17,7 @@
     "type": "git",
     "url": "git+https://github.com/curious-bright/curious-bright.git"
   },
-
   "dependencies": {
-
     "@prisma/client": "^5.0.0"
   },
   "devDependencies": {
