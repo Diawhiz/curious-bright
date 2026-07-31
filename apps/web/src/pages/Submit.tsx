@@ -53,7 +53,6 @@ export default function Submit() {
       const uploadRes = await apiFetch('/submissions/upload', {
         method: 'POST',
         body: formData,
-        isFormData: true,
       });
 
       const fileUrl = uploadRes.fileUrl || uploadRes.url;
