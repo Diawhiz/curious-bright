@@ -155,6 +155,7 @@ export function Whiteboard({ roomId, socket }: WhiteboardProps) {
         y={cursorPos.y + 40}
       />
 
+      {/* Toolbar Controls with Boxicons */}
       <div
         style={{
           padding: '0.6rem 1rem',
@@ -167,7 +168,10 @@ export function Whiteboard({ roomId, socket }: WhiteboardProps) {
         }}
       >
         <div className="flex items-center gap-2">
-          <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-ink)' }}>Felt Pen:</span>
+          <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-ink)' }} className="flex items-center gap-1">
+            <i className="bx bx-pencil" style={{ fontSize: '0.95rem' }}></i>
+            Felt Pen:
+          </span>
           <button
             onClick={() => setActiveColor('#FF5A36')}
             style={{
@@ -223,7 +227,8 @@ export function Whiteboard({ roomId, socket }: WhiteboardProps) {
           className="btn btn-secondary"
           style={{ padding: '0.35rem 0.75rem', fontSize: '0.75rem' }}
         >
-          Clear Whiteboard
+          <i className="bx bx-trash" style={{ fontSize: '0.9rem' }}></i>
+          <span>Clear Whiteboard</span>
         </button>
       </div>
 

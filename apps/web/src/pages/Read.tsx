@@ -33,18 +33,16 @@ export default function Read() {
   const [pageNumber, setPageNumber] = useState(1);
   const [pdfError, setPdfError] = useState(false);
 
-  // Demo Co-author Gliding Cursors & Live Typing Ripple (Signature Moments #1 & #5)
+  // Demo Co-author Gliding Cursors & Live Typing Ripple
   const [collaborators, setCollaborators] = useState([
     { id: '1', name: 'Amara', action: 'reading page 1', color: '#FF5A36', x: 120, y: 180 },
     { id: '2', name: 'Mateo', action: 'highlighting', color: '#00A896', x: 420, y: 310 },
   ]);
 
-  // Live Typing Ripple state
   const [liveMarginNote, setLiveMarginNote] = useState('');
   const fullNoteText = "This passage directly connects with the quantum model discussed in chapter 4.";
 
   useEffect(() => {
-    // Simulate co-author cursor gliding (Signature Moment #1)
     const cursorInterval = setInterval(() => {
       setCollaborators(prev => prev.map(c => ({
         ...c,
@@ -53,7 +51,6 @@ export default function Read() {
       })));
     }, 3200);
 
-    // Simulate co-author live typing ripple (Signature Moment #5)
     let charIndex = 0;
     const typingInterval = setInterval(() => {
       if (charIndex <= fullNoteText.length) {
@@ -159,34 +156,37 @@ export default function Read() {
 
   return (
     <div className="flex flex-col items-center">
-      {/* Top Controls Bar */}
+      {/* Top Controls Bar with Boxicons */}
       <div className="w-full flex justify-between items-center mb-6" style={{ maxWidth: '860px', width: '100%', flexWrap: 'wrap', gap: '1rem' }}>
         <div className="flex items-center gap-3">
           <button className="btn btn-secondary" onClick={() => navigate(-1)} style={{ padding: '0.45rem 0.85rem', fontSize: '0.8125rem' }}>
-            ← Back
+            <i className="bx bx-left-arrow-alt" style={{ fontSize: '1.1rem' }}></i>
+            <span>Back</span>
           </button>
           <div>
             <h2 style={{ fontSize: '1.35rem' }}>{docItem.title}</h2>
             <div className="flex items-center gap-2 mt-1">
               {docItem.license && <span className="badge-tag badge-mustard">{docItem.license}</span>}
               {docItem.academicLevel && <span className="badge-tag badge-teal">{docItem.academicLevel.replace('_', ' ')}</span>}
-              {docItem.cached && <span className="badge-tag badge-coral">⚡ Ready instantly</span>}
+              {docItem.cached && <span className="badge-tag badge-coral"><i className="bx bx-bolt-circle"></i> Ready instantly</span>}
             </div>
           </div>
         </div>
 
         {pdfUrl && (
           <a href={pdfUrl} target="_blank" rel="noreferrer" className="btn btn-secondary" style={{ padding: '0.45rem 0.95rem', fontSize: '0.8125rem' }}>
-            📥 Save Local Copy
+            <i className="bx bx-download" style={{ fontSize: '1.1rem' }}></i>
+            <span>Save Local Copy</span>
           </a>
         )}
       </div>
 
-      {/* Abstract & Live Typing Ripple Card (Signature Moment #5) */}
+      {/* Abstract & Live Typing Ripple Card */}
       <div style={{ maxWidth: '860px', width: '100%' }} className="mb-6">
         <CommentCornerCard commentPreview="Hover to inspect margin activity">
           <div className="flex justify-between items-start gap-4 mb-2">
-            <h4 style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-faded-ink)' }}>
+            <h4 style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-faded-ink)' }} className="flex items-center gap-1">
+              <i className="bx bx-notepad" style={{ fontSize: '0.95rem' }}></i>
               Summary & Margin Notes
             </h4>
             <span className="badge-tag badge-coral" style={{ fontSize: '0.6875rem' }}>
@@ -223,9 +223,8 @@ export default function Read() {
         </CommentCornerCard>
       </div>
 
-      {/* PDF Reader Canvas Frame with Gliding Cursor Tags (Signature Moment #1) */}
+      {/* PDF Reader Canvas Frame with Gliding Cursor Tags */}
       <div style={{ maxWidth: '860px', width: '100%', position: 'relative' }}>
-        {/* Render Gliding Collaborator Cursor Tags */}
         {collaborators.map((c) => (
           <CursorTag
             key={c.id}
@@ -244,7 +243,8 @@ export default function Read() {
               <p className="font-semibold mb-2">Unable to render PDF preview directly in browser.</p>
               <p className="text-muted text-sm mb-4">You can download the full PDF to read offline.</p>
               <a href={pdfUrl} target="_blank" rel="noreferrer" className="btn btn-primary">
-                Download PDF Document
+                <i className="bx bx-download" style={{ fontSize: '1.1rem' }}></i>
+                <span>Download PDF Document</span>
               </a>
             </div>
           ) : (
@@ -261,7 +261,7 @@ export default function Read() {
             </Document>
           )}
 
-          {/* Page Controls */}
+          {/* Page Controls with Boxicons */}
           {numPages && numPages > 0 && !pdfError && (
             <div className="flex items-center gap-4 mt-6 pt-4" style={{ borderTop: '1.5px solid var(--color-line)', width: '100%', justifyContent: 'center' }}>
               <button 
@@ -270,7 +270,8 @@ export default function Read() {
                 onClick={() => setPageNumber(prev => prev - 1)}
                 style={{ padding: '0.4rem 0.85rem' }}
               >
-                ← Previous
+                <i className="bx bx-chevron-left" style={{ fontSize: '1.1rem' }}></i>
+                <span>Previous</span>
               </button>
 
               <span className="text-sm font-medium">
@@ -283,7 +284,8 @@ export default function Read() {
                 onClick={() => setPageNumber(prev => prev + 1)}
                 style={{ padding: '0.4rem 0.85rem' }}
               >
-                Next →
+                <span>Next</span>
+                <i className="bx bx-chevron-right" style={{ fontSize: '1.1rem' }}></i>
               </button>
             </div>
           )}

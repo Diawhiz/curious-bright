@@ -110,21 +110,23 @@ export default function Browse() {
           </p>
         </div>
 
-        {/* Tab Switcher */}
+        {/* Tab Switcher with Boxicons */}
         <div className="flex gap-2" style={{ background: 'var(--color-paper-card)', padding: '0.3rem', borderRadius: '4px 0px 4px 4px', border: '1.5px solid var(--color-line)' }}>
           <button 
             className={`btn ${activeCatalog === 'BOOKS' ? 'btn-primary' : 'btn-secondary'}`}
             style={{ padding: '0.45rem 1.1rem', fontSize: '0.8125rem' }}
             onClick={() => setActiveCatalog('BOOKS')}
           >
-            📖 Open Classics ({books.length})
+            <i className="bx bx-book-alt" style={{ fontSize: '1rem' }}></i>
+            <span>Open Classics ({books.length})</span>
           </button>
           <button 
             className={`btn ${activeCatalog === 'COMMUNITY' ? 'btn-primary' : 'btn-secondary'}`}
             style={{ padding: '0.45rem 1.1rem', fontSize: '0.8125rem' }}
             onClick={() => setActiveCatalog('COMMUNITY')}
           >
-            📝 Shared Papers ({submissions.length})
+            <i className="bx bx-file" style={{ fontSize: '1rem' }}></i>
+            <span>Shared Papers ({submissions.length})</span>
           </button>
         </div>
       </div>
@@ -194,8 +196,9 @@ export default function Browse() {
                     {book.title}
                   </h3>
 
-                  <p className="text-xs text-muted mb-3" style={{ fontWeight: 600 }}>
-                    ✍️ {book.author || 'Classical Author'} • Source: {book.source}
+                  <p className="text-xs text-muted mb-3 flex items-center gap-1" style={{ fontWeight: 600 }}>
+                    <i className="bx bx-pen" style={{ fontSize: '0.9rem' }}></i>
+                    {book.author || 'Classical Author'} • Source: {book.source}
                   </p>
 
                   <p className="text-muted text-sm mb-4" style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
@@ -214,15 +217,17 @@ export default function Browse() {
                 </div>
 
                 <div className="flex justify-between items-center pt-4" style={{ borderTop: '1.5px solid var(--color-line)', marginTop: '1rem' }}>
-                  <span className="text-xs text-muted font-medium">
-                    {book.cacheStatus === 'CACHED' ? '⚡ Ready to read instantly' : '📄 Open document'}
+                  <span className="text-xs text-muted font-medium flex items-center gap-1">
+                    <i className="bx bx-bolt-circle" style={{ fontSize: '0.9rem', color: 'var(--color-mustard)' }}></i>
+                    {book.cacheStatus === 'CACHED' ? 'Ready to read instantly' : 'Open document'}
                   </span>
                   <button 
                     onClick={() => handleReadBook(book)}
                     className="btn btn-primary" 
                     style={{ padding: '0.45rem 0.95rem', fontSize: '0.8125rem' }}
                   >
-                    Read Book →
+                    <span>Read Book</span>
+                    <i className="bx bx-right-arrow-alt" style={{ fontSize: '1.1rem' }}></i>
                   </button>
                 </div>
               </CommentCornerCard>
@@ -238,7 +243,8 @@ export default function Browse() {
             flourishText="Community Notebook"
             actionButton={
               <Link to="/submit" className="btn btn-primary">
-                Share a Paper →
+                <span>Share a Paper</span>
+                <i className="bx bx-right-arrow-alt" style={{ fontSize: '1.1rem' }}></i>
               </Link>
             }
           />
@@ -247,7 +253,7 @@ export default function Browse() {
             {filteredSubmissions.map(sub => (
               <CommentCornerCard
                 key={sub.id}
-                commentPreview={`Peer review note: Verified by community co-authors.`}
+                commentPreview="Peer review note: Verified by community co-authors."
                 className="flex flex-col justify-between"
               >
                 <div>
@@ -265,8 +271,9 @@ export default function Browse() {
                   </h3>
 
                   {sub.user && (
-                    <p className="text-xs text-muted mb-3" style={{ fontWeight: 600 }}>
-                      ✍️ {sub.user.name} {sub.user.schoolName ? `• ${sub.user.schoolName}` : ''}
+                    <p className="text-xs text-muted mb-3 flex items-center gap-1" style={{ fontWeight: 600 }}>
+                      <i className="bx bx-pen" style={{ fontSize: '0.9rem' }}></i>
+                      {sub.user.name} {sub.user.schoolName ? `• ${sub.user.schoolName}` : ''}
                     </p>
                   )}
 
@@ -276,9 +283,13 @@ export default function Browse() {
                 </div>
 
                 <div className="flex justify-between items-center pt-4" style={{ borderTop: '1.5px solid var(--color-line)', marginTop: '1rem' }}>
-                  <span className="text-xs text-muted">Shared PDF</span>
+                  <span className="text-xs text-muted flex items-center gap-1">
+                    <i className="bx bx-file-pdf" style={{ fontSize: '0.9rem' }}></i>
+                    Shared PDF
+                  </span>
                   <Link to={`/read/${sub.id}`} className="btn btn-primary" style={{ padding: '0.45rem 0.95rem', fontSize: '0.8125rem' }}>
-                    Read Paper →
+                    <span>Read Paper</span>
+                    <i className="bx bx-right-arrow-alt" style={{ fontSize: '1.1rem' }}></i>
                   </Link>
                 </div>
               </CommentCornerCard>

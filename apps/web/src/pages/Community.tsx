@@ -1,145 +1,114 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { apiFetch } from '../lib/api';
 import { CommentCornerCard } from '../components/CommentCornerCard';
 import { HighlighterText } from '../components/HighlighterText';
-import { CuriousLoading, CuriousEmpty, CuriousError } from '../components/CuriousStates';
+import { CuriousLoading, CuriousEmpty } from '../components/CuriousStates';
 
 interface Room {
   id: string;
   name: string;
   topic: string;
-  _count?: { members: number };
+  isPrivate: boolean;
+  memberCount?: number;
+  activeCount?: number;
 }
 
 export default function Community() {
   const [rooms, setRooms] = useState<Room[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  
   const [newRoomName, setNewRoomName] = useState('');
   const [newRoomTopic, setNewRoomTopic] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
   const [createError, setCreateError] = useState('');
-  const [creating, setCreating] = useState(false);
 
-  const loadRooms = async () => {
+  useEffect(() => {
+    fetchRooms();
+  }, []);
+
+  const fetchRooms = async () => {
     setLoading(true);
-    setError('');
     try {
       const data = await apiFetch('/rooms');
-      setRooms(Array.isArray(data) ? data : []);
-    } catch (e: any) {
-      console.error('Failed to load rooms', e);
-      setError(e.message || 'Failed to connect to community study rooms');
+      if (Array.isArray(data)) {
+        setRooms(data);
+      }
+    } catch (e) {
+      console.error('Failed to load study rooms', e);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    loadRooms();
-  }, []);
-
   const handleCreateRoom = async (e: React.FormEvent) => {
     e.preventDefault();
     setCreateError('');
-    setCreating(true);
+    if (!newRoomName.trim()) return;
 
     try {
-      await apiFetch('/rooms', {
+      const created = await apiFetch('/rooms', {
         method: 'POST',
         body: JSON.stringify({
-          type: 'TOPIC',
           name: newRoomName.trim(),
-          topic: newRoomTopic.trim(),
-          isPublic: true,
+          topic: newRoomTopic.trim() || 'General Study',
         }),
       });
-      setNewRoomName('');
-      setNewRoomTopic('');
-      loadRooms();
-    } catch (e: any) {
-      if (e.message === 'Unauthorized' || e.message.includes('401')) {
-        setCreateError('Please sign in to start a study room.');
-      } else {
-        setCreateError(e.message || 'Failed to create study room.');
+
+      if (created?.id) {
+        setShowCreateModal(false);
+        setNewRoomName('');
+        setNewRoomTopic('');
+        fetchRooms();
       }
-    } finally {
-      setCreating(false);
+    } catch (err: any) {
+      setCreateError(err.message || 'Could not create study room');
     }
   };
 
   return (
     <div>
-      <div className="mb-6">
-        <h2>
-          <HighlighterText color="#F4B43D">Study Rooms & Co-authors</HighlighterText>
-        </h2>
-        <p className="text-muted text-sm mt-2">
-          Join topic-based study groups with shared whiteboards, live margin notes, and video sessions.
-        </p>
+      {/* Header with Boxicons */}
+      <div className="flex justify-between items-center mb-6" style={{ flexWrap: 'wrap', gap: '1rem' }}>
+        <div>
+          <h2>
+            <HighlighterText color="#00A896">Collaborative Study Rooms</HighlighterText>
+          </h2>
+          <p className="text-muted text-sm mt-2">
+            Join co-authors and scholars in real-time reading sessions, whiteboards, and video calls.
+          </p>
+        </div>
+
+        <button 
+          className="btn btn-primary"
+          onClick={() => setShowCreateModal(true)}
+          style={{ padding: '0.55rem 1.1rem', fontSize: '0.875rem' }}
+        >
+          <i className="bx bx-plus" style={{ fontSize: '1.1rem' }}></i>
+          <span>Create Study Room</span>
+        </button>
       </div>
 
-      {/* Error Alert */}
-      {error && <CuriousError title="Community Connection Error" message={error} onRetry={loadRooms} />}
-
-      {/* Create Room Form */}
-      <CommentCornerCard commentPreview="Peel corner to start a new study group" className="mb-8">
-        <h3 className="mb-2">Start a Study Room</h3>
-        <p className="text-muted text-sm mb-4">Open a public room for shared writing, whiteboard sketching, or discussions.</p>
-        
-        {createError && (
-          <div className="alert alert-info">
-            <span>ℹ️ {createError}</span>
-            {createError.includes('sign in') && (
-              <Link to="/login" className="btn btn-primary" style={{ padding: '0.3rem 0.75rem', fontSize: '0.75rem' }}>
-                Sign In →
-              </Link>
-            )}
-          </div>
-        )}
-
-        <form onSubmit={handleCreateRoom} className="flex gap-4 items-center" style={{ flexWrap: 'wrap' }}>
-          <div className="flex-1" style={{ minWidth: '220px' }}>
-            <input
-              type="text"
-              placeholder="Room Name (e.g. Quantum Physics Notebook)"
-              value={newRoomName}
-              onChange={e => setNewRoomName(e.target.value)}
-              required
-            />
-          </div>
-          <div className="flex-1" style={{ minWidth: '200px' }}>
-            <input
-              type="text"
-              placeholder="Topic (e.g. Physics, Calculus, Literature)"
-              value={newRoomTopic}
-              onChange={e => setNewRoomTopic(e.target.value)}
-              required
-            />
-          </div>
-          <button type="submit" className="btn btn-primary" disabled={creating}>
-            {creating ? 'Opening room...' : '+ Create Room'}
-          </button>
-        </form>
-      </CommentCornerCard>
-
-      {/* Loading State */}
       {loading ? (
-        <CuriousLoading message="Opening active study rooms..." />
+        <CuriousLoading message="Fetching active study rooms & co-author sessions..." />
       ) : rooms.length === 0 ? (
-        /* Empty State */
         <CuriousEmpty
-          title="No Study Rooms Active Yet"
-          description="There are currently no active public study rooms. Be the first to start a room above!"
+          title="No Active Study Rooms Yet"
+          description="Create the first study room for your subject or manuscript!"
           flourishText="Study Rooms"
+          actionButton={
+            <button className="btn btn-primary" onClick={() => setShowCreateModal(true)}>
+              <i className="bx bx-plus" style={{ fontSize: '1.1rem' }}></i>
+              <span>Create First Room</span>
+            </button>
+          }
         />
       ) : (
-        /* Rooms Grid — Zero Status Dots! */
         <div className="grid-container">
           {rooms.map(room => (
             <CommentCornerCard
               key={room.id}
-              commentPreview={`Room note: ${room.name}. Click to join workspace.`}
+              commentPreview="Peel corner to view active co-authors"
               className="flex flex-col justify-between"
             >
               <div>
@@ -147,24 +116,112 @@ export default function Community() {
                   <span className="badge-tag badge-mustard">
                     {room.topic || 'General Topic'}
                   </span>
-                  <span className="badge-tag badge-teal">
-                    {room._count?.members ?? 0} {room._count?.members === 1 ? 'Co-author' : 'Co-authors'}
+                  <span className="badge-tag badge-teal" style={{ fontSize: '0.625rem' }}>
+                    Active Workspace
                   </span>
                 </div>
-                <h3 className="mb-2">{room.name}</h3>
+
+                <h3 className="mb-2" style={{ fontSize: '1.15rem' }}>{room.name}</h3>
+
+                <p className="text-muted text-sm mb-4">
+                  Shared study space equipped with real-time text chat, interactive whiteboard, and video call support.
+                </p>
               </div>
 
-              <div className="pt-4 mt-4" style={{ borderTop: '1.5px solid var(--color-line)' }}>
-                <Link
-                  to={`/room/${room.id}`}
-                  className="btn btn-primary"
-                  style={{ width: '100%' }}
-                >
-                  Join Room →
+              <div className="flex justify-between items-center pt-4" style={{ borderTop: '1.5px solid var(--color-line)' }}>
+                <span className="text-xs text-muted font-medium flex items-center gap-1">
+                  <i className="bx bx-group" style={{ fontSize: '0.95rem' }}></i>
+                  Open Access
+                </span>
+                <Link to={`/room/${room.id}`} className="btn btn-primary" style={{ padding: '0.45rem 0.95rem', fontSize: '0.8125rem' }}>
+                  <span>Join Room</span>
+                  <i className="bx bx-right-arrow-alt" style={{ fontSize: '1.1rem' }}></i>
                 </Link>
               </div>
             </CommentCornerCard>
           ))}
+        </div>
+      )}
+
+      {/* Create Room Modal with Boxicons */}
+      {showCreateModal && (
+        <div 
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(20, 20, 26, 0.45)',
+            backdropFilter: 'blur(3px)',
+            zIndex: 1000,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '1rem',
+          }}
+          onClick={() => setShowCreateModal(false)}
+        >
+          <div onClick={e => e.stopPropagation()} style={{ maxWidth: '460px', width: '100%' }}>
+            <CommentCornerCard style={{ padding: '1.75rem' }}>
+              <div className="flex justify-between items-center mb-4 pb-2" style={{ borderBottom: '1.5px solid var(--color-line)' }}>
+                <h3 style={{ fontSize: '1.2rem' }} className="flex items-center gap-1.5">
+                  <i className="bx bx-conversation" style={{ fontSize: '1.25rem' }}></i>
+                  Create Study Room
+                </h3>
+                <button 
+                  className="btn btn-secondary" 
+                  onClick={() => setShowCreateModal(false)}
+                  style={{ padding: '0.2rem 0.5rem', fontSize: '0.75rem' }}
+                >
+                  <i className="bx bx-x" style={{ fontSize: '1.1rem' }}></i>
+                </button>
+              </div>
+
+              {createError && (
+                <div className="alert alert-error mb-4">
+                  <span className="flex items-center gap-1">
+                    <i className="bx bx-error-circle" style={{ fontSize: '1rem' }}></i>
+                    {createError}
+                  </span>
+                </div>
+              )}
+
+              <form onSubmit={handleCreateRoom} className="flex flex-col gap-4">
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 600, marginBottom: '0.35rem' }}>
+                    Room Name
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g., Quantum Physics Chapter 3 Discussion"
+                    value={newRoomName}
+                    onChange={e => setNewRoomName(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 600, marginBottom: '0.35rem' }}>
+                    Subject or Topic Tag
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g., Physics, Literature, Organic Chemistry"
+                    value={newRoomTopic}
+                    onChange={e => setNewRoomTopic(e.target.value)}
+                  />
+                </div>
+
+                <div className="flex justify-end gap-2 mt-4 pt-3" style={{ borderTop: '1.5px solid var(--color-line)' }}>
+                  <button type="button" className="btn btn-secondary" onClick={() => setShowCreateModal(false)}>
+                    Cancel
+                  </button>
+                  <button type="submit" className="btn btn-primary" disabled={!newRoomName.trim()}>
+                    <span>Create Room</span>
+                    <i className="bx bx-right-arrow-alt" style={{ fontSize: '1.1rem' }}></i>
+                  </button>
+                </div>
+              </form>
+            </CommentCornerCard>
+          </div>
         </div>
       )}
     </div>
