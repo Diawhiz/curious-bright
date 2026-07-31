@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { apiFetch } from '../lib/api';
+import { CommentCornerCard } from '../components/CommentCornerCard';
+import { HighlighterText } from '../components/HighlighterText';
+import { CuriousLoading, CuriousEmpty } from '../components/CuriousStates';
 
 export default function Search() {
   const [searchParams] = useSearchParams();
@@ -18,7 +21,7 @@ export default function Search() {
         .then(data => setResults(data || { submissions: [], rooms: [], users: [] }))
         .catch(err => {
           console.error('Search error:', err);
-          setError('Search query failed or backend search engine is initializing');
+          setError('Could not complete your search query at this time.');
         })
         .finally(() => setLoading(false));
     }
@@ -26,12 +29,12 @@ export default function Search() {
 
   if (!q) {
     return (
-      <div className="empty-state animate-fade-in" style={{ maxWidth: '500px', margin: '3rem auto' }}>
-        <div className="empty-state-icon">🔍</div>
-        <div className="empty-state-title">Global Repository Search</div>
-        <div className="empty-state-desc">
-          Enter a search query in the top navigation bar to find research papers, study rooms, or users.
-        </div>
+      <div style={{ maxWidth: '500px', margin: '3rem auto' }}>
+        <CuriousEmpty
+          title="Search the Library"
+          description="Type a search query in the search bar above to find books, study rooms, or co-authors."
+          flourishText="Global Search"
+        />
       </div>
     );
   }
@@ -42,115 +45,123 @@ export default function Search() {
   const totalResults = (results.submissions?.length || 0) + (results.rooms?.length || 0) + (results.users?.length || 0);
 
   return (
-    <div className="animate-fade-in">
+    <div>
       <div className="mb-6">
-        <h2>Search Results</h2>
+        <h2>
+          <HighlighterText color="#F4B43D">Search Results</HighlighterText>
+        </h2>
         <p className="text-muted text-sm mt-2">
-          Found <strong style={{ color: 'var(--text-primary)' }}>{totalResults}</strong> results matching "{q}"
+          Found <strong style={{ color: 'var(--color-ink)' }}>{totalResults}</strong> items matching "{q}"
         </p>
       </div>
 
-      {/* Error Alert */}
       {error && (
         <div className="alert alert-error mb-6">
-          <span>⚠️ {error}</span>
+          <span>{'\u26A1 '} {error}</span>
         </div>
       )}
 
       {loading ? (
-        <div className="loading-container">
-          <div className="spinner"></div>
-          <p>Searching repository and community database...</p>
-        </div>
+        <CuriousLoading message={`Searching library and study rooms for "${q}"...`} />
       ) : totalResults === 0 ? (
-        <div className="empty-state">
-          <div className="empty-state-icon">🔍</div>
-          <div className="empty-state-title">No Results Found for "{q}"</div>
-          <div className="empty-state-desc">
-            Try checking for spelling errors or searching for broader academic terms.
-          </div>
-        </div>
+        <CuriousEmpty
+          title={`No Items Found for "${q}"`}
+          description="Try checking for spelling errors or searching for broader terms."
+          flourishText="Search Results"
+        />
       ) : (
         <div className="flex flex-col gap-8">
           {/* Submissions Section */}
           <section>
-            <h3 className="mb-4 pb-2" style={{ borderBottom: '1px solid var(--glass-border)', fontSize: '1.125rem' }}>
-              📚 Research Papers ({results.submissions?.length || 0})
+            <h3 className="mb-4 pb-2" style={{ borderBottom: '1.5px solid var(--color-line)', fontSize: '1.15rem' }}>
+              {'\uD83D\uDCD6 Shared Papers'} ({results.submissions?.length || 0})
             </h3>
             {hasSubmissions ? (
               <div className="grid-container">
                 {results.submissions.map((sub: any) => (
-                  <div key={sub.id} className="glass-card flex flex-col justify-between">
+                  <CommentCornerCard key={sub.id} className="flex flex-col justify-between" commentPreview="Peel corner to view summary">
                     <div>
                       <div className="flex justify-between items-center mb-2">
-                        <span className="badge badge-approved">Approved</span>
+                        <span className="badge-tag badge-teal">Verified Paper</span>
                         {sub.academicLevel && (
-                          <span className="badge badge-level">{sub.academicLevel.replace('_', ' ')}</span>
+                          <span className="badge-tag badge-mustard">{sub.academicLevel.replace('_', ' ')}</span>
                         )}
                       </div>
-                      <h4 className="mb-2" style={{ fontSize: '1rem' }}>{sub.title}</h4>
-                      <p className="text-secondary text-sm mb-4" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                      <h4 className="mb-2" style={{ fontSize: '1.05rem' }}>{sub.title}</h4>
+                      <p className="text-muted text-sm mb-4" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                         {sub.description}
                       </p>
                     </div>
-                    <Link to={`/read/${sub.id}`} className="btn btn-primary" style={{ padding: '0.4rem 0.85rem', fontSize: '0.8125rem' }}>
-                      Read Paper →
+                    <Link to={`/read/${sub.id}`} className="btn btn-primary" style={{ padding: '0.45rem 0.95rem', fontSize: '0.8125rem' }}>
+                      {'Read Paper \u2192'}
                     </Link>
-                  </div>
+                  </CommentCornerCard>
                 ))}
               </div>
             ) : (
-              <p className="text-muted text-sm">No research papers found for this query.</p>
+              <p className="text-muted text-sm">No papers found matching this query.</p>
             )}
           </section>
 
           {/* Rooms Section */}
           <section>
-            <h3 className="mb-4 pb-2" style={{ borderBottom: '1px solid var(--glass-border)', fontSize: '1.125rem' }}>
-              💬 Study Rooms ({results.rooms?.length || 0})
+            <h3 className="mb-4 pb-2" style={{ borderBottom: '1.5px solid var(--color-line)', fontSize: '1.15rem' }}>
+              {'\uD83D\uDCAC Study Rooms'} ({results.rooms?.length || 0})
             </h3>
             {hasRooms ? (
               <div className="grid-container">
                 {results.rooms.map((room: any) => (
-                  <div key={room.id} className="glass-card flex flex-col justify-between">
+                  <CommentCornerCard key={room.id} className="flex flex-col justify-between" commentPreview="Peel corner to view room rules">
                     <div>
-                      <span className="badge badge-level mb-2">{room.topic || 'General'}</span>
-                      <h4 className="mb-2" style={{ fontSize: '1rem' }}>{room.name}</h4>
+                      <span className="badge-tag badge-mustard mb-2">{room.topic || 'General Topic'}</span>
+                      <h4 className="mb-2" style={{ fontSize: '1.05rem' }}>{room.name}</h4>
                     </div>
-                    <Link to={`/room/${room.id}`} className="btn btn-secondary mt-4" style={{ padding: '0.4rem 0.85rem', fontSize: '0.8125rem' }}>
-                      Join Room →
+                    <Link to={`/room/${room.id}`} className="btn btn-secondary mt-4" style={{ padding: '0.45rem 0.95rem', fontSize: '0.8125rem' }}>
+                      {'Join Room \u2192'}
                     </Link>
-                  </div>
+                  </CommentCornerCard>
                 ))}
               </div>
             ) : (
-              <p className="text-muted text-sm">No study rooms found for this query.</p>
+              <p className="text-muted text-sm">No study rooms found matching this query.</p>
             )}
           </section>
 
           {/* Users Section */}
           <section>
-            <h3 className="mb-4 pb-2" style={{ borderBottom: '1px solid var(--glass-border)', fontSize: '1.125rem' }}>
-              👥 Members & Scholars ({results.users?.length || 0})
+            <h3 className="mb-4 pb-2" style={{ borderBottom: '1.5px solid var(--color-line)', fontSize: '1.15rem' }}>
+              {'\uD83D\uDC65 Co-authors & Scholars'} ({results.users?.length || 0})
             </h3>
             {hasUsers ? (
               <div className="grid-container">
                 {results.users.map((user: any) => (
-                  <div key={user.id} className="glass-card flex items-center justify-between" style={{ padding: '1rem 1.25rem' }}>
+                  <CommentCornerCard key={user.id} className="flex items-center justify-between" style={{ padding: '1rem 1.25rem' }}>
                     <div className="flex items-center gap-3">
-                      <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'linear-gradient(135deg, var(--accent), #8b5cf6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, color: '#fff' }}>
+                      <div
+                        style={{
+                          width: 36,
+                          height: 36,
+                          borderRadius: '3px 0px 3px 3px',
+                          background: 'var(--color-coral)',
+                          color: '#FFFFFF',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontWeight: 700,
+                        }}
+                      >
                         {user.name?.[0]?.toUpperCase() || 'U'}
                       </div>
                       <div>
                         <div className="font-semibold text-sm">{user.name}</div>
-                        <div className="text-xs text-muted">{user.schoolName || 'Independent Learner'}</div>
+                        <div className="text-xs text-muted">{user.schoolName || 'Co-author'}</div>
                       </div>
                     </div>
-                  </div>
+                  </CommentCornerCard>
                 ))}
               </div>
             ) : (
-              <p className="text-muted text-sm">No users found for this query.</p>
+              <p className="text-muted text-sm">No co-authors found matching this query.</p>
             )}
           </section>
         </div>

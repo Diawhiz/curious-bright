@@ -1,41 +1,49 @@
 /**
- * Marginalia Design System Tokens
- * Source of truth for color palette, dark mode variants, status indicators, and typography scale.
+ * Curious Bright Design System Tokens
+ * Source of truth for color palette, collaborator accents, typography, and container shape.
  */
 
 export const colors = {
-  // Light Mode - Marginalia Palette
-  paper: '#F7F7F2',        // Background
-  ink: '#1E2A4A',          // Primary text, headers, navigation
-  highlighter: '#E8A93B',  // Primary accent - CTAs, active states, repository/reading features
-  marginnote: '#2E9E83',   // Secondary accent - Live features ONLY (chat presence, calls, whiteboard cursors)
-  fadedInk: '#6B7690',     // Muted text, timestamps, secondary labels
-  line: '#DDD9CC',         // Hairline rules, dividers, subtle borders
+  // Curious Bright Core Palette
+  paper: '#F7F6F2',        // Warm paper background
+  paperElevated: '#FFFFFF',// Card/panel surface
+  ink: '#14141A',          // Primary text & solid ink-black buttons
+  fadedInk: '#6B685C',     // Muted text, timestamps, secondary labels
+  line: '#E2DFC9',         // Warm rules, dividers, subtle borders
+  lineHover: '#C8C4B0',    // Border hover state
 
-  // Status Colors
-  statusPending: '#E8A93B',  // Highlighter
-  statusApproved: '#2E9E83', // Marginnote
-  statusRejected: '#B85C4A', // Muted brick
+  // Collaborator Accents
+  coral: '#FF5A36',        // Primary collaborator accent / cursor
+  teal: '#00A896',         // Secondary collaborator accent / cursor
+  mustard: '#F4B43D',      // Tertiary collaborator accent / cursor
 
-  // Dark Mode Variants
+  // Highlights & Status (using plain words, no status dots!)
+  highlighter: '#F4B43D',  // Highlighter draw-on accent
+  marginnote: '#00A896',   // Live feature accent
+
+  statusPending: '#F4B43D',
+  statusApproved: '#00A896',
+  statusRejected: '#FF5A36',
+
+  // Dark variant mappings to preserve system token structure
   dark: {
-    paper: '#10141F',        // Near-black navy background
-    ink: '#F7F7F2',          // Paper text color for contrast
-    highlighter: '#E8A93B',  // Holds contrast on dark
-    marginnote: '#2E9E83',   // Holds contrast on dark
-    fadedInk: '#94A0B8',     // Adjusted faded ink for dark readability
-    line: '#242F48',         // Subtle dark divider line
-    statusPending: '#E8A93B',
-    statusApproved: '#2E9E83',
-    statusRejected: '#D46A58',
+    paper: '#F7F6F2',
+    ink: '#14141A',
+    highlighter: '#F4B43D',
+    marginnote: '#00A896',
+    fadedInk: '#6B685C',
+    line: '#E2DFC9',
+    statusPending: '#F4B43D',
+    statusApproved: '#00A896',
+    statusRejected: '#FF5A36',
   },
 } as const;
 
 export const typography = {
   fontFamily: {
-    display: ['Newsreader', 'Georgia', 'serif'],
-    body: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
-    mono: ['JetBrains Mono', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
+    display: ['Clash Display', 'Georgia', 'serif'],
+    body: ['General Sans', 'Satoshi', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+    mono: ['JetBrains Mono', 'Menlo', 'monospace'],
   },
   fontSize: {
     xs: ['0.75rem', { lineHeight: '1rem' }],
@@ -53,10 +61,10 @@ export const Theme = {
   colors,
   typography,
   borderRadius: {
-    sm: '0.25rem',
-    md: '0.375rem',
-    lg: '0.5rem',
-    full: '9999px',
+    sm: '2px',
+    md: '4px',
+    lg: '6px',
+    commentCorner: '0px 14px 0px 0px',
   },
 } as const;
 

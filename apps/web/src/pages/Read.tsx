@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate, useLocation, Link } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { apiFetch } from '../lib/api';
+import { CommentCornerCard } from '../components/CommentCornerCard';
+import { CursorTag } from '../components/CursorTag';
+import { CuriousLoading, CuriousError } from '../components/CuriousStates';
+import { motion } from 'framer-motion';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 
-// Configure CDN worker for pdf.js
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 interface DocumentItem {
@@ -30,17 +33,53 @@ export default function Read() {
   const [pageNumber, setPageNumber] = useState(1);
   const [pdfError, setPdfError] = useState(false);
 
+  // Demo Co-author Gliding Cursors & Live Typing Ripple (Signature Moments #1 & #5)
+  const [collaborators, setCollaborators] = useState([
+    { id: '1', name: 'Amara', action: 'reading page 1', color: '#FF5A36', x: 120, y: 180 },
+    { id: '2', name: 'Mateo', action: 'highlighting', color: '#00A896', x: 420, y: 310 },
+  ]);
+
+  // Live Typing Ripple state
+  const [liveMarginNote, setLiveMarginNote] = useState('');
+  const fullNoteText = "This passage directly connects with the quantum model discussed in chapter 4.";
+
+  useEffect(() => {
+    // Simulate co-author cursor gliding (Signature Moment #1)
+    const cursorInterval = setInterval(() => {
+      setCollaborators(prev => prev.map(c => ({
+        ...c,
+        x: Math.min(680, Math.max(40, c.x + (Math.random() * 160 - 80))),
+        y: Math.min(540, Math.max(120, c.y + (Math.random() * 120 - 60))),
+      })));
+    }, 3200);
+
+    // Simulate co-author live typing ripple (Signature Moment #5)
+    let charIndex = 0;
+    const typingInterval = setInterval(() => {
+      if (charIndex <= fullNoteText.length) {
+        setLiveMarginNote(fullNoteText.slice(0, charIndex));
+        charIndex++;
+      } else {
+        setTimeout(() => { charIndex = 0; }, 3000);
+      }
+    }, 70);
+
+    return () => {
+      clearInterval(cursorInterval);
+      clearInterval(typingInterval);
+    };
+  }, []);
+
   useEffect(() => {
     const fetchDocument = async () => {
       setLoading(true);
       setError('');
 
-      // Check state passed from navigation
       const navState = location.state as { fileUrl?: string; title?: string; description?: string; academicLevel?: string; license?: string } | null;
       if (navState?.fileUrl) {
         setDocItem({
           id: id || 'doc',
-          title: navState.title || 'Document Reader',
+          title: navState.title || 'Shared Document',
           description: navState.description,
           fileUrl: navState.fileUrl,
           academicLevel: navState.academicLevel,
@@ -50,7 +89,6 @@ export default function Read() {
         return;
       }
 
-      // Try reading as a Book first (hits GET /books/:id/read with origin-to-R2 caching)
       try {
         const bookData = await apiFetch(`/books/${id}/read`);
         if (bookData?.fileUrl && bookData?.book) {
@@ -67,10 +105,9 @@ export default function Read() {
           return;
         }
       } catch (e) {
-        // Fallback to Submissions endpoint if not a book
+        // Fallback to Submissions endpoint
       }
 
-      // Try reading as a Submission
       try {
         const subData = await apiFetch(`/submissions/${id}`);
         if (subData?.fileUrl) {
@@ -86,7 +123,7 @@ export default function Read() {
           return;
         }
       } catch (e: any) {
-        setError(e.message || 'Document not found or storage is unavailable');
+        setError('We could not find this document or it is currently unavailable.');
       } finally {
         setLoading(false);
       }
@@ -103,30 +140,17 @@ export default function Read() {
   }
 
   if (loading) {
-    return (
-      <div className="loading-container">
-        <div className="spinner"></div>
-        <p>Loading document reader & verifying storage cache...</p>
-      </div>
-    );
+    return <CuriousLoading message="Opening shared document & syncing margin notes..." />;
   }
 
   if (error || !docItem) {
     return (
-      <div className="animate-fade-in" style={{ maxWidth: '600px', margin: '3rem auto' }}>
-        <div className="glass-card text-center">
-          <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>⚠️</div>
-          <h3>Failed to Load Document</h3>
-          <p className="text-secondary text-sm mt-2 mb-6">{error || 'The requested document could not be found.'}</p>
-          <div className="flex justify-center gap-4">
-            <button className="btn btn-secondary" onClick={() => navigate(-1)}>
-              Go Back
-            </button>
-            <Link to="/browse" className="btn btn-primary">
-              Browse Open Library
-            </Link>
-          </div>
-        </div>
+      <div style={{ maxWidth: '600px', margin: '3rem auto' }}>
+        <CuriousError
+          title="Document Unavailable"
+          message={error || 'The requested document could not be opened.'}
+          onRetry={() => navigate('/browse')}
+        />
       </div>
     );
   }
@@ -134,119 +158,136 @@ export default function Read() {
   const pdfUrl = docItem.fileUrl;
 
   return (
-    <div className="animate-fade-in flex flex-col items-center">
+    <div className="flex flex-col items-center">
       {/* Top Controls Bar */}
-      <div className="w-full flex justify-between items-center mb-6" style={{ maxWidth: '840px', width: '100%', flexWrap: 'wrap', gap: '1rem' }}>
+      <div className="w-full flex justify-between items-center mb-6" style={{ maxWidth: '860px', width: '100%', flexWrap: 'wrap', gap: '1rem' }}>
         <div className="flex items-center gap-3">
-          <button className="btn btn-secondary" onClick={() => navigate(-1)} style={{ padding: '0.4rem 0.75rem', fontSize: '0.8125rem' }}>
+          <button className="btn btn-secondary" onClick={() => navigate(-1)} style={{ padding: '0.45rem 0.85rem', fontSize: '0.8125rem' }}>
             ← Back
           </button>
           <div>
-            <h2 style={{ fontSize: '1.25rem' }}>{docItem.title}</h2>
+            <h2 style={{ fontSize: '1.35rem' }}>{docItem.title}</h2>
             <div className="flex items-center gap-2 mt-1">
-              {docItem.license && (
-                <span className="badge badge-public-domain">
-                  {docItem.license}
-                </span>
-              )}
-              {docItem.academicLevel && (
-                <span className="badge badge-level">
-                  {docItem.academicLevel.replace('_', ' ')}
-                </span>
-              )}
-              {docItem.cached && (
-                <span className="badge badge-approved" style={{ fontSize: '0.6875rem' }}>
-                  ⚡ Cached on Edge R2
-                </span>
-              )}
+              {docItem.license && <span className="badge-tag badge-mustard">{docItem.license}</span>}
+              {docItem.academicLevel && <span className="badge-tag badge-teal">{docItem.academicLevel.replace('_', ' ')}</span>}
+              {docItem.cached && <span className="badge-tag badge-coral">⚡ Ready instantly</span>}
             </div>
           </div>
         </div>
 
         {pdfUrl && (
-          <a 
-            href={pdfUrl} 
-            target="_blank" 
-            rel="noreferrer" 
-            className="btn btn-secondary"
-            style={{ padding: '0.4rem 0.85rem', fontSize: '0.8125rem' }}
-          >
-            📥 Download PDF
+          <a href={pdfUrl} target="_blank" rel="noreferrer" className="btn btn-secondary" style={{ padding: '0.45rem 0.95rem', fontSize: '0.8125rem' }}>
+            📥 Save Local Copy
           </a>
         )}
       </div>
 
-      {/* Abstract Card */}
-      {docItem.description && (
-        <div className="glass-card mb-6" style={{ maxWidth: '840px', width: '100%', padding: '1.25rem' }}>
-          <h4 className="text-xs text-muted mb-1" style={{ textTransform: 'uppercase', letterSpacing: '0.05em' }}>Description / Abstract</h4>
-          <p className="text-secondary text-sm">{docItem.description}</p>
-        </div>
-      )}
-
-      {/* PDF Viewer Glass Frame */}
-      <div className="glass-card flex flex-col items-center" style={{ maxWidth: '840px', width: '100%', padding: '1.5rem', minHeight: '500px' }}>
-        {pdfError ? (
-          <div className="empty-state" style={{ width: '100%' }}>
-            <div className="empty-state-icon">📄</div>
-            <div className="empty-state-title">Unable to Render PDF Preview</div>
-            <div className="empty-state-desc">
-              Browser-based PDF rendering was blocked or storage is unavailable. You can download the PDF file directly below.
-            </div>
-            <a href={pdfUrl} target="_blank" rel="noreferrer" className="btn btn-primary">
-              Download & Open PDF
-            </a>
-          </div>
-        ) : (
-          <Document
-            file={pdfUrl}
-            onLoadSuccess={onDocumentLoadSuccess}
-            onLoadError={(err) => {
-              console.error('PDF load error:', err);
-              setPdfError(true);
-            }}
-            loading={
-              <div className="loading-container">
-                <div className="spinner"></div>
-                <p>Rendering pages...</p>
-              </div>
-            }
-          >
-            <Page 
-              pageNumber={pageNumber} 
-              renderTextLayer={true} 
-              renderAnnotationLayer={true} 
-              width={750} 
-            />
-          </Document>
-        )}
-
-        {/* Page Control Bar */}
-        {numPages && numPages > 0 && !pdfError && (
-          <div className="flex items-center gap-4 mt-6 pt-4" style={{ borderTop: '1px solid var(--glass-border)', width: '100%', justifyContent: 'center' }}>
-            <button 
-              className="btn btn-secondary" 
-              disabled={pageNumber <= 1} 
-              onClick={() => setPageNumber(prev => prev - 1)}
-              style={{ padding: '0.4rem 0.85rem' }}
-            >
-              ← Previous
-            </button>
-
-            <span className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
-              Page <strong style={{ color: 'var(--text-primary)' }}>{pageNumber}</strong> of {numPages}
+      {/* Abstract & Live Typing Ripple Card (Signature Moment #5) */}
+      <div style={{ maxWidth: '860px', width: '100%' }} className="mb-6">
+        <CommentCornerCard commentPreview="Hover to inspect margin activity">
+          <div className="flex justify-between items-start gap-4 mb-2">
+            <h4 style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-faded-ink)' }}>
+              Summary & Margin Notes
+            </h4>
+            <span className="badge-tag badge-coral" style={{ fontSize: '0.6875rem' }}>
+              Amara is typing live...
             </span>
-
-            <button 
-              className="btn btn-secondary" 
-              disabled={pageNumber >= numPages} 
-              onClick={() => setPageNumber(prev => prev + 1)}
-              style={{ padding: '0.4rem 0.85rem' }}
-            >
-              Next →
-            </button>
           </div>
-        )}
+          {docItem.description && (
+            <p className="text-muted text-sm mb-3">{docItem.description}</p>
+          )}
+
+          {/* Live Typing Ripple Box */}
+          <div
+            style={{
+              padding: '0.75rem 1rem',
+              background: 'var(--color-paper)',
+              border: '1.5px solid var(--color-line)',
+              borderRadius: '4px 0px 4px 4px',
+              fontSize: '0.875rem',
+              fontStyle: 'italic',
+              position: 'relative',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+            }}
+          >
+            <span style={{ color: '#FF5A36', fontWeight: 700 }}>Amara:</span>
+            <span>"{liveMarginNote}"</span>
+            <motion.span
+              animate={{ opacity: [1, 0, 1] }}
+              transition={{ duration: 0.8, repeat: Infinity }}
+              style={{ width: '2px', height: '14px', background: '#FF5A36', display: 'inline-block' }}
+            />
+          </div>
+        </CommentCornerCard>
+      </div>
+
+      {/* PDF Reader Canvas Frame with Gliding Cursor Tags (Signature Moment #1) */}
+      <div style={{ maxWidth: '860px', width: '100%', position: 'relative' }}>
+        {/* Render Gliding Collaborator Cursor Tags */}
+        {collaborators.map((c) => (
+          <CursorTag
+            key={c.id}
+            id={c.id}
+            name={c.name}
+            action={c.action}
+            color={c.color}
+            x={c.x}
+            y={c.y}
+          />
+        ))}
+
+        <CommentCornerCard style={{ padding: '1.5rem', minHeight: '520px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          {pdfError ? (
+            <div className="text-center p-8">
+              <p className="font-semibold mb-2">Unable to render PDF preview directly in browser.</p>
+              <p className="text-muted text-sm mb-4">You can download the full PDF to read offline.</p>
+              <a href={pdfUrl} target="_blank" rel="noreferrer" className="btn btn-primary">
+                Download PDF Document
+              </a>
+            </div>
+          ) : (
+            <Document
+              file={pdfUrl}
+              onLoadSuccess={onDocumentLoadSuccess}
+              onLoadError={(err) => {
+                console.error('PDF load error:', err);
+                setPdfError(true);
+              }}
+              loading={<CuriousLoading message="Rendering pages..." />}
+            >
+              <Page pageNumber={pageNumber} renderTextLayer={true} renderAnnotationLayer={true} width={760} />
+            </Document>
+          )}
+
+          {/* Page Controls */}
+          {numPages && numPages > 0 && !pdfError && (
+            <div className="flex items-center gap-4 mt-6 pt-4" style={{ borderTop: '1.5px solid var(--color-line)', width: '100%', justifyContent: 'center' }}>
+              <button 
+                className="btn btn-secondary" 
+                disabled={pageNumber <= 1} 
+                onClick={() => setPageNumber(prev => prev - 1)}
+                style={{ padding: '0.4rem 0.85rem' }}
+              >
+                ← Previous
+              </button>
+
+              <span className="text-sm font-medium">
+                Page <strong style={{ color: 'var(--color-ink)' }}>{pageNumber}</strong> of {numPages}
+              </span>
+
+              <button 
+                className="btn btn-secondary" 
+                disabled={pageNumber >= numPages} 
+                onClick={() => setPageNumber(prev => prev + 1)}
+                style={{ padding: '0.4rem 0.85rem' }}
+              >
+                Next →
+              </button>
+            </div>
+          )}
+        </CommentCornerCard>
       </div>
     </div>
   );

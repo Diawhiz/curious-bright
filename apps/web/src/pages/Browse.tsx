@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { apiFetch } from '../lib/api';
+import { CommentCornerCard } from '../components/CommentCornerCard';
+import { HighlighterText } from '../components/HighlighterText';
+import { CuriousLoading, CuriousEmpty } from '../components/CuriousStates';
 
 interface BookItem {
   id: string;
@@ -69,7 +72,6 @@ export default function Browse() {
   };
 
   const handleReadBook = async (book: BookItem) => {
-    // Navigate to /read/:id which will hit /books/:id/read to trigger R2 caching
     navigate(`/read/${book.id}`, {
       state: {
         title: book.title,
@@ -96,42 +98,44 @@ export default function Browse() {
   });
 
   return (
-    <div className="animate-fade-in">
+    <div>
       {/* Header */}
       <div className="flex justify-between items-center mb-6" style={{ flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <h2>Open Academic Repository</h2>
+          <h2>
+            <HighlighterText color="#F4B43D">Open Academic Repository</HighlighterText>
+          </h2>
           <p className="text-muted text-sm mt-2">
-            Explore public domain classics, open-access textbooks, and peer-reviewed community papers (HIGH_SCHOOL+)
+            Explore public domain classics, open-access textbooks, and community-written papers with co-authors.
           </p>
         </div>
 
         {/* Tab Switcher */}
-        <div className="flex gap-2" style={{ background: 'var(--glass-bg)', padding: '0.25rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--glass-border)' }}>
+        <div className="flex gap-2" style={{ background: 'var(--color-paper-card)', padding: '0.3rem', borderRadius: '4px 0px 4px 4px', border: '1.5px solid var(--color-line)' }}>
           <button 
             className={`btn ${activeCatalog === 'BOOKS' ? 'btn-primary' : 'btn-secondary'}`}
-            style={{ padding: '0.4rem 1rem', fontSize: '0.8125rem', border: 'none' }}
+            style={{ padding: '0.45rem 1.1rem', fontSize: '0.8125rem' }}
             onClick={() => setActiveCatalog('BOOKS')}
           >
-            📖 Open-Source Books ({books.length})
+            📖 Open Classics ({books.length})
           </button>
           <button 
             className={`btn ${activeCatalog === 'COMMUNITY' ? 'btn-primary' : 'btn-secondary'}`}
-            style={{ padding: '0.4rem 1rem', fontSize: '0.8125rem', border: 'none' }}
+            style={{ padding: '0.45rem 1.1rem', fontSize: '0.8125rem' }}
             onClick={() => setActiveCatalog('COMMUNITY')}
           >
-            📝 Community Papers ({submissions.length})
+            📝 Shared Papers ({submissions.length})
           </button>
         </div>
       </div>
 
       {/* Filter & Search Controls */}
-      <div className="glass-card mb-6" style={{ padding: '1.25rem' }}>
+      <div className="comment-corner-card mb-6" style={{ padding: '1.25rem' }}>
         <div className="flex items-center gap-4" style={{ flexWrap: 'wrap' }}>
           <div className="flex-1" style={{ minWidth: '220px' }}>
             <input 
               type="text" 
-              placeholder={activeCatalog === 'BOOKS' ? "Search books by title, author, subject..." : "Search community papers..."}
+              placeholder={activeCatalog === 'BOOKS' ? "Search books by title, author, topic..." : "Search shared papers..."}
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
             />
@@ -144,7 +148,7 @@ export default function Browse() {
             >
               {ACADEMIC_LEVELS.map(level => (
                 <option key={level} value={level}>
-                  {level === 'ALL' ? 'All Academic Levels' : level.replace('_', ' ')}
+                  {level === 'ALL' ? 'All Learning Levels' : level.replace('_', ' ')}
                 </option>
               ))}
             </select>
@@ -152,55 +156,56 @@ export default function Browse() {
         </div>
       </div>
 
-      {/* Loading Spinner */}
+      {/* Loading & Catalog Views */}
       {loading ? (
-        <div className="loading-container">
-          <div className="spinner"></div>
-          <p>Loading open catalog & verifying cache layers...</p>
-        </div>
+        <CuriousLoading message="Opening library catalog & preparing books..." />
       ) : activeCatalog === 'BOOKS' ? (
         /* OPEN SOURCE BOOKS CATALOG */
         filteredBooks.length === 0 ? (
-          <div className="empty-state">
-            <div className="empty-state-icon">📖</div>
-            <div className="empty-state-title">No Books Found</div>
-            <div className="empty-state-desc">
-              No open-source books matched your criteria. Try resetting search filters.
-            </div>
-            <button className="btn btn-secondary" onClick={() => { setSearchTerm(''); setSelectedLevel('ALL'); }}>
-              Reset Filters
-            </button>
-          </div>
+          <CuriousEmpty
+            title="No Books Match Your Search"
+            description="Nothing matched your current query or filters. Try adjusting your search term."
+            flourishText="Open Library"
+            actionButton={
+              <button className="btn btn-secondary" onClick={() => { setSearchTerm(''); setSelectedLevel('ALL'); }}>
+                Reset Search Filters
+              </button>
+            }
+          />
         ) : (
           <div className="grid-container">
             {filteredBooks.map(book => (
-              <div key={book.id} className="glass-card glass-card-interactive flex flex-col justify-between">
+              <CommentCornerCard
+                key={book.id}
+                commentPreview={`Note: ${book.title.slice(0, 32)}... Peel corner to view margin notes.`}
+                className="flex flex-col justify-between"
+              >
                 <div>
                   <div className="flex justify-between items-center mb-2">
-                    <span className="badge badge-public-domain">
+                    <span className="badge-tag badge-mustard">
                       {book.license || 'Public Domain'}
                     </span>
-                    <span className="badge badge-level">
+                    <span className="badge-tag badge-teal">
                       {book.academicLevel?.replace('_', ' ') || 'HIGH SCHOOL+'}
                     </span>
                   </div>
 
-                  <h3 className="mb-2" style={{ fontSize: '1.125rem', lineHeight: '1.4' }}>
+                  <h3 className="mb-2" style={{ fontSize: '1.15rem', lineHeight: '1.35' }}>
                     {book.title}
                   </h3>
 
-                  <p className="text-xs text-muted mb-3" style={{ fontWeight: 500 }}>
-                    ✍️ {book.author || 'Unknown Author'} • Source: {book.source}
+                  <p className="text-xs text-muted mb-3" style={{ fontWeight: 600 }}>
+                    ✍️ {book.author || 'Classical Author'} • Source: {book.source}
                   </p>
 
-                  <p className="text-secondary text-sm mb-4" style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                  <p className="text-muted text-sm mb-4" style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                     {book.description}
                   </p>
 
                   {book.subjectTags && book.subjectTags.length > 0 && (
                     <div className="flex gap-1" style={{ flexWrap: 'wrap', marginBottom: '1rem' }}>
                       {book.subjectTags.slice(0, 3).map((tag, idx) => (
-                        <span key={idx} className="text-xs" style={{ background: 'rgba(255,255,255,0.05)', padding: '0.15rem 0.4rem', borderRadius: 4, color: 'var(--text-muted)' }}>
+                        <span key={idx} className="badge-tag" style={{ fontSize: '0.6875rem', padding: '0.1rem 0.4rem' }}>
                           #{tag}
                         </span>
                       ))}
@@ -208,71 +213,75 @@ export default function Browse() {
                   )}
                 </div>
 
-                <div className="flex justify-between items-center pt-4" style={{ borderTop: '1px solid var(--glass-border)', marginTop: '1rem' }}>
-                  <span className="text-xs text-muted">
-                    {book.cacheStatus === 'CACHED' ? '⚡ Edge Cached' : '🌐 Origin Document'}
+                <div className="flex justify-between items-center pt-4" style={{ borderTop: '1.5px solid var(--color-line)', marginTop: '1rem' }}>
+                  <span className="text-xs text-muted font-medium">
+                    {book.cacheStatus === 'CACHED' ? '⚡ Ready to read instantly' : '📄 Open document'}
                   </span>
                   <button 
                     onClick={() => handleReadBook(book)}
                     className="btn btn-primary" 
-                    style={{ padding: '0.4rem 0.85rem', fontSize: '0.8125rem' }}
+                    style={{ padding: '0.45rem 0.95rem', fontSize: '0.8125rem' }}
                   >
                     Read Book →
                   </button>
                 </div>
-              </div>
+              </CommentCornerCard>
             ))}
           </div>
         )
       ) : (
-        /* COMMUNITY PAPERS CATALOG */
+        /* SHARED PAPERS CATALOG */
         filteredSubmissions.length === 0 ? (
-          <div className="empty-state">
-            <div className="empty-state-icon">📝</div>
-            <div className="empty-state-title">No Community Submissions Found</div>
-            <div className="empty-state-desc">
-              Be the first scholar to submit a research paper to the community repository!
-            </div>
-            <Link to="/submit" className="btn btn-primary">
-              Submit a Research Paper
-            </Link>
-          </div>
+          <CuriousEmpty
+            title="No Shared Papers Found"
+            description="Be the first co-author to publish a paper to the community notebook!"
+            flourishText="Community Notebook"
+            actionButton={
+              <Link to="/submit" className="btn btn-primary">
+                Share a Paper →
+              </Link>
+            }
+          />
         ) : (
           <div className="grid-container">
             {filteredSubmissions.map(sub => (
-              <div key={sub.id} className="glass-card glass-card-interactive flex flex-col justify-between">
+              <CommentCornerCard
+                key={sub.id}
+                commentPreview={`Peer review note: Verified by community co-authors.`}
+                className="flex flex-col justify-between"
+              >
                 <div>
                   <div className="flex justify-between items-center mb-2">
-                    <span className="badge badge-approved">Approved</span>
+                    <span className="badge-tag badge-teal">Verified Paper</span>
                     {sub.academicLevel && (
-                      <span className="badge badge-level">
+                      <span className="badge-tag badge-mustard">
                         {sub.academicLevel.replace('_', ' ')}
                       </span>
                     )}
                   </div>
 
-                  <h3 className="mb-2" style={{ fontSize: '1.125rem', lineHeight: '1.4' }}>
+                  <h3 className="mb-2" style={{ fontSize: '1.15rem', lineHeight: '1.35' }}>
                     {sub.title}
                   </h3>
 
                   {sub.user && (
-                    <p className="text-xs text-muted mb-3" style={{ fontWeight: 500 }}>
+                    <p className="text-xs text-muted mb-3" style={{ fontWeight: 600 }}>
                       ✍️ {sub.user.name} {sub.user.schoolName ? `• ${sub.user.schoolName}` : ''}
                     </p>
                   )}
 
-                  <p className="text-secondary text-sm mb-4" style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                  <p className="text-muted text-sm mb-4" style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                     {sub.description}
                   </p>
                 </div>
 
-                <div className="flex justify-between items-center pt-4" style={{ borderTop: '1px solid var(--glass-border)', marginTop: '1rem' }}>
-                  <span className="text-xs text-muted">Community PDF</span>
-                  <Link to={`/read/${sub.id}`} className="btn btn-primary" style={{ padding: '0.4rem 0.85rem', fontSize: '0.8125rem' }}>
+                <div className="flex justify-between items-center pt-4" style={{ borderTop: '1.5px solid var(--color-line)', marginTop: '1rem' }}>
+                  <span className="text-xs text-muted">Shared PDF</span>
+                  <Link to={`/read/${sub.id}`} className="btn btn-primary" style={{ padding: '0.45rem 0.95rem', fontSize: '0.8125rem' }}>
                     Read Paper →
                   </Link>
                 </div>
-              </div>
+              </CommentCornerCard>
             ))}
           </div>
         )

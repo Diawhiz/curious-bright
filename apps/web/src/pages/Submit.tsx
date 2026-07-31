@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { apiFetch } from '../lib/api';
+import { CommentCornerCard } from '../components/CommentCornerCard';
+import { HighlighterText } from '../components/HighlighterText';
 
 const ACADEMIC_LEVELS = [
   { value: 'HIGH_SCHOOL', label: 'High School' },
   { value: 'COLLEGE', label: 'College / Undergraduate' },
   { value: 'GRADUATE', label: 'Graduate / Postgraduate' },
-  { value: 'PROFESSIONAL', label: 'Professional / Research Scholar' },
-  { value: 'MIDDLE_SCHOOL', label: 'Middle School' },
-  { value: 'ELEMENTARY', label: 'Elementary' },
+  { value: 'PROFESSIONAL', label: 'Professional / Independent Scholar' },
 ];
 
 export default function Submit() {
@@ -24,12 +24,12 @@ export default function Submit() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!file) {
-      setError('Please select a PDF research document.');
+      setError('Please select a PDF document to share.');
       return;
     }
 
     if (file.type !== 'application/pdf') {
-      setError('Only PDF files are supported.');
+      setError('Please select a valid PDF file.');
       return;
     }
 
@@ -37,15 +37,13 @@ export default function Submit() {
     setLoading(true);
 
     try {
-      // Step 1: Request presigned upload URL
-      setStatusStep('Generating secure upload URL...');
+      setStatusStep('Preparing secure link for your document...');
       const { uploadUrl, fileKey } = await apiFetch('/submissions/presigned-url', {
         method: 'POST',
         body: JSON.stringify({ fileName: file.name, fileType: file.type })
       });
 
-      // Step 2: Upload file directly to S3 / MinIO storage
-      setStatusStep('Uploading document to storage repository...');
+      setStatusStep('Saving your paper safely into the repository...');
       const uploadRes = await fetch(uploadUrl, {
         method: 'PUT',
         body: file,
@@ -55,17 +53,16 @@ export default function Submit() {
       });
 
       if (!uploadRes.ok) {
-        throw new Error('Failed to upload file to storage bucket');
+        throw new Error('Could not upload file to storage repository');
       }
 
-      // Step 3: Register submission record in backend
-      setStatusStep('Finalizing submission record...');
+      setStatusStep('Finalizing your publication record...');
       await apiFetch('/submissions', {
         method: 'POST',
         body: JSON.stringify({
           title: title.trim(),
           description: description.trim(),
-          fileUrl: fileKey, // Backend expects fileUrl
+          fileUrl: fileKey,
           academicLevel,
           license: 'CC-BY-4.0'
         })
@@ -74,7 +71,7 @@ export default function Submit() {
       navigate('/browse');
     } catch (err: any) {
       console.error('Submission error:', err);
-      setError(err.message || 'Failed to complete paper submission');
+      setError(err.message || 'We could not complete your paper submission');
     } finally {
       setLoading(false);
       setStatusStep('');
@@ -82,21 +79,22 @@ export default function Submit() {
   };
 
   return (
-    <div style={{ maxWidth: '640px', margin: '0 auto' }} className="animate-fade-in">
+    <div style={{ maxWidth: '660px', margin: '0 auto' }}>
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h2>Submit Research Paper</h2>
-          <p className="text-muted text-sm mt-2">Publish your paper to the Curious Bright peer-reviewed repository</p>
+          <h2>
+            <HighlighterText color="#FF5A36">Share a Research Paper</HighlighterText>
+          </h2>
+          <p className="text-muted text-sm mt-2">Publish your work to the Curious Bright shared notebook repository</p>
         </div>
-        <Link to="/browse" className="btn btn-secondary" style={{ padding: '0.4rem 0.75rem', fontSize: '0.8125rem' }}>
-          ← Back to Repository
+        <Link to="/browse" className="btn btn-secondary" style={{ padding: '0.45rem 0.85rem', fontSize: '0.8125rem' }}>
+          ← Back to Library
         </Link>
       </div>
 
-      <div className="glass-card">
-        {/* Error Alert */}
+      <CommentCornerCard commentPreview="Peel corner to inspect publishing tips">
         {error && (
-          <div className="alert alert-error">
+          <div className="alert alert-error mb-4">
             <span>⚠️ {error}</span>
             <button className="btn btn-secondary" style={{ padding: '0.2rem 0.5rem', fontSize: '0.75rem' }} onClick={() => setError('')}>
               Dismiss
@@ -112,12 +110,12 @@ export default function Submit() {
               value={title} 
               onChange={e => setTitle(e.target.value)} 
               required 
-              placeholder="e.g. Deep Neural Architectures in Quantum Simulations"
+              placeholder="e.g. Neural Architectures in Quantum Simulations"
             />
           </div>
 
           <div className="form-group">
-            <label>Target Academic Level</label>
+            <label>Learning Level</label>
             <select 
               value={academicLevel}
               onChange={e => setAcademicLevel(e.target.value)}
@@ -132,24 +130,24 @@ export default function Submit() {
           </div>
 
           <div className="form-group">
-            <label>Abstract / Description</label>
+            <label>Summary / Abstract</label>
             <textarea 
               value={description} 
               onChange={e => setDescription(e.target.value)} 
               required 
-              placeholder="Provide a detailed abstract summarizing your research, methodology, and key conclusions..."
+              placeholder="Provide a clear summary outlining your research, core methodology, and key conclusions..."
               rows={5}
             />
           </div>
 
           <div className="form-group">
-            <label>PDF Document</label>
+            <label>PDF Document File</label>
             <div style={{
-              border: '2px dashed var(--glass-border)',
-              borderRadius: 'var(--radius-md)',
-              padding: '1.5rem',
+              border: '1.5px dashed var(--color-line-dark)',
+              borderRadius: '4px 0px 4px 4px',
+              padding: '1.75rem',
               textAlign: 'center',
-              background: 'rgba(0,0,0,0.2)',
+              background: 'var(--color-paper)',
               cursor: 'pointer',
             }}>
               <input 
@@ -160,7 +158,7 @@ export default function Submit() {
                 style={{ cursor: 'pointer' }}
               />
               {file && (
-                <div className="text-sm mt-2" style={{ color: 'var(--success)', fontWeight: 500 }}>
+                <div className="text-sm mt-2" style={{ color: 'var(--color-teal)', fontWeight: 600 }}>
                   ✓ Selected: {file.name} ({(file.size / (1024 * 1024)).toFixed(2)} MB)
                 </div>
               )}
@@ -169,21 +167,20 @@ export default function Submit() {
 
           {loading && statusStep && (
             <div className="alert alert-info mt-4">
-              <div className="spinner" style={{ width: 16, height: 16 }}></div>
-              <span>{statusStep}</span>
+              <span>✨ {statusStep}</span>
             </div>
           )}
 
-          <div className="flex justify-between items-center mt-6 pt-4" style={{ borderTop: '1px solid var(--glass-border)' }}>
+          <div className="flex justify-between items-center mt-6 pt-4" style={{ borderTop: '1.5px solid var(--color-line)' }}>
             <button type="button" className="btn btn-secondary" onClick={() => navigate('/browse')} disabled={loading}>
               Cancel
             </button>
             <button type="submit" className="btn btn-primary" disabled={loading}>
-              {loading ? 'Submitting...' : '🚀 Submit for Moderation'}
+              {loading ? 'Publishing...' : '🚀 Publish Paper'}
             </button>
           </div>
         </form>
-      </div>
+      </CommentCornerCard>
     </div>
   );
 }

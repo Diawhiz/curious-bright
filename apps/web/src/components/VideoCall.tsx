@@ -17,17 +17,19 @@ export function VideoCall({ roomId: _roomId, token, onLeave }: VideoCallProps) {
   );
 
   return (
-    <LiveKitRoom
-      video={true}
-      audio={true}
-      token={token}
-      serverUrl={serverUrl}
-      data-lk-theme="default"
-      style={{ height: '100%', width: '100%' }}
-      onDisconnected={onLeave}
-    >
-      <VideoConference />
-      <RoomAudioRenderer />
-    </LiveKitRoom>
+    <div style={{ height: '100%', width: '100%', background: 'var(--color-paper-card)', position: 'relative' }}>
+      <LiveKitRoom
+        video={true}
+        audio={true}
+        token={token}
+        serverUrl={serverUrl}
+        data-lk-theme="default"
+        style={{ height: '100%', width: '100%' }}
+        onDisconnected={onLeave}
+      >
+        <VideoConference />
+        <RoomAudioRenderer />
+      </LiveKitRoom>
+    </div>
   );
 }
