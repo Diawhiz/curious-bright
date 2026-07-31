@@ -40,7 +40,7 @@ export const InstitutionalBanner: React.FC = () => {
 
             <div className="lg:col-span-4 flex flex-col sm:flex-row lg:flex-col gap-4 justify-center items-start lg:items-end">
               <a 
-                href="/apply-institution"
+                href="https://org.curiousbright.com.ng"
                 className="btn-primary bg-white text-[var(--color-ink)] hover:bg-[#F7F6F2] text-sm px-6 py-3.5 w-full sm:w-auto text-center"
               >
                 <span>Apply for Institution Account</span>
@@ -48,7 +48,7 @@ export const InstitutionalBanner: React.FC = () => {
               </a>
 
               <a 
-                href="/apply-moderator"
+                href="https://app.curiousbright.com.ng/moderate"
                 className="btn-secondary border-white/30 text-white hover:border-white text-sm px-6 py-3.5 w-full sm:w-auto text-center"
               >
                 <span>Become a Moderator</span>

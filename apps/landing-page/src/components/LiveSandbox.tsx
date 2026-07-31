@@ -15,12 +15,12 @@ export const LiveSandbox: React.FC = () => {
     'High school and college study groups can research climate solutions together, co-authoring essays and sharing notes in real time...'
   );
 
-  const [activeCollaborator, setActiveCollaborator] = useState<'Amara' | 'Dr. Chen' | 'Prof. Thorne'>('Amara');
+  const [activeCollaborator, setActiveCollaborator] = useState<'Okikiolamilekan' | 'Dr. Tomiwa' | 'Prof. Chen'>('Okikiolamilekan');
   const [commentInput, setCommentInput] = useState('');
 
   const [comments, setComments] = useState<CommentItem[]>([
-    { id: 1, author: 'Amara', color: colors.coral, text: 'Added statistics on local solar power adoption.', time: '2m ago' },
-    { id: 2, author: 'Dr. Chen', color: colors.teal, text: 'Added efficiency formula: E = P × t', time: 'Just now' },
+    { id: 1, author: 'Okikiolamilekan', color: colors.coral, text: 'Added statistics on local solar power adoption.', time: '2m ago' },
+    { id: 2, author: 'Dr. Tomiwa', color: colors.teal, text: 'Added efficiency formula: E = P × t', time: 'Just now' },
   ]);
 
   const handlePostComment = (e: React.FormEvent) => {
@@ -28,8 +28,8 @@ export const LiveSandbox: React.FC = () => {
     if (!commentInput.trim()) return;
 
     const getColor = (name: string) => {
-      if (name === 'Amara') return colors.coral;
-      if (name === 'Dr. Chen') return colors.teal;
+      if (name === '') return colors.coral;
+      if (name === 'Dr. Tomiwa') return colors.teal;
       return colors.mustard;
     };
 
@@ -93,38 +93,38 @@ export const LiveSandbox: React.FC = () => {
                 <div className="flex items-center gap-1.5">
                   <button
                     type="button"
-                    onClick={() => setActiveCollaborator('Amara')}
+                    onClick={() => setActiveCollaborator('Okikiolamilekan')}
                     className={`px-3 py-1 rounded-sm font-mono text-xs font-semibold transition-all border ${
-                      activeCollaborator === 'Amara'
+                      activeCollaborator === 'Okikiolamilekan'
                         ? 'bg-[var(--color-coral)] text-white border-[var(--color-coral)]'
                         : 'bg-[#F7F6F2] text-[var(--color-ink)] border-[var(--color-line)] hover:border-[var(--color-faded-ink)]'
                     }`}
                   >
-                    Amara (Coral)
+                    Okikiolamilekan (Coral)
                   </button>
 
                   <button
                     type="button"
-                    onClick={() => setActiveCollaborator('Dr. Chen')}
+                    onClick={() => setActiveCollaborator('Dr. Tomiwa')}
                     className={`px-3 py-1 rounded-sm font-mono text-xs font-semibold transition-all border ${
-                      activeCollaborator === 'Dr. Chen'
+                      activeCollaborator === 'Dr. Tomiwa'
                         ? 'bg-[var(--color-teal)] text-white border-[var(--color-teal)]'
                         : 'bg-[#F7F6F2] text-[var(--color-ink)] border-[var(--color-line)] hover:border-[var(--color-faded-ink)]'
                     }`}
                   >
-                    Dr. Chen (Teal)
+                    Dr. Tomiwa (Teal)
                   </button>
 
                   <button
                     type="button"
-                    onClick={() => setActiveCollaborator('Prof. Thorne')}
+                    onClick={() => setActiveCollaborator('Prof. Chen')}
                     className={`px-3 py-1 rounded-sm font-mono text-xs font-semibold transition-all border ${
                       activeCollaborator === 'Prof. Thorne'
                         ? 'bg-[var(--color-mustard)] text-[var(--color-ink)] border-[var(--color-mustard)]'
                         : 'bg-[#F7F6F2] text-[var(--color-ink)] border-[var(--color-line)] hover:border-[var(--color-faded-ink)]'
                     }`}
                   >
-                    Prof. Thorne (Mustard)
+                    Prof. Chen (Mustard)
                   </button>
                 </div>
               </div>

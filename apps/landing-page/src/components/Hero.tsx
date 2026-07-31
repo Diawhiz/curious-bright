@@ -14,9 +14,9 @@ interface CursorState {
 
 export const Hero: React.FC = () => {
   const [cursorPos, setCursorPos] = useState<CursorState[]>([
-    { x: 26, y: 24, name: 'Amara', colorClass: 'cursor-coral', bgColor: colors.coral, action: 'editing paragraph 2' },
-    { x: 68, y: 54, name: 'Dr. Chen', colorClass: 'cursor-teal', bgColor: colors.teal, action: 'adding solar formula' },
-    { x: 40, y: 80, name: 'Prof. Thorne', colorClass: 'cursor-mustard', bgColor: colors.mustard, action: 'commenting on citations' },
+    { x: 26, y: 24, name: 'Okikiolamilekan', colorClass: 'cursor-coral', bgColor: colors.coral, action: 'editing paragraph 2' },
+    { x: 68, y: 54, name: 'Dr. Tomiwa', colorClass: 'cursor-teal', bgColor: colors.teal, action: 'adding solar formula' },
+    { x: 40, y: 80, name: 'Prof. Chen', colorClass: 'cursor-mustard', bgColor: colors.mustard, action: 'commenting on citations' },
   ]);
 
   useEffect(() => {
@@ -59,7 +59,7 @@ export const Hero: React.FC = () => {
             </p>
 
             <div className="flex flex-wrap items-center gap-4 pt-2">
-              <a href="/register" className="btn-primary text-sm px-6 py-3.5">
+              <a href="https://app.curiousbright.com.ng/register" className="btn-primary text-sm px-6 py-3.5">
                 <span>Start Co-Authoring</span>
                 <ArrowRight className="w-4 h-4" />
               </a>
@@ -135,11 +135,11 @@ export const Hero: React.FC = () => {
                 {/* Inline Live Comment Bubble */}
                 <div className="p-3 bg-[#F7F6F2] border-l-4 border-[var(--color-coral)] rounded-r-md text-xs space-y-1">
                   <div className="flex items-center justify-between font-mono text-[10px] text-[var(--color-coral)] font-bold">
-                    <span>AMARA (CORAL) — MARGIN NOTE</span>
+                    <span>OKIKIOLAMILEKAN (CORAL) — MARGIN NOTE</span>
                     <span>3m ago</span>
                   </div>
                   <p className="text-[var(--color-ink)] italic">
-                    "Dr. Chen, I added the survey results from our 5 partner schools. Can you check paragraph 2 formula?"
+                    "Dr. Tomiwa, I added the survey results from our 5 partner schools. Can you check paragraph 2 formula?"
                   </p>
                 </div>
               </div>

@@ -44,10 +44,10 @@ export const Footer: React.FC = () => {
               Platform
             </h4>
             <ul className="space-y-2 text-xs">
-              <li><a href="/browse" className="hover:text-[var(--color-ink)] transition-colors">Open Library</a></li>
-              <li><a href="/community" className="hover:text-[var(--color-ink)] transition-colors">Study Rooms</a></li>
-              <li><a href="/submit" className="hover:text-[var(--color-ink)] transition-colors">Submit Manuscript</a></li>
-              <li><a href="/moderate" className="hover:text-[var(--color-ink)] transition-colors">Moderation Queue</a></li>
+              <li><a href="https://app.curiousbright.com.ng/browse" className="hover:text-[var(--color-ink)] transition-colors">Open Library</a></li>
+              <li><a href="https://app.curiousbright.com.ng/community" className="hover:text-[var(--color-ink)] transition-colors">Study Rooms</a></li>
+              <li><a href="https://app.curiousbright.com.ng/submit" className="hover:text-[var(--color-ink)] transition-colors">Submit Manuscript</a></li>
+              <li><a href="https://app.curiousbright.com.ng/moderate" className="hover:text-[var(--color-ink)] transition-colors">Moderation Queue</a></li>
             </ul>
           </div>
 
@@ -57,9 +57,9 @@ export const Footer: React.FC = () => {
               Institutions
             </h4>
             <ul className="space-y-2 text-xs">
-              <li><a href="/apply-institution" className="hover:text-[var(--color-ink)] transition-colors">Apply for Institution</a></li>
-              <li><a href="/apply-moderator" className="hover:text-[var(--color-ink)] transition-colors">Become a Moderator</a></li>
-              <li><a href="#institutions" className="hover:text-[var(--color-ink)] transition-colors">School Access Grants</a></li>
+              <li><a href="https://org.curiousbright.com.ng" className="hover:text-[var(--color-ink)] transition-colors">Apply for Institution</a></li>
+              <li><a href="https://app.curiousbright.com.ng/moderate" className="hover:text-[var(--color-ink)] transition-colors">Become a Moderator</a></li>
+              <li><a href="https://org.curiousbright.com.ng/#institutions" className="hover:text-[var(--color-ink)] transition-colors">School Access Grants</a></li>
             </ul>
           </div>
 
@@ -69,8 +69,8 @@ export const Footer: React.FC = () => {
               Account
             </h4>
             <ul className="space-y-2 text-xs">
-              <li><a href="/login" className="hover:text-[var(--color-ink)] transition-colors">Sign In</a></li>
-              <li><a href="/register" className="hover:text-[var(--color-ink)] transition-colors">Join Workspace</a></li>
+              <li><a href="https://app.curiousbright.com.ng/login" className="hover:text-[var(--color-ink)] transition-colors">Sign In</a></li>
+              <li><a href="https://app.curiousbright.com.ng/register" className="hover:text-[var(--color-ink)] transition-colors">Join Workspace</a></li>
             </ul>
           </div>
 
@@ -79,7 +79,7 @@ export const Footer: React.FC = () => {
         {/* Bottom copyright */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-[var(--color-faded-ink)]">
           <div>
-            &copy; {new Date().getFullYear()} Curious Bright. Empowering students & scholars worldwide.
+            &copy; {new Date().getFullYear()} Curious Bright. Bridging the gap in academics.
           </div>
 
           <div className="flex items-center gap-4">

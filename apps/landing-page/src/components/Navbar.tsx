@@ -53,13 +53,13 @@ export const Navbar: React.FC = () => {
           {/* Action CTAs */}
           <div className="flex items-center gap-3">
             <a 
-              href="/login" 
+              href="https://app.curiousbright.com.ng/login"
               className="btn-secondary hidden sm:inline-flex text-xs px-4 py-2"
             >
               Sign In
             </a>
             <a 
-              href="/register" 
+              href="https://app.curiousbright.com.ng/register" 
               className="btn-primary text-xs px-4 py-2"
             >
               <span>Join Workspace</span>
