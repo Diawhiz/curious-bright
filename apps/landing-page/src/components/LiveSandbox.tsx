@@ -119,7 +119,7 @@ export const LiveSandbox: React.FC = () => {
                     type="button"
                     onClick={() => setActiveCollaborator('Prof. Chen')}
                     className={`px-3 py-1 rounded-sm font-mono text-xs font-semibold transition-all border ${
-                      activeCollaborator === 'Prof. Thorne'
+                      activeCollaborator === 'Prof. Chen'
                         ? 'bg-[var(--color-mustard)] text-[var(--color-ink)] border-[var(--color-mustard)]'
                         : 'bg-[#F7F6F2] text-[var(--color-ink)] border-[var(--color-line)] hover:border-[var(--color-faded-ink)]'
                     }`}
