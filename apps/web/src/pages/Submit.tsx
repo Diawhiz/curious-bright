@@ -1,14 +1,14 @@
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { apiFetch } from '../lib/api';
 import { CommentCornerCard } from '../components/CommentCornerCard';
 import { HighlighterText } from '../components/HighlighterText';
 
 const ACADEMIC_LEVELS = [
-  { value: 'HIGH_SCHOOL', label: 'High School' },
-  { value: 'COLLEGE', label: 'College / Undergraduate' },
-  { value: 'GRADUATE', label: 'Graduate / Postgraduate' },
-  { value: 'PROFESSIONAL', label: 'Professional / Independent Scholar' },
+  { value: 'HIGH_SCHOOL', label: 'High School & Secondary' },
+  { value: 'COLLEGE', label: 'Undergraduate College' },
+  { value: 'GRADUATE', label: 'Graduate & Postgraduate' },
+  { value: 'PROFESSIONAL', label: 'Professional & Scholar' },
 ];
 
 export default function Submit() {
@@ -17,110 +17,117 @@ export default function Submit() {
   const [description, setDescription] = useState('');
   const [academicLevel, setAcademicLevel] = useState('COLLEGE');
   const [file, setFile] = useState<File | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [statusStep, setStatusStep] = useState('');
+  
+  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const selected = e.target.files[0];
+      if (!selected.name.endsWith('.pdf')) {
+        setError('Only PDF documents are accepted for shared papers.');
+        return;
+      }
+      setError('');
+      setFile(selected);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!file) {
-      setError('Please select a PDF document to share.');
+    if (!title.trim() || !description.trim() || !file) {
+      setError('Please provide a title, plain summary, and a PDF file.');
       return;
     }
 
-    if (file.type !== 'application/pdf') {
-      setError('Please select a valid PDF file.');
-      return;
-    }
-
+    setUploading(true);
     setError('');
-    setLoading(true);
 
     try {
-      setStatusStep('Preparing secure link for your document...');
-      const { uploadUrl, fileKey } = await apiFetch('/submissions/presigned-url', {
+      // 1. Get presigned upload URL or upload file
+      const formData = new FormData();
+      formData.append('file', file);
+
+      // Upload paper file
+      const uploadRes = await apiFetch('/submissions/upload', {
         method: 'POST',
-        body: JSON.stringify({ fileName: file.name, fileType: file.type })
+        body: formData,
+        isFormData: true,
       });
 
-      setStatusStep('Saving your paper safely into the repository...');
-      const uploadRes = await fetch(uploadUrl, {
-        method: 'PUT',
-        body: file,
-        headers: {
-          'Content-Type': file.type,
-        }
-      });
+      const fileUrl = uploadRes.fileUrl || uploadRes.url;
 
-      if (!uploadRes.ok) {
-        throw new Error('Could not upload file to storage repository');
-      }
-
-      setStatusStep('Finalizing your publication record...');
+      // 2. Submit paper metadata to queue
       await apiFetch('/submissions', {
         method: 'POST',
         body: JSON.stringify({
           title: title.trim(),
           description: description.trim(),
-          fileUrl: fileKey,
           academicLevel,
-          license: 'CC-BY-4.0'
-        })
+          fileUrl,
+        }),
       });
 
-      navigate('/browse');
+      setSuccess('Your paper was submitted to the community peer review queue!');
+      setTimeout(() => navigate('/browse'), 2000);
     } catch (err: any) {
       console.error('Submission error:', err);
-      setError(err.message || 'We could not complete your paper submission');
+      setError(err.message || 'Could not upload your paper at this time.');
     } finally {
-      setLoading(false);
-      setStatusStep('');
+      setUploading(false);
     }
   };
 
   return (
-    <div style={{ maxWidth: '660px', margin: '0 auto' }}>
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h2>
-            <HighlighterText color="#FF5A36">Share a Research Paper</HighlighterText>
-          </h2>
-          <p className="text-muted text-sm mt-2">Publish your work to the Curious Bright shared notebook repository</p>
-        </div>
-        <Link to="/browse" className="btn btn-secondary" style={{ padding: '0.45rem 0.85rem', fontSize: '0.8125rem' }}>
-          ← Back to Library
-        </Link>
+    <div style={{ maxWidth: '680px', margin: '0 auto' }}>
+      <div className="mb-6 text-center">
+        <h2>
+          <HighlighterText color="#FF5A36">Publish a Shared Paper</HighlighterText>
+        </h2>
+        <p className="text-muted text-sm mt-2">
+          Share your research, study guide, or open notes with co-authors across the notebook.
+        </p>
       </div>
 
-      <CommentCornerCard commentPreview="Peel corner to inspect publishing tips">
+      <CommentCornerCard commentPreview="Submissions undergo community peer review for open-access licensing">
         {error && (
           <div className="alert alert-error mb-4">
-            <span>⚠️ {error}</span>
-            <button className="btn btn-secondary" style={{ padding: '0.2rem 0.5rem', fontSize: '0.75rem' }} onClick={() => setError('')}>
-              Dismiss
-            </button>
+            <span className="flex items-center gap-1.5">
+              <i className="bx bx-error-circle" style={{ fontSize: '1.1rem' }}></i>
+              {error}
+            </span>
           </div>
         )}
 
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>Paper Title</label>
-            <input 
-              type="text" 
-              value={title} 
-              onChange={e => setTitle(e.target.value)} 
-              required 
-              placeholder="e.g. Neural Architectures in Quantum Simulations"
+        {success && (
+          <div className="alert alert-info mb-4">
+            <span className="flex items-center gap-1.5">
+              <i className="bx bx-check-circle" style={{ fontSize: '1.1rem' }}></i>
+              {success}
+            </span>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+          <div>
+            <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, marginBottom: '0.35rem' }}>
+              Paper Title
+            </label>
+            <input
+              type="text"
+              placeholder="e.g., An Introduction to Atmospheric Physics"
+              value={title}
+              onChange={e => setTitle(e.target.value)}
+              required
             />
           </div>
 
-          <div className="form-group">
-            <label>Learning Level</label>
-            <select 
-              value={academicLevel}
-              onChange={e => setAcademicLevel(e.target.value)}
-              required
-            >
+          <div>
+            <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, marginBottom: '0.35rem' }}>
+              Learning Level Target
+            </label>
+            <select value={academicLevel} onChange={e => setAcademicLevel(e.target.value)}>
               {ACADEMIC_LEVELS.map(level => (
                 <option key={level.value} value={level.value}>
                   {level.label}
@@ -129,54 +136,76 @@ export default function Submit() {
             </select>
           </div>
 
-          <div className="form-group">
-            <label>Summary / Abstract</label>
-            <textarea 
-              value={description} 
-              onChange={e => setDescription(e.target.value)} 
-              required 
-              placeholder="Provide a clear summary outlining your research, core methodology, and key conclusions..."
-              rows={5}
+          <div>
+            <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, marginBottom: '0.35rem' }}>
+              Plain Summary & Overview
+            </label>
+            <textarea
+              rows={4}
+              placeholder="Explain the key takeaways in plain language without unnecessary jargon..."
+              value={description}
+              onChange={e => setDescription(e.target.value)}
+              required
             />
           </div>
 
-          <div className="form-group">
-            <label>PDF Document File</label>
-            <div style={{
-              border: '1.5px dashed var(--color-line-dark)',
-              borderRadius: '4px 0px 4px 4px',
-              padding: '1.75rem',
-              textAlign: 'center',
-              background: 'var(--color-paper)',
-              cursor: 'pointer',
-            }}>
-              <input 
-                type="file" 
-                accept="application/pdf"
-                onChange={e => setFile(e.target.files ? e.target.files[0] : null)}
-                required 
-                style={{ cursor: 'pointer' }}
+          {/* PDF Upload Zone with Boxicons */}
+          <div>
+            <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, marginBottom: '0.35rem' }}>
+              PDF Document Attachment
+            </label>
+            <div
+              style={{
+                border: '2px dashed var(--color-line)',
+                background: 'var(--color-paper)',
+                padding: '1.75rem',
+                borderRadius: '4px 0px 4px 4px',
+                textAlign: 'center',
+                cursor: 'pointer',
+              }}
+              onClick={() => document.getElementById('paper-file-input')?.click()}
+            >
+              <input
+                id="paper-file-input"
+                type="file"
+                accept=".pdf"
+                style={{ display: 'none' }}
+                onChange={handleFileChange}
               />
-              {file && (
-                <div className="text-sm mt-2" style={{ color: 'var(--color-teal)', fontWeight: 600 }}>
-                  ✓ Selected: {file.name} ({(file.size / (1024 * 1024)).toFixed(2)} MB)
+
+              {file ? (
+                <div className="flex items-center justify-center gap-2" style={{ color: 'var(--color-ink)', fontWeight: 600 }}>
+                  <i className="bx bx-file-pdf" style={{ fontSize: '1.5rem', color: 'var(--color-coral)' }}></i>
+                  <span>{file.name} ({(file.size / (1024 * 1024)).toFixed(2)} MB)</span>
+                </div>
+              ) : (
+                <div>
+                  <i className="bx bx-cloud-upload" style={{ fontSize: '2rem', color: 'var(--color-faded-ink)', marginBottom: '0.5rem' }}></i>
+                  <p className="font-semibold text-sm mb-1">Click to select PDF document</p>
+                  <p className="text-xs text-muted">Supports original manuscripts & open notes up to 25 MB</p>
                 </div>
               )}
             </div>
           </div>
 
-          {loading && statusStep && (
-            <div className="alert alert-info mt-4">
-              <span>✨ {statusStep}</span>
-            </div>
-          )}
-
-          <div className="flex justify-between items-center mt-6 pt-4" style={{ borderTop: '1.5px solid var(--color-line)' }}>
-            <button type="button" className="btn btn-secondary" onClick={() => navigate('/browse')} disabled={loading}>
-              Cancel
-            </button>
-            <button type="submit" className="btn btn-primary" disabled={loading}>
-              {loading ? 'Publishing...' : '🚀 Publish Paper'}
+          <div className="pt-2">
+            <button
+              type="submit"
+              className="btn btn-primary w-full"
+              disabled={uploading || !file || !title.trim()}
+              style={{ padding: '0.75rem', fontSize: '0.9375rem' }}
+            >
+              {uploading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <i className="bx bx-loader-alt bx-spin" style={{ fontSize: '1.1rem' }}></i>
+                  Uploading PDF & Submitting...
+                </span>
+              ) : (
+                <span className="flex items-center justify-center gap-2">
+                  <i className="bx bx-paper-plane" style={{ fontSize: '1.1rem' }}></i>
+                  Submit Paper to Peer Review
+                </span>
+              )}
             </button>
           </div>
         </form>

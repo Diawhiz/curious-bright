@@ -28,7 +28,7 @@ export function CommentCornerCard({
       style={style}
       onClick={onClick}
     >
-      {/* Signature Corner Peel Ear (Top-Right Folded Page Corner) */}
+      {/* Signature Corner Peel Ear with Boxicon */}
       <motion.div
         className="comment-corner-ear"
         onMouseEnter={handleCornerHoverStart}
@@ -47,7 +47,7 @@ export function CommentCornerCard({
         transition={{ type: 'spring', stiffness: 320, damping: 22 }}
         title="Peel corner to view note"
       >
-        <span style={{ fontSize: '9px', lineHeight: 1, opacity: 0.6 }}>✎</span>
+        <i className="bx bx-pencil" style={{ fontSize: '10px', color: 'var(--color-ink)', opacity: 0.7 }}></i>
       </motion.div>
 
       {/* Floating Comment Preview Tooltip Revealed on Peel */}
@@ -60,7 +60,10 @@ export function CommentCornerCard({
             exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 4, scale: 0.95 }}
             transition={{ type: 'spring', stiffness: 400, damping: 28 }}
           >
-            <span>{commentPreview}</span>
+            <span className="flex items-center gap-1">
+              <i className="bx bx-comment-detail" style={{ fontSize: '0.85rem' }}></i>
+              {commentPreview}
+            </span>
           </motion.div>
         )}
       </AnimatePresence>

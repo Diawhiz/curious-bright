@@ -15,7 +15,10 @@ export function CuriousLoading({ message = 'Connecting you to your team...' }: L
         animate={shouldReduceMotion ? {} : { scale: [0.95, 1.05, 0.95], y: [0, -6, 0] }}
         transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
       >
-        <span>✨ Collaborator arriving...</span>
+        <span className="flex items-center gap-1.5">
+          <i className="bx bx-loader-alt bx-spin" style={{ fontSize: '1rem' }}></i>
+          Collaborator arriving...
+        </span>
       </motion.div>
       <p style={{ fontSize: '0.9375rem', fontWeight: 500, color: 'var(--color-faded-ink)' }}>
         {message}
@@ -40,7 +43,10 @@ export function CuriousEmpty({
   return (
     <div className="empty-state">
       <div className="empty-state-illustrative">
-        <span>✏️ {flourishText}</span>
+        <span className="flex items-center gap-1.5">
+          <i className="bx bx-book-content" style={{ fontSize: '1.1rem' }}></i>
+          {flourishText}
+        </span>
       </div>
       <h3 className="empty-state-title">{title}</h3>
       <p className="empty-state-desc">{description}</p>
@@ -62,8 +68,9 @@ export function CuriousError({
 }: ErrorStateProps) {
   return (
     <div className="alert alert-error flex flex-col items-start gap-2" style={{ maxWidth: '560px', margin: '2rem auto' }}>
-      <div className="font-semibold text-sm" style={{ fontSize: '1rem' }}>
-        ⚠️ {title}
+      <div className="font-semibold text-sm flex items-center gap-1.5" style={{ fontSize: '1rem' }}>
+        <i className="bx bx-error-circle" style={{ fontSize: '1.25rem', color: '#A82810' }}></i>
+        {title}
       </div>
       <p style={{ fontSize: '0.875rem', color: '#851E0A' }}>{message}</p>
       {onRetry && (

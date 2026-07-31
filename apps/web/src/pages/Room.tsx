@@ -211,11 +211,12 @@ export default function Room() {
         <CursorTag key={c.id} id={c.id} name={c.name} action={c.action} color={c.color} x={c.x} y={c.y} />
       ))}
 
-      {/* Room Header Top Bar */}
+      {/* Room Header Top Bar with Boxicons */}
       <div className="flex justify-between items-center mb-4" style={{ flexWrap: 'wrap', gap: '0.75rem' }}>
         <div className="flex items-center gap-3">
           <Link to="/community" className="btn btn-secondary" style={{ padding: '0.45rem 0.85rem', fontSize: '0.8125rem' }}>
-            {'\u2190 Back'}
+            <i className="bx bx-left-arrow-alt" style={{ fontSize: '1.1rem' }}></i>
+            <span>Back</span>
           </Link>
           <div>
             <div className="flex items-center gap-2">
@@ -232,31 +233,36 @@ export default function Room() {
             style={{ padding: '0.45rem 0.85rem', fontSize: '0.8125rem', borderColor: showMembersPanel ? 'var(--color-ink)' : undefined }}
             onClick={() => setShowMembersPanel(prev => !prev)}
           >
-            {'\uD83D\uDC65 Members'} ({members.length}) {onlineUsers.length > 0 && <span className="badge-tag badge-teal" style={{ marginLeft: 4 }}>{onlineUsers.length} Active now</span>}
+            <i className="bx bx-group" style={{ fontSize: '1.1rem' }}></i>
+            <span>Members ({members.length})</span>
+            {onlineUsers.length > 0 && <span className="badge-tag badge-teal" style={{ marginLeft: 4 }}>{onlineUsers.length} Active now</span>}
           </button>
 
-          {/* Mode Tabs */}
+          {/* Mode Tabs with Boxicons */}
           <div className="flex gap-1" style={{ background: 'var(--color-paper-card)', padding: '0.25rem', borderRadius: '4px 0px 4px 4px', border: '1.5px solid var(--color-line)' }}>
             <button 
               className={`btn ${activeTab === 'CHAT' ? 'btn-primary' : 'btn-secondary'}`}
               style={{ padding: '0.45rem 0.9rem', fontSize: '0.8125rem' }}
               onClick={() => setActiveTab('CHAT')}
             >
-              {'\uD83D\uDCAC Conversation'}
+              <i className="bx bx-chat" style={{ fontSize: '1rem' }}></i>
+              <span>Conversation</span>
             </button>
             <button 
               className={`btn ${activeTab === 'WHITEBOARD' ? 'btn-primary' : 'btn-secondary'}`}
               style={{ padding: '0.45rem 0.9rem', fontSize: '0.8125rem' }}
               onClick={() => setActiveTab('WHITEBOARD')}
             >
-              {'\uD83C\uDFA8 Whiteboard'}
+              <i className="bx bx-palette" style={{ fontSize: '1rem' }}></i>
+              <span>Whiteboard</span>
             </button>
             <button 
               className={`btn ${activeTab === 'VIDEO' ? 'btn-primary' : 'btn-secondary'}`}
               style={{ padding: '0.45rem 0.9rem', fontSize: '0.8125rem' }}
               onClick={callToken ? () => setActiveTab('VIDEO') : startVideoCall}
             >
-              {'\uD83D\uDCF9 '} {callToken ? 'Video Call Active' : 'Start Call'}
+              <i className="bx bx-video" style={{ fontSize: '1rem' }}></i>
+              <span>{callToken ? 'Video Call Active' : 'Start Call'}</span>
             </button>
           </div>
         </div>
@@ -265,17 +271,24 @@ export default function Room() {
       {/* Error Alert */}
       {error && (
         <div className="alert alert-error mb-4">
-          <span>{'\u26A1 '} {error}</span>
+          <span className="flex items-center gap-1.5">
+            <i className="bx bx-error-circle" style={{ fontSize: '1.1rem' }}></i>
+            {error}
+          </span>
           <button className="btn btn-secondary" style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem' }} onClick={() => setError('')}>Dismiss</button>
         </div>
       )}
 
-      {/* Unauthenticated / Guest Plain Language Alert */}
+      {/* Unauthenticated Alert */}
       {socketStatus === 'unauthenticated' && (
         <div className="alert alert-info mb-4">
-          <span>{'\uD83D\uDD12 '} You are viewing this room as a guest. Sign in to post messages, draw on the whiteboard, and join video calls.</span>
+          <span className="flex items-center gap-1.5">
+            <i className="bx bx-lock-alt" style={{ fontSize: '1.1rem' }}></i>
+            You are viewing this room as a guest. Sign in to post messages, draw on the whiteboard, and join video calls.
+          </span>
           <Link to="/login" className="btn btn-primary" style={{ padding: '0.35rem 0.75rem', fontSize: '0.75rem' }}>
-            {'Sign In \u2192'}
+            <span>Sign In</span>
+            <i className="bx bx-right-arrow-alt" style={{ fontSize: '1rem' }}></i>
           </Link>
         </div>
       )}
@@ -304,8 +317,9 @@ export default function Room() {
               {/* Messages Stream */}
               <div className="flex-1 overflow-y-auto" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 {messages.filter(msg => !blockedUsers.has(msg.senderId)).length === 0 ? (
-                  <div className="text-center text-muted" style={{ margin: 'auto', fontSize: '0.9375rem' }}>
-                    {'\uD83D\uDCAC '} No notes in this room yet. Write a message below to start collaborating!
+                  <div className="text-center text-muted flex items-center justify-center gap-1.5" style={{ margin: 'auto', fontSize: '0.9375rem' }}>
+                    <i className="bx bx-chat" style={{ fontSize: '1.25rem' }}></i>
+                    No notes in this room yet. Write a message below to start collaborating!
                   </div>
                 ) : (
                   messages.filter(msg => !blockedUsers.has(msg.senderId)).map(msg => (
@@ -356,7 +370,8 @@ export default function Room() {
                   </Link>
                 ) : (
                   <button type="submit" className="btn btn-primary" disabled={!newMessage.trim()}>
-                    Post Note
+                    <span>Post Note</span>
+                    <i className="bx bx-paper-plane" style={{ fontSize: '1rem' }}></i>
                   </button>
                 )}
               </form>
@@ -389,7 +404,10 @@ export default function Room() {
         {showMembersPanel && (
           <CommentCornerCard style={{ width: '280px', padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '1rem', overflowY: 'auto' }}>
             <div className="flex justify-between items-center pb-3" style={{ borderBottom: '1.5px solid var(--color-line)' }}>
-              <h4 style={{ fontSize: '0.95rem' }}>Room Members ({members.length})</h4>
+              <h4 style={{ fontSize: '0.95rem' }} className="flex items-center gap-1.5">
+                <i className="bx bx-group" style={{ fontSize: '1.1rem' }}></i>
+                Room Members ({members.length})
+              </h4>
               <span className="badge-tag badge-teal" style={{ fontSize: '0.625rem' }}>
                 {onlineUsers.length} Active
               </span>
@@ -432,8 +450,8 @@ export default function Room() {
                         </div>
 
                         <div style={{ overflow: 'hidden' }}>
-                          <div className="font-semibold text-xs" style={{ color: 'var(--color-ink)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                            {m.user.name} {m.isAdmin && <span style={{ color: 'var(--color-mustard)', fontSize: '0.65rem' }}>{'\u2B50 Admin'}</span>}
+                          <div className="font-semibold text-xs flex items-center gap-1" style={{ color: 'var(--color-ink)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            {m.user.name} {m.isAdmin && <i className="bx bxs-star" style={{ color: 'var(--color-mustard)', fontSize: '0.75rem' }}></i>}
                           </div>
                           <div className="text-xs text-muted" style={{ fontSize: '0.6875rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                             {m.user.schoolName || 'Co-author'}

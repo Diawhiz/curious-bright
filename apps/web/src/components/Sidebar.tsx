@@ -89,7 +89,7 @@ export default function Sidebar() {
         padding: '1.5rem 1.25rem',
       }}
     >
-      {/* Brand Header */}
+      {/* Brand Header with Consistent Boxicon */}
       <div className="sidebar-header" style={{ marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '1.5px solid var(--color-line)' }}>
         <Link to="/browse" className="flex items-center gap-3" style={{ textDecoration: 'none' }}>
           <div
@@ -103,11 +103,11 @@ export default function Sidebar() {
               alignItems: 'center',
               justifyContent: 'center',
               fontWeight: 700,
-              fontSize: '1.2rem',
+              fontSize: '1.3rem',
               boxShadow: '0 3px 8px rgba(20,20,26,0.12)',
             }}
           >
-            {'\u270E'}
+            <i className="bx bx-edit-alt"></i>
           </div>
           <div>
             <div className="font-display" style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--color-ink)', lineHeight: 1.1 }}>
@@ -120,7 +120,7 @@ export default function Sidebar() {
         </Link>
       </div>
 
-      {/* Global Search Bar */}
+      {/* Global Search Bar with Boxicon */}
       <form onSubmit={handleSearch} style={{ marginBottom: '1.5rem', position: 'relative' }}>
         <input
           type="text"
@@ -134,12 +134,21 @@ export default function Sidebar() {
             borderColor: 'var(--color-line)',
           }}
         />
-        <span style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', opacity: 0.5, fontSize: '0.85rem' }}>
-          {'\uD83D\uDD0D'}
-        </span>
+        <i
+          className="bx bx-search"
+          style={{
+            position: 'absolute',
+            left: '0.75rem',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            opacity: 0.6,
+            fontSize: '1rem',
+            color: 'var(--color-ink)',
+          }}
+        ></i>
       </form>
 
-      {/* Navigation Links */}
+      {/* Navigation Links with Consistent Boxicons */}
       <nav className="sidebar-nav" style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', flex: 1 }}>
         <div style={{ fontSize: '0.6875rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-faded-ink)', marginBottom: '0.25rem' }}>
           Workspace
@@ -150,7 +159,7 @@ export default function Sidebar() {
           className={`btn ${isActive('/browse') ? 'btn-primary' : 'btn-secondary'}`}
           style={{ justifyContent: 'flex-start', padding: '0.6rem 0.85rem' }}
         >
-          <span style={{ fontSize: '1rem' }}>{'\uD83D\uDCD6'}</span>
+          <i className="bx bx-book-open" style={{ fontSize: '1.15rem' }}></i>
           <span>Open Library</span>
         </Link>
 
@@ -159,7 +168,7 @@ export default function Sidebar() {
           className={`btn ${isActive('/community') ? 'btn-primary' : 'btn-secondary'}`}
           style={{ justifyContent: 'flex-start', padding: '0.6rem 0.85rem' }}
         >
-          <span style={{ fontSize: '1rem' }}>{'\uD83D\uDCAC'}</span>
+          <i className="bx bx-conversation" style={{ fontSize: '1.15rem' }}></i>
           <span>Study Rooms</span>
         </Link>
 
@@ -168,7 +177,7 @@ export default function Sidebar() {
           className={`btn ${isActive('/submit') ? 'btn-primary' : 'btn-secondary'}`}
           style={{ justifyContent: 'flex-start', padding: '0.6rem 0.85rem' }}
         >
-          <span style={{ fontSize: '1rem' }}>{'\uD83D\uDCE4'}</span>
+          <i className="bx bx-upload" style={{ fontSize: '1.15rem' }}></i>
           <span>Share a Paper</span>
         </Link>
 
@@ -181,12 +190,12 @@ export default function Sidebar() {
           className={`btn ${isActive('/moderate') ? 'btn-primary' : 'btn-secondary'}`}
           style={{ justifyContent: 'flex-start', padding: '0.6rem 0.85rem' }}
         >
-          <span style={{ fontSize: '1rem' }}>{'\uD83D\uDEE1'}</span>
+          <i className="bx bx-shield-quarter" style={{ fontSize: '1.15rem' }}></i>
           <span>Community Review</span>
         </Link>
       </nav>
 
-      {/* User Card — Zero Dots, Tag-shaped presence! */}
+      {/* User Card */}
       <div
         style={{
           marginTop: 'auto',
