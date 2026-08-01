@@ -4,8 +4,8 @@ services:
     env: node
     region: oregon
     plan: free
-    buildCommand: NODE_ENV=development pnpm install --frozen-lockfile && pnpm --filter @curious-bright/database exec prisma generate && pnpm --filter backend build
-    startCommand: NODE_ENV=production node apps/backend/dist/index.js
+    buildCommand: pnpm install --prod=false --frozen-lockfile && pnpm --filter @curious-bright/database exec prisma generate && pnpm --filter backend build
+    startCommand: node apps/backend/dist/index.js
     envVars:
       - key: NODE_ENV
         value: production
