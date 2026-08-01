@@ -17,7 +17,7 @@ export const requireAuth = async (req: Request, res: Response, next: NextFunctio
   let token = req.headers.authorization?.split(' ')[1];
 
   if (!token && req.headers.cookie) {
-    const cookies = req.headers.cookie.split(';').reduce((acc, cookie) => {
+    const cookies = req.headers.cookie.split(';').reduce((acc: Record<string, string>, cookie: string) => {
       const [key, value] = cookie.trim().split('=');
       acc[key] = value;
       return acc;
