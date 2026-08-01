@@ -14,10 +14,6 @@
     "@curious-bright/database": "workspace:*",
     "@curious-bright/types": "workspace:*",
     "@curious-bright/validation": "workspace:*",
-    "@types/bcryptjs": "^2.4.2",
-    "@types/cors": "^2.8.13",
-    "@types/express": "^4.17.17",
-    "@types/jsonwebtoken": "^9.0.2",
     "@types/uuid": "^11.0.0",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
@@ -30,6 +26,10 @@
     "zod": "^3.21.0"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^4.17.25",
+    "@types/jsonwebtoken": "^9.0.10",
     "ts-node-dev": "^2.0.0"
   }
 }

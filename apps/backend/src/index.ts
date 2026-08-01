@@ -1,5 +1,5 @@
 import express from 'express';
-import cors from 'cors';
+import cors, { CorsOptions } from 'cors';
 import authRouter from './routes/auth';
 import roomsRouter from './routes/rooms';
 import submissionsRouter from './routes/submissions';
@@ -32,8 +32,8 @@ const defaultOrigins = [
   'https://institutional.curiousbright.com.ng',
 ];
 
-app.use(cors({
-  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+const corsOptions: CorsOptions = {
+  origin: (origin, callback) => {
     // Allow requests with no origin (like mobile apps, curl, server-to-server)
     if (!origin) return callback(null, true);
 
@@ -49,8 +49,10 @@ app.use(cors({
       callback(null, true); // Fallback allow or restrict if strictly needed
     }
   },
-  credentials: true
-}));
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 app.use('/auth', authRouter);

@@ -5,6 +5,7 @@ import { requireAuth } from '../middleware/auth';
 import { requireRole } from '../middleware/role';
 import { generatePresignedUploadUrl, BUCKET_NAME } from '../lib/s3';
 import { sendPushNotification } from '../lib/push';
+import { parseCookies } from '../lib/cookies';
 import { v4 as uuidv4 } from 'uuid';
 
 const prisma = new PrismaClient();
@@ -69,11 +70,7 @@ router.get('/', async (req: Request, res: Response) => {
   let isAdmin = false;
   let token = req.headers.authorization?.split(' ')[1];
   if (!token && req.headers.cookie) {
-    const cookies = req.headers.cookie.split(';').reduce((acc: Record<string, string>, cookie: string) => {
-      const [key, value] = cookie.trim().split('=');
-      acc[key] = value;
-      return acc;
-    }, {} as Record<string, string>);
+    const cookies = parseCookies(req.headers.cookie);
     token = cookies['token'];
   }
   
