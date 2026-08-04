@@ -4,12 +4,11 @@ import { createClient } from 'redis';
 import { RealtimeEvents } from '@curious-bright/realtime-contracts';
 import { WhiteboardEngine } from '@curious-bright/whiteboard-engine';
 import { prisma } from './lib/prisma';
-import jwt from 'jsonwebtoken';
+import { verifyToken } from './lib/jwt';
 import { uploadWhiteboardSnapshot } from './lib/s3';
 import { sendPushNotification } from './lib/push';
 import http from 'http';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'secret';
 const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
 
 const whiteboardSessions: Record<string, WhiteboardEngine> = {};
@@ -42,11 +41,13 @@ export function attachRealtimeServer(server: http.Server) {
       return next(new Error('Authentication error: Token missing'));
     }
     
-    jwt.verify(token, JWT_SECRET, (err: any, decoded: any) => {
-      if (err) return next(new Error('Authentication error: Invalid token'));
+    try {
+      const decoded = verifyToken(token);
       (socket as any).user = decoded;
       next();
-    });
+    } catch (err) {
+      return next(new Error('Authentication error: Invalid token'));
+    }
   });
 
   function broadcastRoomPresence(roomId: string) {
