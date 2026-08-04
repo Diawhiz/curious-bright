@@ -43,10 +43,14 @@ export async function initTypesense() {
 
   for (const schema of collections) {
     try {
-      await typesenseClient.collections(schema.name).retrieve();
-    } catch (err) {
-      await typesenseClient.collections().create(schema);
-      console.log(`Created Typesense collection: ${schema.name}`);
+      try {
+        await typesenseClient.collections(schema.name).retrieve();
+      } catch (err) {
+        await typesenseClient.collections().create(schema);
+        console.log(`Created Typesense collection: ${schema.name}`);
+      }
+    } catch (fatalError) {
+      console.warn(`[Typesense] Could not initialize collection ${schema.name}. Is Typesense running?`);
     }
   }
 }
