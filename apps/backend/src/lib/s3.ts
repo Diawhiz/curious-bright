@@ -43,3 +43,22 @@ export async function uploadBufferToS3(key: string, buffer: Buffer, contentType:
 
   return publicUrl;
 }
+
+export async function uploadWhiteboardSnapshot(roomId: string, state: Uint8Array): Promise<string> {
+  const key = `whiteboards/${roomId}-snapshot.bin`;
+  
+  const command = new PutObjectCommand({
+    Bucket: BUCKET_NAME,
+    Key: key,
+    Body: Buffer.from(state),
+    ContentType: 'application/octet-stream',
+  });
+
+  await s3.send(command);
+  
+  const publicUrl = isProd 
+    ? `https://${process.env.PUBLIC_S3_DOMAIN || 'cdn.curiousbright.org'}/${key}`
+    : `http://localhost:9000/${BUCKET_NAME}/${key}`;
+    
+  return publicUrl;
+}
