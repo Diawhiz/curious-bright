@@ -25,6 +25,8 @@ export default function RootLayout() {
         <Stack.Screen name="submit" options={{ title: 'Submit Document' }} />
         <Stack.Screen name="read/[id]" options={{ title: 'Read Document' }} />
         <Stack.Screen name="moderate" options={{ title: 'Moderation' }} />
+        <Stack.Screen name="privacy" options={{ title: 'Privacy Policy' }} />
+        <Stack.Screen name="terms" options={{ title: 'Terms of Use' }} />
       </Stack>
     </>
   );

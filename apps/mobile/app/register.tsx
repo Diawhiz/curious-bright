@@ -95,6 +95,23 @@ export default function RegisterScreen() {
         <TouchableOpacity onPress={() => router.push('/login')} style={styles.linkButton}>
           <Text style={styles.linkText}>Already have an account? Login</Text>
         </TouchableOpacity>
+
+        {/* Legal consent + navigation */}
+        <Text style={styles.legalNotice}>
+          By registering, you agree to our{' '}
+          <Text style={styles.legalLink} onPress={() => router.push('/terms')}>Terms of Use</Text>
+          {' '}and{' '}
+          <Text style={styles.legalLink} onPress={() => router.push('/privacy')}>Privacy Policy</Text>.
+        </Text>
+
+        <View style={styles.legalRow}>
+          <TouchableOpacity onPress={() => router.push('/privacy')} style={styles.legalBtn}>
+            <Text style={styles.legalBtnText}>Privacy Policy</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push('/terms')} style={styles.legalBtn}>
+            <Text style={styles.legalBtnText}>Terms of Use</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
@@ -147,5 +164,35 @@ const styles = StyleSheet.create({
   linkText: {
     color: '#aaaaaa',
     fontSize: 14,
+  },
+  legalNotice: {
+    marginTop: 20,
+    textAlign: 'center',
+    fontSize: 11,
+    color: '#888888',
+    lineHeight: 17,
+    fontFamily: 'monospace',
+  },
+  legalLink: {
+    color: '#00A896',
+    textDecorationLine: 'underline',
+  },
+  legalRow: {
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 12,
+  },
+  legalBtn: {
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: 10,
+    borderWidth: 1,
+    borderColor: '#333',
+    borderRadius: 6,
+  },
+  legalBtnText: {
+    fontSize: 12,
+    color: '#aaaaaa',
+    fontWeight: '600',
   },
 });
