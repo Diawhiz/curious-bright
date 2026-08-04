@@ -16,7 +16,12 @@ import { syncToTypesense } from './jobs/syncSearch';
 import { runBookIngestion } from './jobs/ingestBooks';
 import { globalLimiter } from './middleware/rateLimiter';
 
+import livekitRouter from './routes/livekit';
+import { attachRealtimeServer } from './realtime';
+import http from 'http';
+
 const app = express();
+const server = http.createServer(app);
 const PORT = process.env.PORT || 4000;
 
 const allowedOriginsFromEnv = process.env.ALLOWED_ORIGINS 
@@ -70,8 +75,11 @@ app.use('/analytics', analyticsRouter);
 app.use('/organizations', organizationsRouter);
 app.use('/books', booksRouter);
 app.use('/moderator-applications', moderatorApplicationsRouter);
+app.use('/api/call', livekitRouter); // Signaling and webhooks
 
-app.listen(PORT, async () => {
+attachRealtimeServer(server);
+
+server.listen(PORT, async () => {
   console.log(`Backend server running on http://localhost:${PORT}`);
   
   // Run initial book ingestion and Typesense search sync
