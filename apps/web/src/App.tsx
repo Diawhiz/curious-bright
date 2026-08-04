@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import { PageTurnContainer } from './components/PageTurnContainer';
@@ -10,13 +11,34 @@ import Moderate from './pages/Moderate';
 import Community from './pages/Community';
 import Room from './pages/Room';
 import Search from './pages/Search';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfUse from './pages/TermsOfUse';
 
 function App() {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
   return (
     <Router>
       <div className="app-shell">
-        <Sidebar />
+        <div 
+          className={`sidebar-overlay ${isSidebarOpen ? 'open' : ''}`}
+          onClick={() => setIsSidebarOpen(false)}
+        />
+        <Sidebar isOpen={isSidebarOpen} closeSidebar={() => setIsSidebarOpen(false)} />
+        
         <main className="app-main">
+          <header className="mobile-header">
+            <div className="font-display" style={{ fontSize: '1.2rem', fontWeight: 700 }}>
+              Curious Bright
+            </div>
+            <button 
+              onClick={() => setIsSidebarOpen(true)}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.5rem', color: 'var(--color-ink)' }}
+            >
+              <i className="bx bx-menu"></i>
+            </button>
+          </header>
+          
           <PageTurnContainer>
             <Routes>
               <Route path="/" element={<Navigate to="/browse" replace />} />
@@ -29,6 +51,8 @@ function App() {
               <Route path="/community" element={<Community />} />
               <Route path="/room/:id" element={<Room />} />
               <Route path="/search" element={<Search />} />
+              <Route path="/privacy" element={<PrivacyPolicy />} />
+              <Route path="/terms" element={<TermsOfUse />} />
             </Routes>
           </PageTurnContainer>
         </main>

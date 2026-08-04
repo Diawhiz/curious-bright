@@ -10,7 +10,7 @@ interface UserProfile {
   schoolName?: string;
 }
 
-export default function Sidebar() {
+export default function Sidebar({ isOpen, closeSidebar }: { isOpen?: boolean; closeSidebar?: () => void }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchQuery, setSearchQuery] = useState('');
@@ -45,6 +45,8 @@ export default function Sidebar() {
           localStorage.removeItem('user');
         });
     }
+
+    if (closeSidebar) closeSidebar();
   }, [location.pathname]);
 
   const handleLogout = async () => {
@@ -73,22 +75,7 @@ export default function Sidebar() {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <aside
-      className="app-sidebar"
-      style={{
-        width: 'var(--sidebar-width)',
-        background: 'var(--color-paper-card)',
-        borderRight: '1.5px solid var(--color-line)',
-        display: 'flex',
-        flexDirection: 'column',
-        position: 'fixed',
-        top: 0,
-        bottom: 0,
-        left: 0,
-        zIndex: 100,
-        padding: '1.5rem 1.25rem',
-      }}
-    >
+    <aside className={`app-sidebar ${isOpen ? 'open' : ''}`}>
       {/* Brand Header with Consistent Boxicon */}
       <div className="sidebar-header" style={{ marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '1.5px solid var(--color-line)' }}>
         <Link to="/browse" className="flex items-center gap-3" style={{ textDecoration: 'none' }}>
@@ -260,6 +247,15 @@ export default function Sidebar() {
             </div>
           </div>
         )}
+      </div>
+
+      {/* Legal links */}
+      <div className="sidebar-legal-links">
+        <Link to="/privacy">Privacy</Link>
+        <span style={{ opacity: 0.3 }}>•</span>
+        <Link to="/terms">Terms</Link>
+        <span style={{ opacity: 0.3 }}>•</span>
+        <a href="https://curiousbright.com.ng" target="_blank" rel="noopener noreferrer">Home</a>
       </div>
     </aside>
   );

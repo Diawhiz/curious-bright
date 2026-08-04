@@ -206,7 +206,7 @@ export default function Room() {
   const onlineUserIds = new Set(onlineUsers.map(u => u.userId));
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 110px)', position: 'relative' }}>
+    <div className="room-main-container">
       {roomCursors.map(c => (
         <CursorTag key={c.id} id={c.id} name={c.name} action={c.action} color={c.color} x={c.x} y={c.y} />
       ))}
@@ -227,7 +227,7 @@ export default function Room() {
         </div>
 
         {/* Action Controls & Tab Selector */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 flex-wrap">
           <button 
             className="btn btn-secondary"
             style={{ padding: '0.45rem 0.85rem', fontSize: '0.8125rem', borderColor: showMembersPanel ? 'var(--color-ink)' : undefined }}
@@ -294,7 +294,7 @@ export default function Room() {
       )}
 
       {/* Main Room Workspace Pane */}
-      <div className="flex-1 flex gap-4" style={{ overflow: 'hidden' }}>
+      <div className="room-workspace-pane">
         <CommentCornerCard style={{ flex: 1, padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
           {/* CHAT TAB */}
           {activeTab === 'CHAT' && (
@@ -402,7 +402,7 @@ export default function Room() {
 
         {/* Right Members Panel */}
         {showMembersPanel && (
-          <CommentCornerCard style={{ width: '280px', padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '1rem', overflowY: 'auto' }}>
+          <CommentCornerCard className="room-members-panel">
             <div className="flex justify-between items-center pb-3" style={{ borderBottom: '1.5px solid var(--color-line)' }}>
               <h4 style={{ fontSize: '0.95rem' }} className="flex items-center gap-1.5">
                 <i className="bx bx-group" style={{ fontSize: '1.1rem' }}></i>
