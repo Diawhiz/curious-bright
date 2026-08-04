@@ -22,97 +22,50 @@ router.get('/:id/read', bookReadLimiter, async (req: Request, res: Response) => 
       return res.status(404).json({ error: 'Book not found' });
     }
 
-    const now = new Date();
-    const isRecentlyCached = 
-      book.cacheStatus === 'CACHED' && 
-      book.cachedFileUrl && 
-      book.lastFetchedAt && 
-      (now.getTime() - new Date(book.lastFetchedAt).getTime() < STALENESS_MS);
-
-    // 1. Return cached URL directly if fresh
-    if (isRecentlyCached) {
-      return res.json({
-        fileUrl: book.cachedFileUrl,
-        cached: true,
-        book,
-      });
-    }
-
-    // 2. Handle uncached / stale / missing file
-    if (!book.originUrl) {
-      return res.status(400).json({ error: 'Book origin file URL is missing' });
-    }
-
-    // Check in-flight lock for concurrent requests
-    if (inFlightFetches.has(book.id)) {
-      const cachedFileUrl = await inFlightFetches.get(book.id)!;
-      return res.json({ fileUrl: cachedFileUrl, cached: true, book });
-    }
-
-    // Create caching promise
-    const fetchAndCachePromise = (async (): Promise<string> => {
-      try {
-        await prisma.book.update({
-          where: { id: book.id },
-          data: { cacheStatus: 'CACHING' },
-        });
-
-        if (!book.originUrl) {
-          throw new Error('Book origin URL is missing');
-        }
-
-        console.log(`[Book Cache] Fetching origin file from ${book.originUrl}...`);
-        const originRes = await fetch(book.originUrl);
-
-
-        if (!originRes.ok) {
-          throw new Error(`Failed to fetch from origin: ${originRes.statusText}`);
-        }
-
-        const arrayBuffer = await originRes.arrayBuffer();
-        const buffer = Buffer.from(arrayBuffer);
-
-        const contentType = originRes.headers.get('content-type') || 'application/pdf';
-        const ext = contentType.includes('epub') ? 'epub' : 'pdf';
-        const key = `books/${book.source.toLowerCase()}/${book.sourceId}.${ext}`;
-
-        console.log(`[Book Cache] Uploading ${buffer.length} bytes to R2 storage under key ${key}...`);
-        const cachedUrl = await uploadBufferToS3(key, buffer, contentType);
-
-        await prisma.book.update({
-          where: { id: book.id },
-          data: {
-            cachedFileUrl: cachedUrl,
-            cacheStatus: 'CACHED',
-            lastFetchedAt: new Date(),
-          },
-        });
-
-        return cachedUrl;
-      } catch (err) {
-        console.error(`[Book Cache] Error caching book ${book.id}:`, err);
-        await prisma.book.update({
-          where: { id: book.id },
-          data: { cacheStatus: 'NOT_CACHED' },
-        });
-        // Fallback to origin URL on error
-        return book.originUrl || '';
-
-      } finally {
-        inFlightFetches.delete(book.id);
-      }
-    })();
-
-    inFlightFetches.set(book.id, fetchAndCachePromise);
-    const fileUrl = await fetchAndCachePromise;
+    // Always return our proxy URL to bypass CORS!
+    const protocol = req.headers['x-forwarded-proto'] || req.protocol;
+    const host = req.headers.host;
+    const fileUrl = `${protocol}://${host}/books/${id}/download`;
 
     return res.json({
       fileUrl,
-      cached: fileUrl !== book.originUrl,
+      cached: book.cacheStatus === 'CACHED',
       book,
     });
   } catch (error: any) {
     return res.status(500).json({ error: error.message || 'Failed to read book' });
+  }
+});
+
+// 1.5 GET /books/:id/download - Proxy stream to bypass Gutenberg CORS
+router.get('/:id/download', async (req: Request, res: Response) => {
+  const { id } = req.params;
+  try {
+    const book = await prisma.book.findUnique({ where: { id } });
+    if (!book || !book.originUrl) {
+      return res.status(404).send('Book or origin URL not found');
+    }
+
+    // If they actually configured S3 properly, we can redirect to it
+    if (book.cacheStatus === 'CACHED' && book.cachedFileUrl && !book.cachedFileUrl.includes('cdn.curiousbright.org')) {
+      return res.redirect(book.cachedFileUrl);
+    }
+
+    // Proxy the stream from origin
+    const originRes = await fetch(book.originUrl);
+    if (!originRes.ok) {
+      return res.status(originRes.status).send('Failed to fetch from origin');
+    }
+
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Content-Type', originRes.headers.get('content-type') || 'application/epub+zip');
+    
+    // Stream response
+    const arrayBuffer = await originRes.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    res.send(buffer);
+  } catch (err) {
+    res.status(500).send('Proxy error');
   }
 });
 
