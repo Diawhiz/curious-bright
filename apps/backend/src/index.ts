@@ -14,6 +14,7 @@ import moderatorApplicationsRouter from './routes/moderatorApplications';
 import { initTypesense } from './lib/typesense';
 import { syncToTypesense } from './jobs/syncSearch';
 import { runBookIngestion } from './jobs/ingestBooks';
+import { globalLimiter } from './middleware/rateLimiter';
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -54,6 +55,9 @@ const corsOptions: CorsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.json());
+
+// Global rate limiter — safety net for all routes (1000 req / 15 min per IP)
+app.use(globalLimiter);
 
 app.use('/auth', authRouter);
 app.use('/health', healthRouter);

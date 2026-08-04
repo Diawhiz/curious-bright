@@ -1,12 +1,13 @@
 import { Router, Request, Response } from 'express';
 import { PrismaClient } from '@curious-bright/database';
 import { requireAuth } from '../middleware/auth';
+import { roomActionLimiter } from '../middleware/rateLimiter';
 
 const prisma = new PrismaClient();
 const router = Router();
 
 // 1. POST /rooms - Create a new room
-router.post('/', requireAuth, async (req: Request, res: Response) => {
+router.post('/', requireAuth, roomActionLimiter, async (req: Request, res: Response) => {
   const { type, name, topic, isPublic } = req.body;
   
   try {
@@ -72,7 +73,7 @@ router.get('/:id/members', async (req: Request, res: Response) => {
 });
 
 // 4. POST /rooms/:id/join - Join a room
-router.post('/:id/join', requireAuth, async (req: Request, res: Response) => {
+router.post('/:id/join', requireAuth, roomActionLimiter, async (req: Request, res: Response) => {
   try {
     const member = await prisma.roomMember.create({
       data: {

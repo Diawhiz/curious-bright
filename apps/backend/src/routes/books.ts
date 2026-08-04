@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { prisma } from '../lib/prisma';
 import { uploadBufferToS3 } from '../lib/s3';
 import { runBookIngestion } from '../jobs/ingestBooks';
+import { bookReadLimiter, bookIngestLimiter } from '../middleware/rateLimiter';
 
 
 const router = Router();
@@ -12,7 +13,7 @@ const inFlightFetches = new Map<string, Promise<string>>();
 const STALENESS_MS = 90 * 24 * 60 * 60 * 1000; // 90 Days staleness window
 
 // 1. GET /books/:id/read - Entry point to read a book with origin caching to R2/MinIO
-router.get('/:id/read', async (req: Request, res: Response) => {
+router.get('/:id/read', bookReadLimiter, async (req: Request, res: Response) => {
   const { id } = req.params;
 
   try {
@@ -160,7 +161,7 @@ router.get('/', async (req: Request, res: Response) => {
 });
 
 // 3. POST /books/ingest - Trigger manual ingestion run
-router.post('/ingest', async (_req: Request, res: Response) => {
+router.post('/ingest', bookIngestLimiter, async (_req: Request, res: Response) => {
   try {
     const summary = await runBookIngestion();
     return res.json({ message: 'Ingestion triggered successfully', summary });

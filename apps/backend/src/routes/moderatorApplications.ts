@@ -2,11 +2,12 @@ import { Router, Request, Response } from 'express';
 import { prisma } from '../lib/prisma';
 import { requireAuth } from '../middleware/auth';
 import { requireRole } from '../middleware/role';
+import { moderatorApplicationLimiter } from '../middleware/rateLimiter';
 
 const router = Router();
 
 // POST /moderator-applications — submit application (logged-in users only)
-router.post('/', requireAuth, async (req: Request, res: Response) => {
+router.post('/', requireAuth, moderatorApplicationLimiter, async (req: Request, res: Response) => {
   try {
     const userId = req.user!.id;
     const { motivation, experience, subjects } = req.body;

@@ -1,10 +1,11 @@
 import { Router, Request, Response } from 'express';
 import { typesenseClient } from '../lib/typesense';
+import { searchLimiter } from '../middleware/rateLimiter';
 
 const router = Router();
 
 // GET /search?q=foo&type=submission
-router.get('/', async (req: Request, res: Response) => {
+router.get('/', searchLimiter, async (req: Request, res: Response) => {
 
   const { q, type } = req.query;
   

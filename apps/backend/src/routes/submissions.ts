@@ -7,12 +7,13 @@ import { generatePresignedUploadUrl, BUCKET_NAME } from '../lib/s3';
 import { sendPushNotification } from '../lib/push';
 import { parseCookies } from '../lib/cookies';
 import { v4 as uuidv4 } from 'uuid';
+import { uploadUrlLimiter, submissionCreateLimiter } from '../middleware/rateLimiter';
 
 const prisma = new PrismaClient();
 const router = Router();
 
 // 1. POST /submissions/upload-url - Get a presigned URL
-router.post('/upload-url', requireAuth, async (req: Request, res: Response) => {
+router.post('/upload-url', requireAuth, uploadUrlLimiter, async (req: Request, res: Response) => {
   const { filename, contentType } = req.body;
   if (!filename || !contentType) {
     return res.status(400).json({ error: 'filename and contentType required' });
@@ -40,7 +41,7 @@ router.post('/upload-url', requireAuth, async (req: Request, res: Response) => {
 });
 
 // 2. POST /submissions - Create a new submission
-router.post('/', requireAuth, async (req: Request, res: Response) => {
+router.post('/', requireAuth, submissionCreateLimiter, async (req: Request, res: Response) => {
   try {
     const data = SubmissionSchema.parse(req.body);
     

@@ -4,6 +4,7 @@ import { RegisterSchema, LoginSchema } from '@curious-bright/validation';
 import { signToken, verifyToken } from '../lib/jwt';
 import { prisma } from '../lib/prisma';
 import { requireAuth } from '../middleware/auth';
+import { authLoginLimiter, authRegisterLimiter } from '../middleware/rateLimiter';
 
 const router = Router();
 const isProd = process.env.NODE_ENV === 'production';
@@ -19,7 +20,7 @@ const setTokenCookie = (res: Response, token: string) => {
   });
 };
 
-router.post('/register', async (req: Request, res: Response) => {
+router.post('/register', authRegisterLimiter, async (req: Request, res: Response) => {
   try {
     const data = RegisterSchema.parse(req.body);
     const existingUser = await prisma.user.findUnique({ where: { email: data.email } });
@@ -54,7 +55,7 @@ router.post('/register', async (req: Request, res: Response) => {
   }
 });
 
-router.post('/login', async (req: Request, res: Response) => {
+router.post('/login', authLoginLimiter, async (req: Request, res: Response) => {
   try {
     const data = LoginSchema.parse(req.body);
     const user = await prisma.user.findUnique({ where: { email: data.email } });

@@ -1,11 +1,12 @@
 import { Router, Request, Response } from 'express';
 import { prisma } from '../lib/prisma';
 import { requireAuth } from '../middleware/auth';
+import { reportLimiter } from '../middleware/rateLimiter';
 
 const router = Router();
 
 // POST /reports
-router.post('/', requireAuth, async (req: Request, res: Response) => {
+router.post('/', requireAuth, reportLimiter, async (req: Request, res: Response) => {
 
   try {
     const { targetType, targetId, reason } = req.body;

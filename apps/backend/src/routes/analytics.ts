@@ -2,11 +2,12 @@ import { Router, Request, Response } from 'express';
 import { prisma } from '../lib/prisma';
 import { requireAuth } from '../middleware/auth';
 import { requireRole } from '../middleware/role';
+import { analyticsLimiter } from '../middleware/rateLimiter';
 
 const router = Router();
 
 // GET /analytics/dashboard
-router.get('/dashboard', requireRole(['ADMIN', 'MODERATOR']), async (req: Request, res: Response) => {
+router.get('/dashboard', analyticsLimiter, requireRole(['ADMIN', 'MODERATOR']), async (req: Request, res: Response) => {
 
   try {
     const [
