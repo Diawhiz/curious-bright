@@ -13,7 +13,7 @@ router.post('/', requireAuth, roomActionLimiter, async (req: Request, res: Respo
   try {
     const room = await prisma.room.create({
       data: {
-        type,
+        type: type || 'GROUP',
         name,
         topic,
         isPublic: isPublic ?? true,

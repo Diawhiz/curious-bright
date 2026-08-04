@@ -52,6 +52,7 @@ export default function Community() {
         body: JSON.stringify({
           name: newRoomName.trim(),
           topic: newRoomTopic.trim() || 'General Study',
+          type: 'GROUP',
         }),
       });
 
