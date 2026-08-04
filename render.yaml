@@ -4,7 +4,7 @@ services:
     env: node
     region: oregon
     plan: free
-    buildCommand: pnpm install --frozen-lockfile --prod=false; pnpm --filter @curious-bright/database run generate; pnpm --filter backend run build
+    buildCommand: pnpm install --frozen-lockfile --prod=false; pnpm --filter @curious-bright/database run generate; pnpm db:push; pnpm --filter backend run build
     startCommand: node apps/backend/dist/index.js
     envVars:
       - key: NODE_ENV
