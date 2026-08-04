@@ -141,6 +141,14 @@ export default function Register() {
               </span>
             )}
           </button>
+
+          {/* Legal consent notice */}
+          <p style={{ textAlign: 'center', fontSize: '0.72rem', color: 'var(--color-faded-ink)', lineHeight: 1.5, fontFamily: 'var(--font-mono)', marginTop: '0.25rem' }}>
+            By registering, you agree to our{' '}
+            <Link to="/terms" style={{ color: 'var(--color-teal)', textDecoration: 'underline' }}>Terms of Use</Link>
+            {' '}and{' '}
+            <Link to="/privacy" style={{ color: 'var(--color-teal)', textDecoration: 'underline' }}>Privacy Policy</Link>.
+          </p>
         </form>
 
         <div className="text-center mt-4 pt-3" style={{ borderTop: '1.5px solid var(--color-line)', fontSize: '0.8125rem' }}>
