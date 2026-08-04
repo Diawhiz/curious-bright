@@ -1,18 +1,16 @@
 import { Router, Request, Response } from 'express';
 import { prisma } from '../lib/prisma';
-import { uploadBufferToS3 } from '../lib/s3';
+import { uploadBufferToS3, s3, BUCKET_NAME } from '../lib/s3';
+import { GetObjectCommand } from '@aws-sdk/client-s3';
 import { runBookIngestion } from '../jobs/ingestBooks';
 import { bookReadLimiter, bookIngestLimiter } from '../middleware/rateLimiter';
-
+import { Readable } from 'stream';
 
 const router = Router();
 
-// In-flight concurrency lock to prevent parallel fetches of the same uncached book
 const inFlightFetches = new Map<string, Promise<string>>();
+const STALENESS_MS = 90 * 24 * 60 * 60 * 1000;
 
-const STALENESS_MS = 90 * 24 * 60 * 60 * 1000; // 90 Days staleness window
-
-// 1. GET /books/:id/read - Entry point to read a book with origin caching to R2/MinIO
 router.get('/:id/read', bookReadLimiter, async (req: Request, res: Response) => {
   const { id } = req.params;
 
@@ -22,7 +20,6 @@ router.get('/:id/read', bookReadLimiter, async (req: Request, res: Response) => 
       return res.status(404).json({ error: 'Book not found' });
     }
 
-    // Always return our proxy URL to bypass CORS!
     const protocol = req.headers['x-forwarded-proto'] || req.protocol;
     const host = req.headers.host;
     const fileUrl = `${protocol}://${host}/books/${id}/download`;
@@ -37,7 +34,6 @@ router.get('/:id/read', bookReadLimiter, async (req: Request, res: Response) => 
   }
 });
 
-// 1.5 GET /books/:id/download - Proxy stream to bypass Gutenberg CORS
 router.get('/:id/download', async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
@@ -46,21 +42,38 @@ router.get('/:id/download', async (req: Request, res: Response) => {
       return res.status(404).send('Book or origin URL not found');
     }
 
-    // If they actually configured S3 properly, we can redirect to it
-    if (book.cacheStatus === 'CACHED' && book.cachedFileUrl && !book.cachedFileUrl.includes('cdn.curiousbright.org')) {
-      return res.redirect(book.cachedFileUrl);
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    
+    // Try S3 first if cached
+    if (book.cacheStatus === 'CACHED') {
+      try {
+        const ext = book.originUrl.includes('.epub') ? 'epub' : 'pdf';
+        const key = `books/${book.source.toLowerCase()}/${book.sourceId}.${ext}`;
+        
+        const command = new GetObjectCommand({
+          Bucket: BUCKET_NAME,
+          Key: key,
+        });
+        const s3Res = await s3.send(command);
+        
+        res.setHeader('Content-Type', s3Res.ContentType || 'application/epub+zip');
+        if (s3Res.Body instanceof Readable) {
+          s3Res.Body.pipe(res);
+          return;
+        }
+      } catch (s3Err) {
+        console.warn(`[Proxy] S3 fetch failed for ${book.id}, falling back to origin...`);
+      }
     }
 
-    // Proxy the stream from origin
+    // Proxy from origin (Gutenberg)
     const originRes = await fetch(book.originUrl);
     if (!originRes.ok) {
       return res.status(originRes.status).send('Failed to fetch from origin');
     }
 
-    res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Content-Type', originRes.headers.get('content-type') || 'application/epub+zip');
     
-    // Stream response
     const arrayBuffer = await originRes.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
     res.send(buffer);
