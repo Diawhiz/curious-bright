@@ -1,5 +1,6 @@
 import React from 'react';
 import { BookOpen } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { colors } from '@curious-bright/ui-kit';
 
 export const Footer: React.FC = () => {
@@ -7,7 +8,7 @@ export const Footer: React.FC = () => {
     <footer className="bg-white border-t border-[var(--color-line)] pt-16 pb-12 text-sm text-[var(--color-faded-ink)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-10 pb-12 border-b border-[var(--color-line)]">
+        <div className="grid grid-cols-1 md:grid-cols-6 gap-10 pb-12 border-b border-[var(--color-line)]">
           
           {/* Brand Info */}
           <div className="md:col-span-2 space-y-4">
@@ -74,6 +75,35 @@ export const Footer: React.FC = () => {
             </ul>
           </div>
 
+          {/* Column 4: Legal */}
+          <div className="space-y-3">
+            <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-[var(--color-ink)]">
+              Legal
+            </h4>
+            <ul className="space-y-2 text-xs">
+              <li>
+                <Link to="/privacy" className="hover:text-[var(--color-ink)] transition-colors">
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link to="/terms" className="hover:text-[var(--color-ink)] transition-colors">
+                  Terms of Use
+                </Link>
+              </li>
+              <li>
+                <a
+                  href="https://github.com/curious-bright"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-[var(--color-ink)] transition-colors"
+                >
+                  Open Source (GPL-3.0)
+                </a>
+              </li>
+            </ul>
+          </div>
+
         </div>
 
         {/* Bottom copyright */}
@@ -83,7 +113,9 @@ export const Footer: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-4">
-            <span>Open Source & Open Access</span>
+            <Link to="/privacy" className="hover:text-[var(--color-ink)] transition-colors">Privacy</Link>
+            <span>•</span>
+            <Link to="/terms" className="hover:text-[var(--color-ink)] transition-colors">Terms</Link>
             <span>•</span>
             <span>Free for Education Worldwide</span>
           </div>
