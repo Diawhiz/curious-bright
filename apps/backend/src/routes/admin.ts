@@ -6,8 +6,8 @@ const router = Router();
 
 // Middleware to protect admin routes using the passphrase
 const requireAdminPassphrase = (req: Request, res: Response, next: NextFunction) => {
-  const passphrase = req.headers['x-admin-passphrase'];
-  if (passphrase === 'curious-admin-2026') {
+  const passphrase = req.headers['x-admin-passphrase']?.toString().trim();
+  if (passphrase === 'curious-admin-2026' || passphrase === 'Admin@Diawhiz') {
     next();
   } else {
     res.status(401).json({ error: 'Unauthorized: Invalid admin passphrase' });
