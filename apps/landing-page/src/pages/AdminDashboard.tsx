@@ -2,22 +2,12 @@ import React, { useState } from 'react';
 import { Shield, Activity, Users, Terminal, Settings, Lock, Unlock, Database, Server, Clock, Search, CheckCircle, AlertTriangle } from 'lucide-react';
 import websiteLogo from '../assets/website-logo.svg';
 
-// Fake data to populate the UI until we wire up the backend
-const FAKE_LOGS = [
-  { id: 1, type: 'info', message: 'User @johndoe registered successfully.', time: '2 mins ago' },
-  { id: 2, type: 'warning', message: 'High CPU usage detected on signaling-service.', time: '15 mins ago' },
-  { id: 3, type: 'error', message: 'Failed to connect to Prisma Database on region EU-West.', time: '1 hour ago' },
-  { id: 4, type: 'info', message: 'Deployment v1.4.2 successful via Vercel.', time: '3 hours ago' },
-];
-
-const FAKE_USERS = [
-  { id: 1, name: 'Diawhiz', email: 'diawhiz@curiousbright.com', role: 'ADMIN', status: 'Active' },
-  { id: 2, name: 'Alice Smith', email: 'alice@mit.edu', role: 'USER', status: 'Active' },
-  { id: 3, name: 'Bob Jones', email: 'bob@stanford.edu', role: 'MODERATOR', status: 'Active' },
-];
+// Fallback URL based on environment
+const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:4000' : 'https://api.curiousbright.com.ng';
 
 const CHANGELOG = [
-  { version: 'v1.4.3', date: 'Today', description: 'Added Admin Dashboard to landing page with passphrase authentication.' },
+  { version: 'v1.4.4', date: 'Today', description: 'Wired up Admin Dashboard to secure backend API using passphrase auth.' },
+  { version: 'v1.4.3', date: 'Today', description: 'Added Admin Dashboard UI to landing page.' },
   { version: 'v1.4.2', date: 'Yesterday', description: 'Fixed mobile Expo dependencies and updated entry point for EAS.' },
   { version: 'v1.4.1', date: 'Yesterday', description: 'Rebranded all UI components with official SVG logo and favicons.' },
 ];
@@ -28,17 +18,41 @@ export const AdminDashboard: React.FC = () => {
   const [error, setError] = useState('');
   
   const [activeTab, setActiveTab] = useState<'analytics' | 'logs' | 'users' | 'changelog' | 'settings'>('analytics');
+  
+  // Real Data States
+  const [stats, setStats] = useState({ totalUsers: 0, activeRooms: 0, uptime: '0%', serverUptime: '0' });
+  const [users, setUsers] = useState<any[]>([]);
+  const [logs, setLogs] = useState<any[]>([]);
+
+  const fetchAdminData = async (secret: string) => {
+    try {
+      const headers = { 'X-Admin-Passphrase': secret };
+      const [statsRes, usersRes, logsRes] = await Promise.all([
+        fetch(`${API_URL}/admin/stats`, { headers }),
+        fetch(`${API_URL}/admin/users`, { headers }),
+        fetch(`${API_URL}/admin/logs`, { headers })
+      ]);
+      
+      if (!statsRes.ok) throw new Error('Invalid passphrase or server error');
+
+      const s = await statsRes.json();
+      const u = await usersRes.json();
+      const l = await logsRes.json();
+
+      setStats(s);
+      setUsers(u);
+      setLogs(l);
+      
+      setIsAuthenticated(true);
+      setError('');
+    } catch (err) {
+      setError('Invalid passphrase or backend unreachable. Access denied.');
+    }
+  };
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    // In production, this should be validated against the backend securely.
-    // For now, setting a strong placeholder passphrase.
-    if (passphrase === 'curious-admin-2026') {
-      setIsAuthenticated(true);
-      setError('');
-    } else {
-      setError('Invalid passphrase. Access denied.');
-    }
+    fetchAdminData(passphrase);
   };
 
   if (!isAuthenticated) {
@@ -163,29 +177,29 @@ export const AdminDashboard: React.FC = () => {
                     <h3 className="text-[#888] text-sm font-medium">Total Users</h3>
                     <Users className="w-4 h-4 text-[var(--color-coral)]" />
                   </div>
-                  <p className="text-3xl font-bold text-white">1,248</p>
-                  <p className="text-xs text-green-400 mt-2 flex items-center gap-1"><Activity className="w-3 h-3" /> +12% this week</p>
+                  <p className="text-3xl font-bold text-white">{stats.totalUsers}</p>
+                  <p className="text-xs text-green-400 mt-2 flex items-center gap-1"><Activity className="w-3 h-3" /> Real-time</p>
                 </div>
                 <div className="bg-[#0D0D0D] border border-[#1F1F1F] rounded-xl p-6 shadow-sm">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-[#888] text-sm font-medium">Active Study Rooms</h3>
                     <Database className="w-4 h-4 text-[var(--color-coral)]" />
                   </div>
-                  <p className="text-3xl font-bold text-white">42</p>
-                  <p className="text-xs text-green-400 mt-2 flex items-center gap-1"><Activity className="w-3 h-3" /> 182 concurrent users</p>
+                  <p className="text-3xl font-bold text-white">{stats.activeRooms}</p>
+                  <p className="text-xs text-green-400 mt-2 flex items-center gap-1"><Activity className="w-3 h-3" /> Live public rooms</p>
                 </div>
                 <div className="bg-[#0D0D0D] border border-[#1F1F1F] rounded-xl p-6 shadow-sm">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-[#888] text-sm font-medium">System Uptime</h3>
                     <Server className="w-4 h-4 text-[var(--color-coral)]" />
                   </div>
-                  <p className="text-3xl font-bold text-white">99.98%</p>
-                  <p className="text-xs text-[#888] mt-2 flex items-center gap-1"><Clock className="w-3 h-3" /> Last 30 days</p>
+                  <p className="text-3xl font-bold text-white">{stats.uptime}</p>
+                  <p className="text-xs text-[#888] mt-2 flex items-center gap-1"><Clock className="w-3 h-3" /> Server running: {stats.serverUptime}</p>
                 </div>
               </div>
               
               <div className="bg-[#0D0D0D] border border-[#1F1F1F] rounded-xl p-6 shadow-sm min-h-[300px] flex items-center justify-center">
-                <p className="text-[#555] font-mono text-sm">[ Analytics Chart Visualization Placeholder - Needs Backend Data ]</p>
+                <p className="text-[#555] font-mono text-sm">[ Analytics Chart Visualization Placeholder - Needs Chart.js ]</p>
               </div>
             </div>
           )}
@@ -198,12 +212,12 @@ export const AdminDashboard: React.FC = () => {
                   <Search className="w-4 h-4 absolute left-3 top-2.5 text-[#555]" />
                   <input type="text" placeholder="Filter logs..." className="w-full bg-[#1A1A1A] border border-[#333] rounded-md py-1.5 pl-9 pr-3 text-sm text-white focus:outline-none focus:border-[var(--color-coral)]" />
                 </div>
-                <button className="text-xs font-mono text-[#888] hover:text-white px-3 py-1.5 bg-[#1A1A1A] rounded border border-[#333]">Refresh Logs</button>
+                <button onClick={() => fetchAdminData(passphrase)} className="text-xs font-mono text-[#888] hover:text-white px-3 py-1.5 bg-[#1A1A1A] rounded border border-[#333]">Refresh Logs</button>
               </div>
               <div className="flex-1 overflow-y-auto p-4 space-y-2 font-mono text-xs">
-                {FAKE_LOGS.map(log => (
+                {logs.map(log => (
                   <div key={log.id} className="flex gap-4 p-2 hover:bg-[#151515] rounded border border-transparent hover:border-[#222]">
-                    <span className="text-[#666] w-24 shrink-0">{log.time}</span>
+                    <span className="text-[#666] w-24 shrink-0">{new Date(log.time).toLocaleTimeString()}</span>
                     <span className={`w-20 shrink-0 font-bold ${log.type === 'error' ? 'text-red-400' : log.type === 'warning' ? 'text-amber-400' : 'text-blue-400'}`}>
                       [{log.type.toUpperCase()}]
                     </span>
@@ -228,7 +242,7 @@ export const AdminDashboard: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#1F1F1F]">
-                  {FAKE_USERS.map(user => (
+                  {users.map(user => (
                     <tr key={user.id} className="hover:bg-[#151515]">
                       <td className="px-6 py-4 font-medium text-white">{user.name}</td>
                       <td className="px-6 py-4 text-[#888]">{user.email}</td>
@@ -239,7 +253,7 @@ export const AdminDashboard: React.FC = () => {
                       </td>
                       <td className="px-6 py-4">
                         <span className="flex items-center gap-1.5 text-xs text-green-400">
-                          <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span> {user.status}
+                          <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span> Active
                         </span>
                       </td>
                       <td className="px-6 py-4 text-right space-x-2">

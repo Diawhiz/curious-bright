@@ -11,6 +11,7 @@ import analyticsRouter from './routes/analytics';
 import organizationsRouter from './routes/organizations';
 import booksRouter from './routes/books';
 import moderatorApplicationsRouter from './routes/moderatorApplications';
+import adminRouter from './routes/admin';
 import { initTypesense } from './lib/typesense';
 import { syncToTypesense } from './jobs/syncSearch';
 import { runBookIngestion } from './jobs/ingestBooks';
@@ -75,6 +76,7 @@ app.use('/analytics', analyticsRouter);
 app.use('/organizations', organizationsRouter);
 app.use('/books', booksRouter);
 app.use('/moderator-applications', moderatorApplicationsRouter);
+app.use('/admin', adminRouter);
 app.use('/api/call', livekitRouter); // Signaling and webhooks
 
 attachRealtimeServer(server);
