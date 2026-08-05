@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
-import { apiFetch } from '../lib/api';
+import { apiFetch } from '../src/lib/api';
 import { useRouter } from 'expo-router';
 
 export default function NotificationsScreen() {
