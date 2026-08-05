@@ -31,8 +31,9 @@ router.get('/stats', async (req, res) => {
       uptime: '99.98%',
       serverUptime: uptimeStr
     });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch stats' });
+  } catch (error: any) {
+    console.error('Stats Error:', error);
+    res.status(500).json({ error: 'Failed to fetch stats', details: error.message });
   }
 });
 
@@ -51,8 +52,9 @@ router.get('/users', async (req, res) => {
     });
     
     res.json(users);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch users' });
+  } catch (error: any) {
+    console.error('Users Error:', error);
+    res.status(500).json({ error: 'Failed to fetch users', details: error.message });
   }
 });
 
