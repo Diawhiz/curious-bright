@@ -1,7 +1,5 @@
 import React from 'react';
-import { BookOpen } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { colors } from '@curious-bright/ui-kit';
 import websiteLogo from '../assets/website-logo.svg';
 
 

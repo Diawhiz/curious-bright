@@ -1,6 +1,5 @@
 import React from 'react';
-import { BookOpen, Users, ArrowRight, Sparkles } from 'lucide-react';
-import { colors } from '@curious-bright/ui-kit';
+import { Users, ArrowRight, Sparkles } from 'lucide-react';
 import websiteLogo from '../assets/website-logo.svg';
 
 
