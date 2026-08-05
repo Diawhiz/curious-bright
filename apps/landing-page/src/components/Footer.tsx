@@ -2,6 +2,8 @@ import React from 'react';
 import { BookOpen } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { colors } from '@curious-bright/ui-kit';
+import websiteLogo from '../assets/website-logo.svg';
+
 
 export const Footer: React.FC = () => {
   return (
@@ -13,15 +15,7 @@ export const Footer: React.FC = () => {
           {/* Brand Info */}
           <div className="md:col-span-2 space-y-4">
             <div className="flex items-center gap-2.5">
-              <div 
-                className="w-8 h-8 rounded-sm flex items-center justify-center text-white font-bold"
-                style={{ backgroundColor: colors.ink }}
-              >
-                <BookOpen className="w-4 h-4 text-[#F7F6F2]" />
-              </div>
-              <span className="font-display font-bold text-xl text-[var(--color-ink)]">
-                Curious Bright
-              </span>
+              <img src={websiteLogo} alt="Curious Bright" style={{ height: 32, width: 'auto' }} />
             </div>
 
             <p className="text-xs leading-relaxed text-[var(--color-faded-ink)] max-w-sm">
