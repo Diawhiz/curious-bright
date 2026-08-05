@@ -16,4 +16,4 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: ALLOWED_ORIGINS
-        value: https://curiousbright.com.ng,https://app.curiousbright.com.ng,https://institutional.curiousbright.com.ng
+        value: https://curiousbright.com.ng,https://app.curiousbright.com.ng,https://org.curiousbright.com.ng

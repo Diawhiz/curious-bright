@@ -5,7 +5,7 @@ import { colors } from '@curious-bright/ui-kit';
 const featureList = [
   {
     noteTag: 'NOTE 01',
-    author: 'AMARA // LIVE WRITING',
+    author: 'OKIKIOLAMILEKAN // LIVE WRITING',
     color: colors.coral,
     bgColor: 'rgba(255, 90, 54, 0.08)',
     borderColor: 'rgba(255, 90, 54, 0.3)',
@@ -17,7 +17,7 @@ const featureList = [
   },
   {
     noteTag: 'NOTE 02',
-    author: 'DR. CHEN // MATH & DIAGRAMS',
+    author: 'DR. TOMIWA // MATH & DIAGRAMS',
     color: colors.teal,
     bgColor: 'rgba(0, 168, 150, 0.08)',
     borderColor: 'rgba(0, 168, 150, 0.3)',
@@ -29,7 +29,7 @@ const featureList = [
   },
   {
     noteTag: 'NOTE 03',
-    author: 'PROF. THORNE // PEER REVIEWS',
+    author: 'PROF. CHEN // PEER REVIEWS',
     color: colors.mustard,
     bgColor: 'rgba(244, 180, 61, 0.12)',
     borderColor: 'rgba(244, 180, 61, 0.4)',
