@@ -22,7 +22,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#121212"
-      }
+      },
+      "package": "com.diawhiz.curiousbright"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -31,6 +32,12 @@
       "expo-router",
       "expo-secure-store",
       "expo-document-picker"
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "e26f158c-3a7b-41cd-9133-d0acfbc4bd98"
+      }
+    }
   }
 }
