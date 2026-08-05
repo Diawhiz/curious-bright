@@ -7,7 +7,14 @@ const router = Router();
 // Middleware to protect admin routes using the passphrase
 const requireAdminPassphrase = (req: Request, res: Response, next: NextFunction) => {
   const passphrase = req.headers['x-admin-passphrase']?.toString().trim();
-  if (passphrase === 'curious-admin-2026' || passphrase === 'Admin@Diawhiz') {
+  const expectedPassphrase = process.env.ADMIN_PASSPHRASE;
+  
+  if (!expectedPassphrase) {
+    console.error('ADMIN_PASSPHRASE environment variable is not set on the server!');
+    return res.status(500).json({ error: 'Server misconfiguration: Admin passphrase not configured' });
+  }
+
+  if (passphrase === expectedPassphrase) {
     next();
   } else {
     res.status(401).json({ error: 'Unauthorized: Invalid admin passphrase' });
