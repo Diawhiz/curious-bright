@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { apiFetch } from '../lib/api';
+import websiteLogo from '../assets/website-logo.svg';
 
 interface UserProfile {
   id: string;
@@ -76,34 +77,14 @@ export default function Sidebar({ isOpen, closeSidebar }: { isOpen?: boolean; cl
 
   return (
     <aside className={`app-sidebar ${isOpen ? 'open' : ''}`}>
-      {/* Brand Header with Consistent Boxicon */}
+      {/* Brand Header — official wordmark */}
       <div className="sidebar-header" style={{ marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '1.5px solid var(--color-line)' }}>
-        <Link to="/browse" className="flex items-center gap-3" style={{ textDecoration: 'none' }}>
-          <div
-            style={{
-              width: 38,
-              height: 38,
-              borderRadius: '4px 0px 4px 4px',
-              background: 'var(--color-ink)',
-              color: 'var(--color-paper)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontWeight: 700,
-              fontSize: '1.3rem',
-              boxShadow: '0 3px 8px rgba(20,20,26,0.12)',
-            }}
-          >
-            <i className="bx bx-edit-alt"></i>
-          </div>
-          <div>
-            <div className="font-display" style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--color-ink)', lineHeight: 1.1 }}>
-              Curious Bright
-            </div>
-            <div style={{ fontSize: '0.7rem', color: 'var(--color-faded-ink)', fontWeight: 500 }}>
-              Shared Learning Notebook
-            </div>
-          </div>
+        <Link to="/browse" style={{ textDecoration: 'none', display: 'block' }}>
+          <img
+            src={websiteLogo}
+            alt="Curious Bright"
+            style={{ height: 44, width: 'auto', maxWidth: '100%', display: 'block' }}
+          />
         </Link>
       </div>
 

@@ -8,6 +8,7 @@ import { VideoCall } from '../components/VideoCall';
 import { CommentCornerCard } from '../components/CommentCornerCard';
 import { CursorTag } from '../components/CursorTag';
 
+
 interface Message {
   id: string;
   senderName: string;
@@ -50,6 +51,8 @@ export default function Room() {
   
   const [activeTab, setActiveTab] = useState<'CHAT' | 'WHITEBOARD' | 'VIDEO'>('CHAT');
   const [callToken, setCallToken] = useState<string | null>(null);
+  const [videoCallActive, setVideoCallActive] = useState(false);
+  const [videoPiP, setVideoPiP] = useState(false); // floating overlay mode
   const [blockedUsers, setBlockedUsers] = useState<Set<string>>(new Set());
   const [error, setError] = useState('');
   const [socketStatus, setSocketStatus] = useState<'connecting' | 'connected' | 'unauthenticated' | 'error'>('connecting');
@@ -119,7 +122,13 @@ export default function Room() {
 
     const realtimeUrl = import.meta.env.VITE_REALTIME_URL || 'http://localhost:4001';
     const newSocket = io(realtimeUrl, {
-      auth: { token }
+      auth: { token },
+      reconnection: true,
+      reconnectionAttempts: 10,
+      reconnectionDelay: 1500,
+      reconnectionDelayMax: 8000,
+      timeout: 20000,
+      transports: ['websocket', 'polling'],
     });
 
     newSocket.on('connect', () => {
@@ -127,9 +136,27 @@ export default function Room() {
       newSocket.emit('room:join', id);
     });
 
+    newSocket.on('reconnect', () => {
+      setSocketStatus('connected');
+      newSocket.emit('room:join', id);
+    });
+
+    newSocket.on('reconnect_attempt', () => {
+      setSocketStatus('connecting');
+    });
+
     newSocket.on('connect_error', (err) => {
       console.error('Socket connection error:', err);
-      setSocketStatus('error');
+      // Don't set permanent error — let it retry
+      setSocketStatus('connecting');
+    });
+
+    newSocket.on('disconnect', (reason) => {
+      if (reason === 'io server disconnect') {
+        // Server actively disconnected — try to reconnect manually
+        newSocket.connect();
+      }
+      setSocketStatus('connecting');
     });
 
     newSocket.on('room:presence', (activeList: ActiveUser[]) => {
@@ -193,6 +220,7 @@ export default function Room() {
       const data = await res.json();
       if (data.token) {
         setCallToken(data.token);
+        setVideoCallActive(true);
         setActiveTab('VIDEO');
       } else {
         setError(data.error || 'Failed to start video session');
@@ -200,6 +228,24 @@ export default function Room() {
     } catch (err: any) {
       console.error('Failed to get call token', err);
       setError('Video call service is unavailable');
+    }
+  };
+
+  const leaveVideoCall = () => {
+    setCallToken(null);
+    setVideoCallActive(false);
+    setVideoPiP(false);
+    if (activeTab === 'VIDEO') setActiveTab('CHAT');
+  };
+
+  const toggleVideoPiP = () => {
+    if (!videoPiP) {
+      // Switch to whiteboard (or chat) and show floating pip
+      setVideoPiP(true);
+      if (activeTab === 'VIDEO') setActiveTab('WHITEBOARD');
+    } else {
+      setVideoPiP(false);
+      setActiveTab('VIDEO');
     }
   };
 
@@ -257,12 +303,15 @@ export default function Room() {
               <span>Whiteboard</span>
             </button>
             <button 
-              className={`btn ${activeTab === 'VIDEO' ? 'btn-primary' : 'btn-secondary'}`}
-              style={{ padding: '0.45rem 0.9rem', fontSize: '0.8125rem' }}
-              onClick={callToken ? () => setActiveTab('VIDEO') : startVideoCall}
+              className={`btn ${activeTab === 'VIDEO' && !videoPiP ? 'btn-primary' : 'btn-secondary'}`}
+              style={{ padding: '0.45rem 0.9rem', fontSize: '0.8125rem', position: 'relative' }}
+              onClick={videoCallActive ? (videoPiP ? () => { setVideoPiP(false); setActiveTab('VIDEO'); } : () => setActiveTab('VIDEO')) : startVideoCall}
             >
               <i className="bx bx-video" style={{ fontSize: '1rem' }}></i>
-              <span>{callToken ? 'Video Call Active' : 'Start Call'}</span>
+              <span>{videoCallActive ? (videoPiP ? 'Expand Video' : 'Video Active') : 'Start Call'}</span>
+              {videoCallActive && (
+                <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#22c55e', position: 'absolute', top: 5, right: 5, boxShadow: '0 0 0 2px #fff' }} />
+              )}
             </button>
           </div>
         </div>
@@ -386,15 +435,13 @@ export default function Room() {
           )}
 
           {/* VIDEO TAB */}
-          {activeTab === 'VIDEO' && callToken && (
+          {activeTab === 'VIDEO' && callToken && !videoPiP && (
             <div style={{ width: '100%', height: '100%', background: 'var(--color-paper-card)' }}>
               <VideoCall 
                 roomId={id!} 
-                token={callToken} 
-                onLeave={() => {
-                  setCallToken(null);
-                  setActiveTab('CHAT');
-                }} 
+                token={callToken}
+                onPiP={toggleVideoPiP}
+                onLeave={leaveVideoCall}
               />
             </div>
           )}
@@ -470,6 +517,46 @@ export default function Room() {
           </CommentCornerCard>
         )}
       </div>
+
+      {/* Floating Picture-in-Picture Video Overlay */}
+      {videoPiP && callToken && (
+        <div className="vc-pip-panel">
+          {/* PiP header bar */}
+          <div className="vc-pip-header">
+            <span className="vc-live-badge" style={{ fontSize: '0.65rem', padding: '2px 8px' }}>
+              <span className="vc-live-dot" />
+              Video Call Active
+            </span>
+            <div className="vc-pip-actions">
+              <button
+                className="vc-pip-action-btn"
+                onClick={() => { setVideoPiP(false); setActiveTab('VIDEO'); }}
+                title="Expand to full view"
+              >
+                <i className="bx bx-expand" style={{ fontSize: '0.85rem' }} />
+              </button>
+              <button
+                className="vc-pip-action-btn danger"
+                onClick={leaveVideoCall}
+                title="Leave call"
+              >
+                <i className="bx bx-phone-off" style={{ fontSize: '0.85rem' }} />
+              </button>
+            </div>
+          </div>
+          {/* Embedded compact video */}
+          <div style={{ flex: 1, overflow: 'hidden' }}>
+            <VideoCall
+              roomId={id!}
+              token={callToken}
+              onPiP={toggleVideoPiP}
+              onLeave={leaveVideoCall}
+              compact={true}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+

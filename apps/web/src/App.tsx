@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import { PageTurnContainer } from './components/PageTurnContainer';
+import websiteLogo from './assets/website-logo.svg';
+
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Browse from './pages/Browse';
@@ -28,9 +30,7 @@ function App() {
         
         <main className="app-main">
           <header className="mobile-header">
-            <div className="font-display" style={{ fontSize: '1.2rem', fontWeight: 700 }}>
-              Curious Bright
-            </div>
+            <img src={websiteLogo} alt="Curious Bright" style={{ height: 34, width: 'auto' }} />
             <button 
               onClick={() => setIsSidebarOpen(true)}
               style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.5rem', color: 'var(--color-ink)' }}

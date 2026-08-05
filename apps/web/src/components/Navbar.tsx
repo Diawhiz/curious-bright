@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { apiFetch } from '../lib/api';
+import websiteLogo from '../assets/website-logo.svg';
+
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -35,9 +37,8 @@ export default function Navbar() {
   return (
     <nav className="navbar">
       <div className="navbar-brand">
-        <Link to="/">
-          <span style={{ fontSize: '1.25rem' }}>✨</span>
-          <span>CuriousBright</span>
+        <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
+          <img src={websiteLogo} alt="Curious Bright" style={{ height: 36, width: 'auto' }} />
         </Link>
       </div>
 

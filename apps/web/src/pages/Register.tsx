@@ -3,6 +3,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import { apiFetch } from '../lib/api';
 import { CommentCornerCard } from '../components/CommentCornerCard';
 import { HighlighterText } from '../components/HighlighterText';
+import iconMark from '../assets/icon-mark.svg';
+
 
 export default function Register() {
   const navigate = useNavigate();
@@ -53,6 +55,11 @@ export default function Register() {
   return (
     <div style={{ maxWidth: '460px', margin: '2.5rem auto' }}>
       <div className="text-center mb-6">
+        <img
+          src={iconMark}
+          alt="Curious Bright"
+          style={{ width: 56, height: 56, margin: '0 auto 1rem', display: 'block' }}
+        />
         <h2>
           <HighlighterText color="#FF5A36">Join Curious Bright</HighlighterText>
         </h2>

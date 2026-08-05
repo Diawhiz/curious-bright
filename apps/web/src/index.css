@@ -746,3 +746,378 @@ input:focus, select:focus, textarea:focus {
     box-shadow: -5px 0 20px rgba(20, 20, 26, 0.08);
   }
 }
+
+/* ==========================================================================
+   VIDEO CALL — Full UI Design System
+   ========================================================================== */
+
+/* Root shell for the video call area */
+.video-call-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: linear-gradient(160deg, #0d0d18 0%, #111122 100%);
+  font-family: var(--font-body);
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── Top bar ── */
+.vc-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.25rem;
+  background: rgba(13, 13, 24, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+/* LIVE badge */
+.vc-live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.28);
+  color: #4ade80;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 4px 0 4px 4px;
+  letter-spacing: 0.07em;
+}
+
+.vc-live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 6px rgba(34, 197, 94, 0.7);
+  animation: vcLivePulse 1.4s ease-in-out infinite;
+}
+
+@keyframes vcLivePulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 6px rgba(34, 197, 94, 0.7); }
+  50%       { opacity: 0.6; box-shadow: 0 0 12px rgba(34, 197, 94, 0.35); }
+}
+
+/* Float on whiteboard button */
+.vc-pip-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  color: rgba(255, 255, 255, 0.6);
+  border-radius: 6px 0 6px 6px;
+  padding: 5px 13px;
+  cursor: pointer;
+  font-size: 0.72rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.18s ease;
+  letter-spacing: 0.02em;
+  font-family: var(--font-body);
+}
+
+.vc-pip-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+/* ── Participant grid ── */
+.vc-grid {
+  flex: 1;
+  overflow: hidden;
+  padding: 10px 10px 6px 10px;
+  display: grid;
+  gap: 8px;
+  align-content: center;
+}
+
+/* ── Individual participant tile ── */
+.vc-tile {
+  position: relative;
+  background: #13131f;
+  border-radius: 10px 0 10px 10px;
+  overflow: hidden;
+  border: 1.5px solid rgba(255, 255, 255, 0.06);
+  aspect-ratio: 16 / 9;
+  transition: border-color 0.2s ease;
+}
+
+.vc-tile:hover {
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+/* Speaking ring */
+.vc-speaking-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 10px 0 10px 10px;
+  border: 2.5px solid var(--color-teal);
+  pointer-events: none;
+  box-shadow: 0 0 0 4px rgba(0, 168, 150, 0.18), inset 0 0 0 1px rgba(0, 168, 150, 0.1);
+  animation: vcSpeakRing 0.9s ease-in-out infinite alternate;
+  z-index: 5;
+}
+
+@keyframes vcSpeakRing {
+  from { opacity: 0.5; box-shadow: 0 0 0 3px rgba(0,168,150,0.12); }
+  to   { opacity: 1;   box-shadow: 0 0 0 7px rgba(0,168,150,0.22); }
+}
+
+/* Name label */
+.vc-name-label {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background: rgba(13, 13, 20, 0.72);
+  backdrop-filter: blur(6px);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 3px 0 3px 3px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  letter-spacing: 0.02em;
+  z-index: 4;
+}
+
+.vc-name-online-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #22c55e;
+  flex-shrink: 0;
+}
+
+/* "YOU" corner badge */
+.vc-you-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(255, 90, 54, 0.16);
+  border: 1px solid rgba(255, 90, 54, 0.38);
+  color: var(--color-coral);
+  font-size: 0.6rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 3px 0 3px 3px;
+  letter-spacing: 0.09em;
+  z-index: 4;
+}
+
+/* Avatar placeholder */
+.vc-avatar {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+}
+
+.vc-avatar-letter {
+  width: 56px;
+  height: 56px;
+  border-radius: 10px 0 10px 10px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.4rem;
+}
+
+.vc-avatar-letter.local {
+  background: linear-gradient(135deg, #FF5A36, #c73d1d);
+  box-shadow: 0 6px 20px rgba(255, 90, 54, 0.35);
+}
+
+.vc-avatar-letter.remote {
+  background: linear-gradient(135deg, #00A896, #006b61);
+  box-shadow: 0 6px 20px rgba(0, 168, 150, 0.35);
+}
+
+/* ── Controls bar ── */
+.vc-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 1rem 1.5rem;
+  background: rgba(13, 13, 24, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
+}
+
+.vc-controls-divider {
+  width: 1px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 0 4px;
+}
+
+/* Control button */
+.vc-ctrl-btn {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1.5px solid rgba(255, 255, 255, 0.10);
+  color: rgba(255, 255, 255, 0.88);
+  border-radius: 8px 0 8px 8px;
+  padding: 0.6rem 1.1rem;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+  min-width: 62px;
+  font-family: var(--font-body);
+  user-select: none;
+}
+
+.vc-ctrl-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.13);
+  transform: translateY(-2px);
+}
+
+.vc-ctrl-btn:disabled {
+  opacity: 0.45;
+  cursor: wait;
+}
+
+.vc-ctrl-btn.muted {
+  background: rgba(220, 38, 38, 0.2);
+  border-color: rgba(220, 38, 38, 0.45);
+  color: #f87171;
+}
+
+.vc-ctrl-btn.muted:hover:not(:disabled) {
+  background: rgba(220, 38, 38, 0.32);
+}
+
+.vc-ctrl-btn i { font-size: 1.15rem; line-height: 1; }
+
+.vc-ctrl-btn span {
+  font-size: 0.59rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+/* Leave button */
+.vc-leave-btn {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  border: 1.5px solid rgba(220, 38, 38, 0.55);
+  color: #fff;
+  border-radius: 10px 0 10px 10px;
+  padding: 0.65rem 1.65rem;
+  cursor: pointer;
+  font-weight: 800;
+  font-size: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  box-shadow: 0 4px 18px rgba(220, 38, 38, 0.38);
+  transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+  letter-spacing: 0.02em;
+  font-family: var(--font-body);
+  user-select: none;
+}
+
+.vc-leave-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(220, 38, 38, 0.55);
+}
+
+/* Empty "waiting" state */
+.vc-waiting {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  gap: 12px;
+  color: rgba(255, 255, 255, 0.28);
+}
+
+.vc-waiting-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 10px 0 10px 10px;
+  background: rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+}
+
+/* ── Floating PiP panel ── */
+.vc-pip-panel {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  width: 340px;
+  height: 224px;
+  background: #0d0d18;
+  border-radius: 10px 0 10px 10px;
+  border: 1.5px solid rgba(255, 255, 255, 0.10);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5), 0 4px 16px rgba(0, 0, 0, 0.3);
+  z-index: 200;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: vcPipEnter 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes vcPipEnter {
+  from { transform: translateY(20px) scale(0.95); opacity: 0; }
+  to   { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+.vc-pip-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.38rem 0.7rem;
+  background: rgba(13, 13, 24, 0.95);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  flex-shrink: 0;
+}
+
+.vc-pip-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.vc-pip-action-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  border-radius: 4px 0 4px 4px;
+  padding: 3px 8px;
+  cursor: pointer;
+  font-size: 0.72rem;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+}
+
+.vc-pip-action-btn:hover { background: rgba(255, 255, 255, 0.15); color: #fff; }
+
+.vc-pip-action-btn.danger { background: rgba(220, 38, 38, 0.5); color: #fff; }
+.vc-pip-action-btn.danger:hover { background: rgba(220, 38, 38, 0.75); }
+

@@ -35,12 +35,20 @@ export function Whiteboard({ roomId, socket }: WhiteboardProps) {
   };
 
   useEffect(() => {
-    if (!socket) return;
+    // If no socket yet (unauthenticated guest or still connecting), allow drawing locally
+    if (!socket) {
+      const timer = setTimeout(() => setSynced(true), 800);
+      return () => clearTimeout(timer);
+    }
 
     socket.emit(RealtimeEvents.WHITEBOARD_SYNC, { roomId });
 
+    // Fallback: if server doesn't reply in 4s (empty/new room), unblock the UI
+    const syncTimeout = setTimeout(() => setSynced(true), 4000);
+
     const handleSync = (payload: { roomId: string; state: number[] }) => {
       if (payload.roomId === roomId) {
+        clearTimeout(syncTimeout);
         engine.applyUpdate(new Uint8Array(payload.state));
         setSynced(true);
         updateLocalStrokes();
@@ -66,6 +74,7 @@ export function Whiteboard({ roomId, socket }: WhiteboardProps) {
     });
 
     return () => {
+      clearTimeout(syncTimeout);
       socket.off(RealtimeEvents.WHITEBOARD_SYNC, handleSync);
       socket.off(RealtimeEvents.WHITEBOARD_UPDATE, handleUpdate);
     };
