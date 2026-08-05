@@ -7,6 +7,7 @@ import { InstitutionalBanner } from './components/InstitutionalBanner';
 import { Footer } from './components/Footer';
 import { PrivacyPolicy } from './pages/PrivacyPolicy';
 import { TermsOfUse } from './pages/TermsOfUse';
+import { AdminDashboard } from './pages/AdminDashboard';
 
 function HomePage() {
   return (
@@ -30,6 +31,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route path="/terms" element={<TermsOfUse />} />
+        <Route path="/admin" element={<AdminDashboard />} />
       </Routes>
     </BrowserRouter>
   );
