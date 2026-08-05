@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Shield, Activity, Users, Terminal, Settings, Lock, Unlock, Database, Server, Clock, Search, CheckCircle, AlertTriangle } from 'lucide-react';
-import { colors } from '@curious-bright/ui-kit';
 import websiteLogo from '../assets/website-logo.svg';
 
 // Fake data to populate the UI until we wire up the backend
