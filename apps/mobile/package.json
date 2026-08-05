@@ -2,7 +2,7 @@
   "name": "mobile",
   "version": "1.0.0",
   "private": true,
-  "main": "index.js",
+  "main": "expo-router/entry",
   "dependencies": {
     "@curious-bright/realtime-contracts": "workspace:*",
     "@curious-bright/types": "workspace:*",
