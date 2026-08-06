@@ -10,6 +10,9 @@ import Browse from './pages/Browse';
 import Submit from './pages/Submit';
 import Read from './pages/Read';
 import Moderate from './pages/Moderate';
+import ModeratorLogin from './pages/ModeratorLogin';
+import ApplyModerator from './pages/ApplyModerator';
+import About from './pages/About';
 import Community from './pages/Community';
 import Room from './pages/Room';
 import Search from './pages/Search';
@@ -48,6 +51,9 @@ function App() {
               <Route path="/submit" element={<Submit />} />
               <Route path="/read/:id" element={<Read />} />
               <Route path="/moderate" element={<Moderate />} />
+              <Route path="/mod-login" element={<ModeratorLogin />} />
+              <Route path="/apply-moderator" element={<ApplyModerator />} />
+              <Route path="/about" element={<About />} />
               <Route path="/community" element={<Community />} />
               <Route path="/room/:id" element={<Room />} />
               <Route path="/search" element={<Search />} />
