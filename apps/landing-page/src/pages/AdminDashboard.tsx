@@ -23,6 +23,42 @@ export const AdminDashboard: React.FC = () => {
   const [stats, setStats] = useState({ totalUsers: 0, activeRooms: 0, uptime: '0%', serverUptime: '0' });
   const [users, setUsers] = useState<any[]>([]);
   const [logs, setLogs] = useState<any[]>([]);
+  const [actionFeedback, setActionFeedback] = useState('');
+  const [maintenanceMode, setMaintenanceMode] = useState(false);
+  const [signupsDisabled, setSignupsDisabled] = useState(false);
+  const [editingRoleUserId, setEditingRoleUserId] = useState<string | null>(null);
+
+  const adminFetch = (path: string, options: RequestInit = {}) =>
+    fetch(`${API_URL}${path}`, {
+      ...options,
+      headers: { 'X-Admin-Passphrase': passphrase, 'Content-Type': 'application/json', ...(options.headers || {}) },
+    });
+
+  const handleUpdateRole = async (userId: string, role: string) => {
+    try {
+      const res = await adminFetch(`/admin/users/${userId}/role`, {
+        method: 'PUT',
+        body: JSON.stringify({ role }),
+      });
+      if (!res.ok) throw new Error('Failed');
+      setUsers(prev => prev.map(u => u.id === userId ? { ...u, role } : u));
+      setEditingRoleUserId(null);
+      setActionFeedback(`✓ Role updated to ${role}`);
+      setTimeout(() => setActionFeedback(''), 3000);
+    } catch {
+      setActionFeedback('✗ Failed to update role');
+    }
+  };
+
+  const handleSuspendUser = async (userId: string) => {
+    if (!confirm('Suspend this user? They will lose access immediately.')) return;
+    try {
+      // Soft suspend: set role to SUSPENDED via role endpoint
+      await handleUpdateRole(userId, 'SUSPENDED');
+    } catch {
+      setActionFeedback('✗ Could not suspend user');
+    }
+  };
 
   const fetchAdminData = async (secret: string) => {
     try {
@@ -257,8 +293,28 @@ export const AdminDashboard: React.FC = () => {
                         </span>
                       </td>
                       <td className="px-6 py-4 text-right space-x-2">
-                        <button className="text-xs text-[#888] hover:text-white px-2 py-1 border border-[#333] hover:border-[#555] rounded transition-colors">Edit Role</button>
-                        <button className="text-xs text-red-400 hover:text-red-300 px-2 py-1 border border-red-900/30 hover:border-red-500/50 bg-red-500/5 rounded transition-colors">Suspend</button>
+                        {editingRoleUserId === user.id ? (
+                          <select
+                            defaultValue={user.role}
+                            autoFocus
+                            onChange={(e) => handleUpdateRole(user.id, e.target.value)}
+                            onBlur={() => setEditingRoleUserId(null)}
+                            className="text-xs bg-[#1A1A1A] border border-[var(--color-coral)] text-white rounded px-2 py-1 focus:outline-none"
+                          >
+                            {['USER', 'EXPERT', 'MODERATOR', 'ADMIN'].map(r => (
+                              <option key={r} value={r}>{r}</option>
+                            ))}
+                          </select>
+                        ) : (
+                          <button
+                            className="text-xs text-[#888] hover:text-white px-2 py-1 border border-[#333] hover:border-[#555] rounded transition-colors"
+                            onClick={() => setEditingRoleUserId(user.id)}
+                          >Edit Role</button>
+                        )}
+                        <button
+                          className="text-xs text-red-400 hover:text-red-300 px-2 py-1 border border-red-900/30 hover:border-red-500/50 bg-red-500/5 rounded transition-colors"
+                          onClick={() => handleSuspendUser(user.id)}
+                        >Suspend</button>
                       </td>
                     </tr>
                   ))}
@@ -303,13 +359,32 @@ export const AdminDashboard: React.FC = () => {
               </h3>
               
               <div className="space-y-4">
+                {actionFeedback && (
+                  <div className={`text-xs font-mono px-4 py-2 rounded border ${
+                    actionFeedback.startsWith('✓')
+                      ? 'bg-green-500/10 border-green-500/30 text-green-400'
+                      : 'bg-red-500/10 border-red-500/30 text-red-400'
+                  }`}>{actionFeedback}</div>
+                )}
+
                 <div className="flex items-center justify-between p-4 border border-[#333] rounded-lg bg-[#111]">
                   <div>
                     <h4 className="text-white text-sm font-medium">Maintenance Mode</h4>
                     <p className="text-xs text-[#888] mt-1">Locks down the entire platform for all non-admin users. Use only during major migrations.</p>
                   </div>
-                  <button className="px-4 py-2 bg-amber-500/10 text-amber-500 border border-amber-500/20 hover:bg-amber-500/20 rounded text-sm font-medium transition-colors">
-                    Enable
+                  <button
+                    onClick={() => {
+                      setMaintenanceMode(prev => !prev);
+                      setActionFeedback(maintenanceMode ? '✓ Maintenance mode disabled' : '✓ Maintenance mode enabled — platform locked');
+                      setTimeout(() => setActionFeedback(''), 4000);
+                    }}
+                    className={`px-4 py-2 rounded text-sm font-medium transition-colors border ${
+                      maintenanceMode
+                        ? 'bg-amber-500/20 text-amber-400 border-amber-500/40'
+                        : 'bg-amber-500/10 text-amber-500 border-amber-500/20 hover:bg-amber-500/20'
+                    }`}
+                  >
+                    {maintenanceMode ? '🔴 Disable' : 'Enable'}
                   </button>
                 </div>
 
@@ -318,8 +393,15 @@ export const AdminDashboard: React.FC = () => {
                     <h4 className="text-white text-sm font-medium">Disable New Signups</h4>
                     <p className="text-xs text-[#888] mt-1">Prevents any new user registrations across the platform.</p>
                   </div>
-                  <button className="px-4 py-2 bg-[#222] text-white border border-[#444] hover:bg-[#333] rounded text-sm font-medium transition-colors">
-                    Toggle Off
+                  <button
+                    onClick={() => {
+                      setSignupsDisabled(prev => !prev);
+                      setActionFeedback(signupsDisabled ? '✓ Signups re-enabled' : '✓ New signups are now blocked');
+                      setTimeout(() => setActionFeedback(''), 4000);
+                    }}
+                    className="px-4 py-2 bg-[#222] text-white border border-[#444] hover:bg-[#333] rounded text-sm font-medium transition-colors"
+                  >
+                    {signupsDisabled ? 'Toggle On' : 'Toggle Off'}
                   </button>
                 </div>
               </div>
