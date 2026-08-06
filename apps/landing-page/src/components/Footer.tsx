@@ -41,6 +41,7 @@ export const Footer: React.FC = () => {
               <li><a href="https://app.curiousbright.com.ng/community" className="hover:text-[var(--color-ink)] transition-colors">Study Rooms</a></li>
               <li><a href="https://app.curiousbright.com.ng/submit" className="hover:text-[var(--color-ink)] transition-colors">Submit Manuscript</a></li>
               <li><a href="https://app.curiousbright.com.ng/moderate" className="hover:text-[var(--color-ink)] transition-colors">Moderation Queue</a></li>
+              <li><a href="/#sponsor" className="hover:text-[var(--color-coral)] font-semibold text-[var(--color-coral)] transition-colors">♥ Sponsor Us</a></li>
             </ul>
           </div>
 

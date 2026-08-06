@@ -4,6 +4,7 @@ import { Hero } from './components/Hero';
 import { Features } from './components/Features';
 import { LiveSandbox } from './components/LiveSandbox';
 import { InstitutionalBanner } from './components/InstitutionalBanner';
+import { SponsorSection } from './components/SponsorSection';
 import { Footer } from './components/Footer';
 import { PrivacyPolicy } from './pages/PrivacyPolicy';
 import { TermsOfUse } from './pages/TermsOfUse';
@@ -18,6 +19,7 @@ function HomePage() {
         <Features />
         <LiveSandbox />
         <InstitutionalBanner />
+        <SponsorSection />
       </main>
       <Footer />
     </div>
