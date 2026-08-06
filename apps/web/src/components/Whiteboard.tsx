@@ -243,7 +243,7 @@ export function Whiteboard({ roomId, socket }: WhiteboardProps) {
 
       <svg
         ref={svgRef}
-        className="flex-1 w-full cursor-crosshair touch-none"
+        className="flex-1 w-full h-full block cursor-crosshair touch-none"
         style={{ background: 'var(--color-paper-card)' }}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}

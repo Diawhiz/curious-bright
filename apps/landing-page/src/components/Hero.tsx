@@ -43,7 +43,7 @@ export const Hero: React.FC = () => {
             {/* Live Cursor Badge Tag (Plain Words, Zero Dots!) */}
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-sm border border-[var(--color-line)] bg-white text-xs font-mono font-semibold text-[var(--color-ink)] shadow-xs">
               <span className="w-2 h-2 rounded-full bg-[var(--color-coral)]" />
-              <span>AMARA IS REVIEWING LIVE // NO VERSIONS LOST</span>
+              <span>OKIKIOLAMILEKAN IS REVIEWING LIVE // NO VERSIONS LOST</span>
             </div>
 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold tracking-tight text-[var(--color-ink)] leading-[1.12]">
