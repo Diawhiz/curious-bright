@@ -44,3 +44,9 @@ export const requireAuth = async (req: Request, res: Response, next: NextFunctio
   }
 };
 
+export const requireModerator = (req: Request, res: Response, next: NextFunction) => {
+  if (!req.user || !['MODERATOR', 'ADMIN'].includes(req.user.role)) {
+    return res.status(403).json({ error: 'Forbidden: Moderator access required' });
+  }
+  next();
+};
