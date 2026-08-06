@@ -23,6 +23,7 @@ export function Whiteboard({ roomId, socket }: WhiteboardProps) {
   const [synced, setSynced] = useState(false);
   const [strokes, setStrokes] = useState<DrawStroke[]>([]);
   const [activeColor, setActiveColor] = useState('#FF5A36');
+  const [penSize, setPenSize] = useState<2 | 4 | 8>(4);
   
   const svgRef = useRef<SVGSVGElement>(null);
   const currentStrokeRef = useRef<DrawStroke | null>(null);
@@ -120,7 +121,7 @@ export function Whiteboard({ roomId, socket }: WhiteboardProps) {
     const newStroke: DrawStroke = {
       id: crypto.randomUUID(),
       color: activeColor,
-      width: 4,
+      width: penSize,
       points: [pos],
     };
     currentStrokeRef.current = newStroke;
@@ -154,7 +155,7 @@ export function Whiteboard({ roomId, socket }: WhiteboardProps) {
   }
 
   return (
-    <div className="w-full h-full relative flex flex-col" style={{ background: 'var(--color-paper-card)' }}>
+    <div className="w-full h-full relative flex flex-col" style={{ background: 'var(--color-paper-card)', overflow: 'hidden' }}>
       <CursorTag
         id="whiteboard-me"
         name="You"
@@ -176,7 +177,8 @@ export function Whiteboard({ roomId, socket }: WhiteboardProps) {
           gap: '1rem',
         }}
       >
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2" style={{ flexWrap: 'wrap' }}>
+          {/* Color Picker */}
           <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-ink)' }} className="flex items-center gap-1">
             <i className="bx bx-pencil" style={{ fontSize: '0.95rem' }}></i>
             Felt Pen:
@@ -229,6 +231,41 @@ export function Whiteboard({ roomId, socket }: WhiteboardProps) {
             }}
             title="Dark Jet Ink"
           />
+
+          {/* Divider */}
+          <span style={{ width: 1, height: 20, background: 'var(--color-line)', margin: '0 0.25rem' }} />
+
+          {/* Pen Size Selector */}
+          <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-ink)' }}>
+            Size:
+          </span>
+          {([2, 4, 8] as const).map((size) => (
+            <button
+              key={size}
+              onClick={() => setPenSize(size)}
+              title={size === 2 ? 'Thin' : size === 4 ? 'Medium' : 'Thick'}
+              style={{
+                width: 28,
+                height: 28,
+                borderRadius: '3px 0px 3px 3px',
+                background: penSize === size ? 'var(--color-coral)' : 'var(--color-paper)',
+                border: penSize === size ? '2px solid #14141A' : '1.5px solid var(--color-line)',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'all 0.15s',
+              }}
+            >
+              <span style={{
+                display: 'block',
+                width: size === 2 ? 8 : size === 4 ? 12 : 16,
+                height: size,
+                borderRadius: 2,
+                background: penSize === size ? '#fff' : activeColor,
+              }} />
+            </button>
+          ))}
         </div>
 
         <button 
@@ -243,8 +280,8 @@ export function Whiteboard({ roomId, socket }: WhiteboardProps) {
 
       <svg
         ref={svgRef}
-        className="flex-1 w-full h-full block cursor-crosshair touch-none"
-        style={{ background: 'var(--color-paper-card)' }}
+        className="flex-1 block cursor-crosshair touch-none"
+        style={{ background: 'var(--color-paper-card)', width: '100%', height: '100%', display: 'block', minHeight: 0 }}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}

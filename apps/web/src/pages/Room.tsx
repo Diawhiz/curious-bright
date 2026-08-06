@@ -429,7 +429,7 @@ export default function Room() {
 
           {/* WHITEBOARD TAB */}
           {activeTab === 'WHITEBOARD' && (
-            <div style={{ width: '100%', height: '100%' }}>
+            <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
               <Whiteboard roomId={id!} socket={socket} />
             </div>
           )}
