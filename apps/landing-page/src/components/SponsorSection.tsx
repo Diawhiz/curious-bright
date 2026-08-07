@@ -228,6 +228,7 @@ export const SponsorSection: React.FC = () => {
               );
             })}
           </div>
+          )}
 
           {/* Payment Form */}
           <div className="lg:col-span-5">
@@ -256,7 +257,6 @@ export const SponsorSection: React.FC = () => {
                     </div>
                   </div>
                 )}
-              </div>
               </div>
 
               {success ? (
