@@ -4,7 +4,7 @@ import { prisma } from '@curious-bright/database';
 
 const router = express.Router();
 
-const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY!;
+const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY || '';
 const PAYSTACK_BASE_URL = 'https://api.paystack.co';
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -95,19 +95,19 @@ router.get('/verify/:reference', async (req, res) => {
 // Receive and process Paystack webhook events.
 // Register this URL in your Paystack dashboard:
 //   https://api.curiousbright.com.ng/payment/webhook
-router.post('/webhook', express.raw({ type: 'application/json' }), (req, res) => {
+router.post('/webhook', (req, res) => {
   // Validate signature
   const signature = req.headers['x-paystack-signature'] as string;
   const hash = crypto
     .createHmac('sha512', PAYSTACK_SECRET_KEY)
-    .update(req.body)
+    .update((req as any).rawBody || JSON.stringify(req.body))
     .digest('hex');
 
   if (hash !== signature) {
     return res.status(401).send('Invalid signature');
   }
 
-  const event = JSON.parse(req.body.toString());
+  const event = req.body;
 
   // Always respond 200 immediately so Paystack doesn't retry
   res.sendStatus(200);

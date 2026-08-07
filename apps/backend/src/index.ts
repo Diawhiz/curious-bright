@@ -66,7 +66,11 @@ const corsOptions: CorsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.use(express.json());
+app.use(express.json({
+  verify: (req: any, res, buf) => {
+    req.rawBody = buf;
+  }
+}));
 
 // Global rate limiter — safety net for all routes (1000 req / 15 min per IP)
 app.use(globalLimiter);
