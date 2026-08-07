@@ -62,7 +62,8 @@ const corsOptions: CorsOptions = {
     }
   },
   credentials: true,
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Admin-Passphrase'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Admin-Passphrase', 'x-admin-passphrase'],
+  exposedHeaders: ['X-Admin-Passphrase', 'x-admin-passphrase'],
 };
 
 app.use(cors(corsOptions));
