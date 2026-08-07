@@ -92,14 +92,19 @@ export const AdminDashboard: React.FC = () => {
         const failedRes = !statsRes.ok ? statsRes : !usersRes.ok ? usersRes : logsRes;
         const failedName = !statsRes.ok ? 'stats' : !usersRes.ok ? 'users' : 'logs';
 
+        let errBody: any = {};
+        try {
+          errBody = await failedRes.json();
+        } catch (_) {}
+
         if (failedRes.status === 401) {
-          throw new Error('Passphrase header not received by server');
+          throw new Error(errBody.error || 'Passphrase header not received by server');
         } else if (failedRes.status === 403) {
-          throw new Error('Invalid passphrase');
+          throw new Error(errBody.error || 'Invalid passphrase');
         } else if (failedRes.status === 500) {
-          throw new Error('Server error - check backend logs');
+          throw new Error(errBody.error ? `Server error: ${errBody.error}` : 'Server error - check backend logs');
         } else {
-          throw new Error(`Failed to fetch ${failedName} (Status ${failedRes.status})`);
+          throw new Error(errBody.error || `Failed to fetch ${failedName} (Status ${failedRes.status})`);
         }
       }
 
