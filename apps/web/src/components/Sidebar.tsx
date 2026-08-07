@@ -149,6 +149,15 @@ export default function Sidebar({ isOpen, closeSidebar }: { isOpen?: boolean; cl
           <span>Share a Paper</span>
         </Link>
 
+        <Link
+          to="/pay"
+          className={`btn ${isActive('/pay') ? 'btn-primary' : 'btn-secondary'}`}
+          style={{ justifyContent: 'flex-start', padding: '0.6rem 0.85rem' }}
+        >
+          <i className="bx bx-credit-card" style={{ fontSize: '1.15rem' }}></i>
+          <span>Custom Payment</span>
+        </Link>
+
         <div style={{ fontSize: '0.6875rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-faded-ink)', marginTop: '1.25rem', marginBottom: '0.25rem' }}>
           Review Queue
         </div>
