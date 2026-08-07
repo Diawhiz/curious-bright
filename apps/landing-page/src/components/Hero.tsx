@@ -112,9 +112,9 @@ export const Hero: React.FC = () => {
                   </span>
                 </div>
                 <div className="flex items-center -space-x-2">
-                  <div className="w-7 h-7 rounded-full bg-[var(--color-coral)] text-white text-xs font-bold flex items-center justify-center border-2 border-white shadow-xs" title="Okikiolamilekan">A</div>
-                  <div className="w-7 h-7 rounded-full bg-[var(--color-teal)] text-white text-xs font-bold flex items-center justify-center border-2 border-white shadow-xs" title="Dr. Tomiwa">C</div>
-                  <div className="w-7 h-7 rounded-full bg-[var(--color-mustard)] text-[var(--color-ink)] text-xs font-bold flex items-center justify-center border-2 border-white shadow-xs" title="Prof. Chen">T</div>
+                  <div className="w-7 h-7 rounded-full bg-[var(--color-coral)] text-white text-xs font-bold flex items-center justify-center border-2 border-white shadow-xs" title="Okikiolamilekan">O</div>
+                  <div className="w-7 h-7 rounded-full bg-[var(--color-teal)] text-white text-xs font-bold flex items-center justify-center border-2 border-white shadow-xs" title="Dr. Tomiwa">T</div>
+                  <div className="w-7 h-7 rounded-full bg-[var(--color-mustard)] text-[var(--color-ink)] text-xs font-bold flex items-center justify-center border-2 border-white shadow-xs" title="Prof. Chen">C</div>
                 </div>
               </div>
 

@@ -6,7 +6,7 @@ Thank you for your interest in contributing to Curious Bright! We welcome contri
 
 To run the repository locally:
 
-1. **Spin up local infrastructure services (PostgreSQL, Redis, MinIO, LiveKit):**
+1. **Spin up local infrastructure services (PostgreSQL, Redis, LiveKit):**
    ```bash
    docker compose up -d
    ```

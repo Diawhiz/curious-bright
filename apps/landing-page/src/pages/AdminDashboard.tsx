@@ -28,11 +28,23 @@ export const AdminDashboard: React.FC = () => {
   const [signupsDisabled, setSignupsDisabled] = useState(false);
   const [editingRoleUserId, setEditingRoleUserId] = useState<string | null>(null);
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const adminFetch = (path: string, options: RequestInit = {}) =>
     fetch(`${API_URL}${path}`, {
       ...options,
+      credentials: 'include',
       headers: { 'X-Admin-Passphrase': passphrase, 'Content-Type': 'application/json', ...(options.headers || {}) },
     });
+
+  const fetchWithTimeout = (url: string, options: RequestInit, timeout = 5000): Promise<Response> => {
+    return Promise.race([
+      fetch(url, options),
+      new Promise<Response>((_, reject) =>
+        setTimeout(() => reject(new Error('Request timeout')), timeout)
+      ),
+    ]);
+  };
 
   const handleUpdateRole = async (userId: string, role: string) => {
     try {
@@ -62,14 +74,34 @@ export const AdminDashboard: React.FC = () => {
 
   const fetchAdminData = async (secret: string) => {
     try {
-      const headers = { 'X-Admin-Passphrase': secret };
+      const fetchOptions: RequestInit = {
+        credentials: 'include',
+        headers: {
+          'X-Admin-Passphrase': secret,
+          'Content-Type': 'application/json',
+        },
+      };
+
       const [statsRes, usersRes, logsRes] = await Promise.all([
-        fetch(`${API_URL}/admin/stats`, { headers }),
-        fetch(`${API_URL}/admin/users`, { headers }),
-        fetch(`${API_URL}/admin/logs`, { headers })
+        fetchWithTimeout(`${API_URL}/admin/stats`, fetchOptions, 5000),
+        fetchWithTimeout(`${API_URL}/admin/users`, fetchOptions, 5000),
+        fetchWithTimeout(`${API_URL}/admin/logs`, fetchOptions, 5000),
       ]);
-      
-      if (!statsRes.ok) throw new Error('Invalid passphrase or server error');
+
+      if (!statsRes.ok || !usersRes.ok || !logsRes.ok) {
+        const failedRes = !statsRes.ok ? statsRes : !usersRes.ok ? usersRes : logsRes;
+        const failedName = !statsRes.ok ? 'stats' : !usersRes.ok ? 'users' : 'logs';
+
+        if (failedRes.status === 401) {
+          throw new Error('Passphrase header not received by server');
+        } else if (failedRes.status === 403) {
+          throw new Error('Invalid passphrase');
+        } else if (failedRes.status === 500) {
+          throw new Error('Server error - check backend logs');
+        } else {
+          throw new Error(`Failed to fetch ${failedName} (Status ${failedRes.status})`);
+        }
+      }
 
       const s = await statsRes.json();
       const u = await usersRes.json();
@@ -82,13 +114,24 @@ export const AdminDashboard: React.FC = () => {
       setIsAuthenticated(true);
       setError('');
     } catch (err) {
-      setError('Invalid passphrase or backend unreachable. Access denied.');
+      if (err instanceof TypeError && err.message.includes('fetch')) {
+        setError('Backend unreachable. Check your API URL.');
+      } else {
+        const message = err instanceof Error ? err.message : 'Unknown error';
+        setError(`Authentication failed: ${message}`);
+      }
+      console.error('Admin auth error:', err);
     }
   };
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    fetchAdminData(passphrase);
+    if (!passphrase.trim()) {
+      setError('Passphrase cannot be empty');
+      return;
+    }
+    setIsLoading(true);
+    fetchAdminData(passphrase).finally(() => setIsLoading(false));
   };
 
   if (!isAuthenticated) {
@@ -115,7 +158,10 @@ export const AdminDashboard: React.FC = () => {
                 <input
                   type="password"
                   value={passphrase}
-                  onChange={(e) => setPassphrase(e.target.value)}
+                  onChange={(e) => {
+                    setPassphrase(e.target.value);
+                    if (error) setError('');
+                  }}
                   className="w-full bg-[#1A1A1A] border border-[#333] text-white rounded-lg pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-[var(--color-coral)] focus:ring-1 focus:ring-[var(--color-coral)] transition-colors placeholder-[#555]"
                   placeholder="Secret Passphrase"
                   autoFocus
@@ -125,10 +171,17 @@ export const AdminDashboard: React.FC = () => {
             </div>
             <button
               type="submit"
-              className="w-full bg-[var(--color-coral)] hover:bg-[#ff492a] text-white font-medium py-3 rounded-lg text-sm transition-colors flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(255,90,54,0.3)]"
+              onClick={(e) => {
+                if (!isLoading) {
+                  // In case form submission is blocked or event doesn't bubble, handle login directly
+                  handleLogin(e);
+                }
+              }}
+              disabled={isLoading}
+              className="w-full bg-[var(--color-coral)] hover:bg-[#ff492a] text-white font-medium py-3 rounded-lg text-sm transition-colors flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(255,90,54,0.3)] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               <Unlock className="w-4 h-4" />
-              Authenticate
+              {isLoading ? 'Authenticating...' : 'Authenticate'}
             </button>
           </form>
         </div>

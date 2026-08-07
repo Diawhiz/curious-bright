@@ -14,10 +14,14 @@ const requireAdminPassphrase = (req: Request, res: Response, next: NextFunction)
     return res.status(500).json({ error: 'Server misconfiguration: Admin passphrase not configured' });
   }
 
+  if (!passphrase) {
+    return res.status(401).json({ error: 'Unauthorized: Passphrase header missing' });
+  }
+
   if (passphrase === expectedPassphrase) {
     next();
   } else {
-    res.status(401).json({ error: 'Unauthorized: Invalid admin passphrase' });
+    res.status(403).json({ error: 'Forbidden: Invalid admin passphrase' });
   }
 };
 
