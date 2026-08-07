@@ -13,7 +13,7 @@ async function paystackRequest(
   method: 'GET' | 'POST',
   path: string,
   body?: Record<string, unknown>,
-) {
+): Promise<any> {
   const res = await fetch(`${PAYSTACK_BASE_URL}${path}`, {
     method,
     headers: {
@@ -118,7 +118,7 @@ router.post('/webhook', express.raw({ type: 'application/json' }), (req, res) =>
   );
 });
 
-async function handleWebhookEvent(event: { event: string; data: Record<string, unknown> }) {
+async function handleWebhookEvent(event: { event: string; data: any }) {
   const { event: type, data } = event;
   console.log(`[payment/webhook] received: ${type}`);
 
