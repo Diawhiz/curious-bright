@@ -6,32 +6,44 @@ export async function syncToTypesense() {
   
   try {
     // Sync Users
-    const users = await prisma.user.findMany({
-      select: { id: true, name: true, email: true }
-    });
-    if (users.length > 0) {
-      await typesenseClient.collections('users').documents().import(users, { action: 'upsert' });
+    try {
+      const users = await prisma.user.findMany({
+        select: { id: true, name: true, email: true }
+      });
+      if (users.length > 0) {
+        await typesenseClient.collections('users').documents().import(users, { action: 'upsert' });
+      }
+    } catch (err) {
+      console.warn('[Search Sync] Failed to sync users to Typesense:', err instanceof Error ? err.message : err);
     }
 
     // Sync Submissions
-    const submissions = await prisma.submission.findMany({
-      where: { status: 'APPROVED' },
-      select: { id: true, title: true, description: true, status: true }
-    });
-    if (submissions.length > 0) {
-      await typesenseClient.collections('submissions').documents().import(submissions, { action: 'upsert' });
+    try {
+      const submissions = await prisma.submission.findMany({
+        where: { status: 'APPROVED' },
+        select: { id: true, title: true, description: true, status: true }
+      });
+      if (submissions.length > 0) {
+        await typesenseClient.collections('submissions').documents().import(submissions, { action: 'upsert' });
+      }
+    } catch (err) {
+      console.warn('[Search Sync] Failed to sync submissions to Typesense:', err instanceof Error ? err.message : err);
     }
 
     // Sync Rooms
-    const rooms = await prisma.room.findMany({
-      where: { isPublic: true },
-      select: { id: true, name: true, topic: true }
-    });
-    if (rooms.length > 0) {
-      await typesenseClient.collections('rooms').documents().import(rooms, { action: 'upsert' });
+    try {
+      const rooms = await prisma.room.findMany({
+        where: { id: { not: undefined } },
+        select: { id: true, name: true, topic: true }
+      });
+      if (rooms.length > 0) {
+        await typesenseClient.collections('rooms').documents().import(rooms, { action: 'upsert' });
+      }
+    } catch (err) {
+      console.warn('[Search Sync] Failed to sync rooms to Typesense:', err instanceof Error ? err.message : err);
     }
 
-    console.log('[Search Sync] Sync completed successfully.');
+    console.log('[Search Sync] Sync cycle completed.');
   } catch (error) {
     console.error('[Search Sync] Error syncing to Typesense:', error);
   }
