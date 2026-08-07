@@ -54,6 +54,8 @@ export const SponsorSection: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [activeTab, setActiveTab] = useState<'tiers' | 'custom'>('tiers');
+  const [customAmount, setCustomAmount] = useState('');
 
   const loadPaystackScript = (): Promise<void> => {
     return new Promise((resolve, reject) => {
@@ -72,6 +74,19 @@ export const SponsorSection: React.FC = () => {
       setError('Please enter your name and email to proceed.');
       return;
     }
+    
+    let paymentAmount = 0;
+    if (activeTab === 'custom') {
+      const parsedAmount = parseInt(customAmount, 10);
+      if (isNaN(parsedAmount) || parsedAmount < 500) {
+        setError('Please enter a valid amount of at least ₦500.');
+        return;
+      }
+      paymentAmount = parsedAmount;
+    } else {
+      paymentAmount = selectedTier.amount;
+    }
+
     setError('');
     setLoading(true);
 
@@ -81,17 +96,17 @@ export const SponsorSection: React.FC = () => {
       const handler = window.PaystackPop.setup({
         key: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || 'pk_live_placeholder',
         email: email.trim(),
-        amount: selectedTier.amount * 100, // Paystack uses kobo
-        currency: selectedTier.currency,
+        amount: paymentAmount * 100, // Paystack uses kobo
+        currency: activeTab === 'custom' ? 'NGN' : selectedTier.currency,
         ref: `CB-SPONSOR-${Date.now()}-${Math.floor(Math.random() * 1000000)}`,
         metadata: {
           custom_fields: [
             { display_name: 'Name', variable_name: 'name', value: name.trim() },
-            { display_name: 'Tier', variable_name: 'tier', value: selectedTier.label },
+            { display_name: 'Tier', variable_name: 'tier', value: activeTab === 'custom' ? 'Custom' : selectedTier.label },
           ],
         },
         callback: (response: any) => {
-          setSuccess(`🎉 Thank you, ${name.split(' ')[0]}! Your contribution as a ${selectedTier.label} has been received. Reference: ${response.reference}`);
+          setSuccess(`🎉 Thank you, ${name.split(' ')[0]}! Your ${activeTab === 'custom' ? 'custom payment' : `contribution as a ${selectedTier.label}`} has been received. Reference: ${response.reference}`);
           setEmail('');
           setName('');
           setLoading(false);
@@ -137,9 +152,27 @@ export const SponsorSection: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+          
+          <div className="lg:col-span-12 flex justify-center mb-6">
+            <div className="flex bg-[#F7F6F2] p-1 rounded-md border border-[var(--color-line)]">
+              <button 
+                className={`px-6 py-2 text-sm font-semibold rounded-sm transition-colors ${activeTab === 'tiers' ? 'bg-white shadow-sm text-[var(--color-ink)]' : 'text-[var(--color-faded-ink)] hover:text-[var(--color-ink)]'}`}
+                onClick={() => setActiveTab('tiers')}
+              >
+                Sponsor Tiers
+              </button>
+              <button 
+                className={`px-6 py-2 text-sm font-semibold rounded-sm transition-colors ${activeTab === 'custom' ? 'bg-white shadow-sm text-[var(--color-ink)]' : 'text-[var(--color-faded-ink)] hover:text-[var(--color-ink)]'}`}
+                onClick={() => setActiveTab('custom')}
+              >
+                Custom Payment
+              </button>
+            </div>
+          </div>
 
-          {/* Tier Cards */}
-          <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-3 gap-5">
+          {/* Tier Cards (Only show if tiers tab is active) */}
+          {activeTab === 'tiers' && (
+            <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-3 gap-5">
             {TIERS.map((tier) => {
               const Icon = tier.icon;
               const isSelected = selectedTier.id === tier.id;
@@ -203,20 +236,27 @@ export const SponsorSection: React.FC = () => {
 
               <div className="mb-6">
                 <div className="font-mono text-xs font-bold uppercase tracking-wider text-[var(--color-faded-ink)] mb-1">
-                  Selected Tier
+                  {activeTab === 'custom' ? 'Payment Details' : 'Selected Tier'}
                 </div>
-                <div className="flex items-center gap-2.5">
-                  <div
-                    className="w-8 h-8 rounded-sm flex items-center justify-center"
-                    style={{ background: selectedTier.bgColor }}
-                  >
-                    {React.createElement(selectedTier.icon, { className: 'w-4 h-4', style: { color: selectedTier.color } })}
+                {activeTab === 'custom' ? (
+                  <div className="text-sm text-[var(--color-ink)] mb-4">
+                    You have chosen to make a custom payment. Please enter the details below.
                   </div>
-                  <div>
-                    <div className="font-display font-bold text-[var(--color-ink)]">{selectedTier.label}</div>
-                    <div className="font-mono text-xs" style={{ color: selectedTier.color }}>{selectedTier.tagline}</div>
+                ) : (
+                  <div className="flex items-center gap-2.5">
+                    <div
+                      className="w-8 h-8 rounded-sm flex items-center justify-center"
+                      style={{ background: selectedTier.bgColor }}
+                    >
+                      {React.createElement(selectedTier.icon, { className: 'w-4 h-4', style: { color: selectedTier.color } })}
+                    </div>
+                    <div>
+                      <div className="font-display font-bold text-[var(--color-ink)]">{selectedTier.label}</div>
+                      <div className="font-mono text-xs" style={{ color: selectedTier.color }}>{selectedTier.tagline}</div>
+                    </div>
                   </div>
-                </div>
+                )}
+              </div>
               </div>
 
               {success ? (
@@ -253,6 +293,23 @@ export const SponsorSection: React.FC = () => {
                     />
                   </div>
 
+                  {activeTab === 'custom' && (
+                    <div>
+                      <label className="block text-xs font-bold uppercase tracking-wider text-[var(--color-faded-ink)] mb-1.5">
+                        Amount (NGN)
+                      </label>
+                      <input
+                        type="number"
+                        value={customAmount}
+                        onChange={(e) => setCustomAmount(e.target.value)}
+                        placeholder="e.g. 5000"
+                        min="500"
+                        required
+                        className="w-full bg-[#F7F6F2] border border-[var(--color-line)] rounded-sm px-4 py-2.5 text-sm text-[var(--color-ink)] focus:outline-none focus:border-[var(--color-ink)]"
+                      />
+                    </div>
+                  )}
+
                   {error && (
                     <p className="text-xs text-red-500 font-medium">{error}</p>
                   )}
@@ -268,7 +325,7 @@ export const SponsorSection: React.FC = () => {
                     ) : (
                       <>
                         <Heart className="w-4 h-4" />
-                        <span>Sponsor via Paystack — {selectedTier.tagline}</span>
+                        <span>{activeTab === 'custom' ? 'Pay Now' : `Sponsor via Paystack — ${selectedTier.tagline}`}</span>
                       </>
                     )}
                   </button>
