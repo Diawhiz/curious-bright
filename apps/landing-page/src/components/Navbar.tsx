@@ -42,10 +42,10 @@ export const Navbar: React.FC = () => {
               For Schools & Labs
             </a>
             <a 
-              href="#sponsor" 
+              href="https://app.curiousbright.com.ng/pay" 
               className="text-sm font-semibold text-[var(--color-coral)] hover:text-[var(--color-ink)] transition-colors flex items-center gap-1.5"
             >
-              ♥ Sponsor
+              ♥ Custom Payment
             </a>
           </nav>
 
