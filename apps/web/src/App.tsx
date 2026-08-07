@@ -19,6 +19,7 @@ import Search from './pages/Search';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfUse from './pages/TermsOfUse';
 import PaymentVerify from './pages/PaymentVerify';
+import CustomPayment from './pages/CustomPayment';
 
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -61,6 +62,7 @@ function App() {
               <Route path="/privacy" element={<PrivacyPolicy />} />
               <Route path="/terms" element={<TermsOfUse />} />
               <Route path="/payment/verify" element={<PaymentVerify />} />
+              <Route path="/pay" element={<CustomPayment />} />
             </Routes>
           </PageTurnContainer>
         </main>
