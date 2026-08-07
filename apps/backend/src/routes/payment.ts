@@ -95,6 +95,12 @@ router.get('/verify/:reference', async (req, res) => {
 // Receive and process Paystack webhook events.
 // Register this URL in your Paystack dashboard:
 //   https://api.curiousbright.com.ng/payment/webhook
+
+// Some platforms ping with a GET request first to check if the URL is valid
+router.get('/webhook', (req, res) => {
+  res.status(200).send('Webhook endpoint is live');
+});
+
 router.post('/webhook', (req, res) => {
   // Validate signature
   const signature = req.headers['x-paystack-signature'] as string;
@@ -104,7 +110,8 @@ router.post('/webhook', (req, res) => {
     .digest('hex');
 
   if (hash !== signature) {
-    return res.status(401).send('Invalid signature');
+    console.warn('[payment/webhook] Invalid signature received. Returning 200 but ignoring event to satisfy Paystack config ping.');
+    return res.status(200).send('OK');
   }
 
   const event = req.body;
